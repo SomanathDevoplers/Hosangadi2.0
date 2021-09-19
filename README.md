@@ -1,5 +1,3 @@
 # Hosangadi2.0
 POS software
-Krish & Shiv
-Hello World
-commit test
+Krish & Shiv anand Shenoy
