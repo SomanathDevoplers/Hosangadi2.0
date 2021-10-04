@@ -79,10 +79,7 @@ def style(hgt,wdt):
 
                                              }
                                },
-          
-               
-                         
-        
+                
     })
 
 
