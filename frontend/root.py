@@ -1,5 +1,5 @@
 from tkinter import Tk , Frame , Button , constants as con , ttk , Menu , Label , font as font , Canvas , PhotoImage , messagebox as msg
-import styles , login
+import style , login
 
 theme_state = False             #False if dark
 task_place = False              #taskbar placement
@@ -68,7 +68,7 @@ root_wdt = root.winfo_screenwidth()-10
 root.geometry(str(int(root_wdt))+"x"+str(int(root_hgt))+"-0-0")
 num_alpha = root.register(val_num_alpha)
 decimal = root.register(val_dec) 
-style = styles.style(root_hgt , root_wdt)
+style = style.style(root_hgt , root_wdt)
 style.theme_use("dark_theme")  
 
 

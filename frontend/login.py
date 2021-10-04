@@ -73,10 +73,14 @@ class login:
 
         if user_name == "" or user_pass =="":
             msg.showerror("Error" , "ENTER ALL DETAILS!")
+            self.ent_user_name.focus_set()
+            self.ent_user_name.select_range(0,con.END)
             return
 
         if fin_year not in self.fin_years:
             msg.showerror("Error" , "SELECT YEAR FROM DROP DOWN!")
+            self.combo_year.focus_set()
+            self.combo_year.select_range(0,con.END)
             return
         
         user_type = "ADMIN"  #get from backend
@@ -84,12 +88,12 @@ class login:
         self.lbl_btn[0].config(text = user_name)
         self.lbl_btn[1].config(text = user_type)
         self.lbl_btn[2].config(text = fin_year)
- 
+        self.base_frame.destroy()
            
     def close(self ,e):
         self.main.quit()
         
-
+    
 
 
 
