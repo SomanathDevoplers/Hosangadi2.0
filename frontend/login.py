@@ -27,6 +27,7 @@ class login:
 
         self.title_frame = ttk.Frame(self.base_frame , height = int(dmsn[0]*0.3*0.12)-2 , width = int(dmsn[1]*0.3)-4 ,  style = "root_menu.TFrame")
         self.title_frame.pack_propagate(False)
+        self.lbl_title = ttk.Label(self.title_frame , text = "Login" , style = "window_title.TLabel")
         self.btn_close = ttk.Label(self.title_frame , text = "X" , style = "window_close.TLabel")
         self.btn_close.bind("<Button-1>" , self.close )
 
@@ -41,7 +42,9 @@ class login:
         
         self.ent_user_name = ttk.Entry(self.main_frame , width = 12 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.13)) ,  validate="key", validatecommand=(val_num_alpha, '%P'))
         self.ent_user_pass = ttk.Entry(self.main_frame  , width = 12 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.13)) , show = "*" , validate="key", validatecommand=(val_num_alpha, '%P')) 
+        self.ent_user_pass.bind("<Return>" , self.submit)
         self.combo_year = ttk.Combobox(self.main_frame , width = 12  ,values =self.fin_years , font = ('Lucida Grande' , -int(self.main_hgt*0.13))) 
+        self.combo_year.bind("<Return>" , self.submit)
         self.combo_year.insert(con.END , self.fin_years[-1])
 
         self.btn_submit = ttk.Button(self.main_frame , text = "Submit" , style = "window_btn.TButton" ,command = lambda : self.submit(None))
@@ -49,9 +52,9 @@ class login:
 
         self.base_frame.pack(anchor = con.CENTER , pady = int(dmsn[0]/4))
         self.title_frame.pack(anchor = con.N , pady = 2)
+        self.lbl_title.pack(side = con.LEFT)
         self.btn_close.pack(side = con.RIGHT)
         self.main_frame.pack(anchor = con.S)
-        #self.widget_frame.pack(anchor = con.CENTER)
 
 
         self.lbl_user_name.place(x = int(self.main_wdt*0.08) , y = int(self.main_hgt*0.03))
@@ -63,7 +66,7 @@ class login:
         
         self.btn_submit.place(x = int(self.main_wdt*0.1) , y = int(self.main_hgt*0.7))
 
-        
+        self.ent_user_name.focus_set()
 
 
     def submit(self , e):
@@ -89,10 +92,9 @@ class login:
         self.lbl_btn[1].config(text = user_type)
         self.lbl_btn[2].config(text = fin_year)
         self.base_frame.destroy()
-           
+
     def close(self ,e):
-        self.main.quit()
-        
+        self.main.quit() 
     
 
 
