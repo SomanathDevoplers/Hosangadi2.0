@@ -66,16 +66,32 @@ def style(hgt,wdt):
                            },
           "status_text.TLabel":
                               {
-                                   "configure" : {"background" : "#0b6faa" , "foreground" : "#f0f0f0" , "font" : ('Lucida Console',-int(hgt*0.02)) },
+                                   "configure" : {"background" : "#0b6faa" , "foreground" : "#f0f0f0" , "font" : ('Lucida Console',-int(hgt*0.025)) },
                               },
 
           "window_base.TFrame":{
                                 "configure" : {"background" : "#fff"},
 
                            },
+          "window_access.TFrame":{
+                                "configure" : {"background" : "#000"},
+
+                           },
+          "access_close.TLabel":
+                                {
+                                   "configure" : {"background" : "#000" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.029), 'bold') , "padding" : ( int(wdt*0.008), 0)},
+                                   "map"       : {"background" : [('hover','red')]}
+
+                                },
+          "window_access.TLabel":{
+                                "configure" : {"background" : "#000" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.0285)) , "anchor" : "center" , "padding" : ( int(wdt*0.0028), 0)},
+                                 "map"       : {"background" : [('hover','#AEC1B5')],
+                                                "foreground" : [('hover','#000')]
+                                               }
+                           },
           "window_title.TLabel":
                               {
-                                   "configure" : {"background" : "#434447" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.024),) , "padding" : ( int(wdt*0.008), 0)},
+                                   "configure" : {"background" : "#434447" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.024)) , "padding" : ( int(wdt*0.008), 0)},
                               },
           "window_close.TLabel":
                                 {
@@ -123,7 +139,7 @@ def style(hgt,wdt):
                            },
           "status_text.TLabel":
                               {
-                                   "configure" : {"background" : "#0b6faa" , "foreground" : "#f0f0f0" , "font" : ('Lucida Console',-int(hgt*0.02)) },
+                                   "configure" : {"background" : "#0b6faa" , "foreground" : "#f0f0f0" , "font" : ('Lucida Console',-int(hgt*0.025)) },
                               },
           "root_task.TFrame":{
                                 "configure" : {"background" : "#65caf6"},
@@ -164,6 +180,22 @@ def style(hgt,wdt):
 
                                              }
                            },
+          "window_access.TFrame":{
+                                "configure" : {"background" : "#000"},
+
+                           },
+          "access_close.TLabel":
+                                {
+                                   "configure" : {"background" : "#000" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.029), 'bold') , "padding" : ( int(wdt*0.008), 0)},
+                                   "map"       : {"background" : [('hover','red')]}
+
+                                },
+          "window_access.TLabel":{
+                                "configure" : {"background" : "#000" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.0285)) , "anchor" : "center" , "padding" : ( int(wdt*0.0028), 0)},
+                                 "map"       : {"background" : [('hover','#AEC1B5')],
+                                                "foreground" : [('hover','#000')]
+                                               }
+                           },
           "window_base.TFrame":{
                                 "configure" : {"background" : "#000"},
 
@@ -174,7 +206,7 @@ def style(hgt,wdt):
                                 },
           "window_close.TLabel":
                                 {
-                                    "configure" : {"background" : "#7ee8fa" , "foreground" : "#fff" , "font" : ('Tahoma',-int(hgt*0.024) , 'bold'), "padding" : ( int(wdt*0.008), 0) },
+                                    "configure" : {"background" : "#7ee8fa" , "foreground" : "#000" , "font" : ('Tahoma',-int(hgt*0.024) , 'bold'), "padding" : ( int(wdt*0.008), 0) },
                                     "map"       : {"background" : [('hover','red')]}
 
                                 },

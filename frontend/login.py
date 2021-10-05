@@ -50,7 +50,7 @@ class login:
         self.btn_submit = ttk.Button(self.main_frame , text = "Submit" , style = "window_btn.TButton" ,command = lambda : self.submit(None))
         self.btn_submit.bind("<Return>" , self.submit)
 
-        self.base_frame.pack(anchor = con.CENTER , pady = int(dmsn[0]/4))
+        self.base_frame.grid(padx = int(dmsn[1]/3) , pady = int(dmsn[0]/4))
         self.title_frame.pack(anchor = con.N , pady = 2)
         self.lbl_title.pack(side = con.LEFT)
         self.btn_close.pack(side = con.RIGHT)

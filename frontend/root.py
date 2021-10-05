@@ -46,10 +46,9 @@ def change_theme():
 
 def logout(e):
     if lbl_user_type.cget("text") =="   -   ":
-        #ask if msgbox required
         return
 
-    if lbl_task_cnt.cget("text") !="0":
+    if int(lbl_task_cnt.cget("text")) != 0:
         #ask if msgbox required
         return
     
@@ -61,9 +60,7 @@ def logout(e):
     lbl_user_type.config(text = "   -   ")
     lbl_fin_year.config(text = "   -   ")
     login_main =  login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
-    print("logged out")
     #remaining
-
 
 def val_num_alpha(char):
     flag = True
@@ -84,7 +81,7 @@ def admin_panel():
     if lbl_user_type.cget("text") != "ADMIN":
         #ask if mesagebox required
         return
-    print("Admin Panel")
+    window = base_window.base_window(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Apple" )
 
 #---------------------settings menu---------------------#
 def firms():
@@ -146,7 +143,7 @@ lbl_logout.pack(side = con.RIGHT , padx = int(root_wdt*0.003))
 frm_task_view = ttk.Frame(root , width = int(0.01*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 frm_task_view.bind("<Enter>" , view_task)
 frm_main = ttk.Frame(root , width = int(0.98*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
-frm_main.pack_propagate(False)
+frm_main.grid_propagate(False)
 frm_ntfc_view = ttk.Frame(root , width = int(0.011*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 frm_ntfc_view.bind("<Enter>" , view_ntfc)
 
@@ -168,9 +165,12 @@ lbl_user_type_txt.grid(row = 2 , column = 0)
 lbl_user_type.grid(row = 2 , column = 1)
 
 frm_task = ttk.Frame(root , width = int(0.4*root_wdt) , height = int(0.865*root_hgt) , style = "root_task.TFrame")
-frm_task_sales = ttk.Frame(frm_task , width = int(0.2*root_wdt)-2 , height = int(0.865*root_hgt)-2 , style = "root_task_sales.TFrame")
-frm_task_others = ttk.Frame(frm_task , width = int(0.2*root_wdt)-2 , height = int(0.865*root_hgt)-2 , style = "root_task_sales.TFrame")
 frm_task.bind("<Leave>" , view_task)
+frm_task_sales = ttk.Frame(frm_task , width = int(0.2*root_wdt)-2 , height = int(0.865*root_hgt)-2 , style = "root_task_sales.TFrame")
+frm_task_sales.pack_propagate(False)
+frm_task_others = ttk.Frame(frm_task , width = int(0.2*root_wdt)-2 , height = int(0.865*root_hgt)-2 , style = "root_task_sales.TFrame")
+frm_task_others.pack_propagate(False)
+
 frm_ntfc = ttk.Frame(root , width = int(0.4*root_wdt) , height = int(0.865*root_hgt) , style = "root_task.TFrame" )
 frm_ntfc.bind("<Leave>" , view_ntfc)
 
@@ -191,6 +191,6 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
 
-#login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
-b = base_window.base_window(root, [frm_main] , [int(0.865*root_hgt) , int(0.98*root_wdt)] , ["Apple"])
+login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
+# = base_window.base_window(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] , "Apple" )
 root.mainloop()
