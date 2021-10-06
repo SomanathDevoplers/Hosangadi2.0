@@ -36,18 +36,21 @@ class login:
         self.main_wdt = self.main_frame.winfo_reqwidth()
 
         
-        self.lbl_user_name = ttk.Label(self.main_frame , text = "User Name :" , style = "window_text.TLabel")
-        self.lbl_user_pass = ttk.Label(self.main_frame , text = "Password  :" , style = "window_text.TLabel")
-        self.lbl_year = ttk.Label(self.main_frame , text = "Year      :" ,  style = "window_text.TLabel")
+        self.lbl_user_name = ttk.Label(self.main_frame , text = "User Name :" , style = "window_text_large.TLabel")
+        self.lbl_user_pass = ttk.Label(self.main_frame , text = "Password  :" , style = "window_text_large.TLabel")
+        self.lbl_year = ttk.Label(self.main_frame , text = "Year      :" ,  style = "window_text_large.TLabel")
         
         self.ent_user_name = ttk.Entry(self.main_frame , width = 12 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.13)) ,  validate="key", validatecommand=(val_num_alpha, '%P'))
+        self.ent_user_name.bind("<FocusOut>" , self.combo_entry_out)
         self.ent_user_pass = ttk.Entry(self.main_frame  , width = 12 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.13)) , show = "*" , validate="key", validatecommand=(val_num_alpha, '%P')) 
         self.ent_user_pass.bind("<Return>" , self.submit)
-        self.combo_year = ttk.Combobox(self.main_frame , width = 12  ,values =self.fin_years , font = ('Lucida Grande' , -int(self.main_hgt*0.13))) 
+        self.ent_user_pass.bind("<FocusOut>" , self.combo_entry_out)
+        self.combo_year = ttk.Combobox(self.main_frame , width = 12  ,values =self.fin_years , font = ('Lucida Grande' , -int(self.main_hgt*0.13)))
+        self.combo_year.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_year.bind("<Return>" , self.submit)
         self.combo_year.insert(con.END , self.fin_years[-1])
 
-        self.btn_submit = ttk.Button(self.main_frame , text = "Submit" , style = "window_btn.TButton" ,command = lambda : self.submit(None))
+        self.btn_submit = ttk.Button(self.main_frame , text = "Submit" , style = "window_btn_large.TButton" ,command = lambda : self.submit(None))
         self.btn_submit.bind("<Return>" , self.submit)
 
         self.base_frame.grid(padx = int(dmsn[1]/3) , pady = int(dmsn[0]/4))
@@ -93,10 +96,9 @@ class login:
         self.lbl_btn[2].config(text = fin_year)
         self.base_frame.destroy()
 
+    def combo_entry_out(self , e):
+        e.widget.select_clear()
+
     def close(self ,e):
         self.main.quit() 
     
-
-
-
-

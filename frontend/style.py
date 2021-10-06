@@ -101,13 +101,30 @@ def style(hgt,wdt):
                                 },
           
                
-         "window_text.TLabel":
+         "window_text_large.TLabel":
                                 {
                                    "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03)) },
                                },
-          "window_btn.TButton":
+          "window_text_medium.TLabel":
+                                {
+                                   "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.024)) },
+                               },
+          "window_text_small.TLabel":
+                                {
+                                   "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.015)) },
+                               },
+          "window_btn_large.TButton":
                                 {
                                    "configure" : {"background" : "#666666" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) },
+                                   "map"       : {
+                                            "background" : [("hover","#B8B3BE")],
+                                            "foreground" : [("hover","red")]
+
+                                             }
+                               },
+          "window_btn_medium.TButton":
+                                {
+                                   "configure" : {"background" : "#666666" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.025)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) },
                                    "map"       : {
                                             "background" : [("hover","#B8B3BE")],
                                             "foreground" : [("hover","red")]
@@ -211,11 +228,19 @@ def style(hgt,wdt):
 
                                 },
                
-         "window_text.TLabel":
+         "window_text_large.TLabel":
                                 {
                                    "configure" : {"background" : "#D0F4B9" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03)) },
                                },
-          "window_btn.TButton":
+          "window_text_medium.TLabel":
+                                {
+                                   "configure" : {"background" : "#D0F4B9" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.024)) },
+                               },
+          "window_text_small.TLabel":
+                                {
+                                   "configure" : {"background" : "#D0F4B9" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.015)) },
+                               },
+          "window_btn_large.TButton":
                                 {
                                    "configure" : {"background" : "#CAEDF6" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03)) , "padding" : (int(wdt*0.003) , int(hgt*0.008)) , "relief" : "solid" },
                                    "map"       : {
@@ -224,7 +249,15 @@ def style(hgt,wdt):
 
                                              }
                                },
-          
+          "window_btn_medium.TButton":
+                                {
+                                   "configure" : {"background" : "#CAEDF6" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.025)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) , "relief" : "solid" },
+                                   "map"       : {
+                                            "background" : [("hover","#ADFC92")],
+                                            "foreground" : [("hover","red")]
+
+                                             }
+                               },
  
     })
     return(style)

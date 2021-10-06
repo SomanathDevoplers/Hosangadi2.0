@@ -1,12 +1,13 @@
 from tkinter import ttk , constants as con
 
 class base_window:
+    main_frame = None
     def __init__(self , root ,frames , dmsn , lbls ,title ):
         self.lbls = lbls
         self.lbls[0].config(text = int(self.lbls[0].cget("text"))+1)
         self.access_frame = ttk.Frame(frames[1], width = frames[1].winfo_reqwidth() , height = int(frames[1].winfo_reqheight()*0.05) , style = "window_access.TFrame")
         self.access_frame.pack_propagate(False)
-        self.acc_title = ttk.Label(self.access_frame , text = title +str(int(self.lbls[0].cget("text"))) , width = 19 , style = "window_access.TLabel")
+        self.acc_title = ttk.Label(self.access_frame , text = title , width = 19 , style = "window_access.TLabel")
         self.acc_title.bind("<Button-1>" , self.pack_top)
         self.acc_title.bind("<Enter>" , self.acc_lbl_config_enter)
         self.acc_title.bind("<Leave>" , self.acc_lbl_config_leave)
@@ -17,15 +18,15 @@ class base_window:
 
         self.base_frame = ttk.Frame(frames[0] , height = int(dmsn[0]) , width = dmsn[1] , style = "window_base.TFrame")
         self.base_frame.pack_propagate(False)
-
         self.title_frame = ttk.Frame(self.base_frame , height = int(dmsn[0]*0.05)-2 , width = int(dmsn[1])-2 ,  style = "root_menu.TFrame")
         self.title_frame.pack_propagate(False)
-        self.lbl_title = ttk.Label(self.title_frame , text = title+"\t\t\t\t\t\t\t\t"+str(int(self.lbls[0].cget("text"))) , style = "window_title.TLabel")
+        self.lbl_title = ttk.Label(self.title_frame , text = title , style = "window_title.TLabel")
         self.btn_min = ttk.Label(self.title_frame , text = "-" , style = "window_close.TLabel")
         self.btn_min.bind("<Button-1>" , self.minimize )
         self.btn_close = ttk.Label(self.title_frame , text = "X" , style = "window_close.TLabel")
         self.btn_close.bind("<Button-1>" , self.close )
         self.main_frame = ttk.Frame(self.base_frame , height = int(dmsn[0]*0.95) , width = int(dmsn[1])-2 ,  style = "root_main.TFrame")
+        base_window.main_frame = self.main_frame
         self.main_hgt = self.main_frame.winfo_reqheight()
         self.main_wdt = self.main_frame.winfo_reqwidth()
 

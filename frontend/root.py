@@ -1,5 +1,5 @@
 from tkinter import Tk , Frame , Button , constants as con , ttk , Menu , Label , font as font , Canvas , PhotoImage , messagebox as msg
-import style , login , base_window
+import style , login , firm
 
 theme_state = False             #False if dark
 task_place = False              #taskbar placement
@@ -49,7 +49,7 @@ def logout(e):
         return
 
     if int(lbl_task_cnt.cget("text")) != 0:
-        #ask if msgbox required
+        msg.showinfo("Info" , "CLOSE ALL TABS BEFORE LOGGING OUT")
         return
     
     ans = msg.askokcancel("Logout" , "DO YOU WANT TO LOG OUT?")
@@ -76,31 +76,46 @@ def val_dec(char):
             flag = False
     return flag
 
+def val_email(char):
+    flag = True
+    for each in char:
+        if not (each.isalpha() or each.isdigit() or each == "_" or each == "@" or each == "."):
+            flag = False
+    return flag
+
+def close():
+    if int(lbl_task_cnt.cget("text"))>0:
+        msg.showinfo("Info" , "CLOSE ALL TABS BEFORE EXIT!")
+        return
+    else:
+        root.quit()
+
 #----------------------Admin menu-----------------------#     
 def admin_panel():
     if lbl_user_type.cget("text") != "ADMIN":
         #ask if mesagebox required
         return
-    window = base_window.base_window(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Apple" )
 
 #---------------------settings menu---------------------#
-def firms():
+def firms(e = None):
     user_type = lbl_user_type.cget("text")
     if not (user_type == "ADMIN" or user_type == "OWNER"):
         #ask if mesagebox required
         return
     
-    print("firmsa")
+    window = firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,val_email])
 
 #1{
 root = Tk()
 root.resizable(con.FALSE , con.FALSE)
-
+root.protocol("WM_DELETE_WINDOW" , close)
+root.bind_all("<Control-h>", firms)
 root_hgt = root.winfo_screenheight()-34
 root_wdt = root.winfo_screenwidth()-10
 root.geometry(str(int(root_wdt))+"x"+str(int(root_hgt))+"-0-0")
 num_alpha = root.register(val_num_alpha)
-decimal = root.register(val_dec) 
+decimal = root.register(val_dec)
+email = root.register(val_email)
 style = style.style(root_hgt , root_wdt)
 style.theme_use("dark_theme")  
 
@@ -119,13 +134,13 @@ menu_settings_head['menu'] = menu_settings
 
 menu_accounts_head = ttk.Menubutton(frm_menubar , text = "Settings" , direction = 'below',style = "root_menu.TMenubutton" )
 menu_accounts = Menu(menu_accounts_head , tearoff = 0 , font = ('Tahoma' , 13 ) )
-menu_accounts.add_command(label = "Firms" , command = firms)
+menu_accounts.add_command(label = "Firms" , command = firms , accelerator = "Ctrl+s" , underline = 1)
 menu_accounts_head['menu'] = menu_accounts
 
 
 lbl_ntfc_cnt = ttk.Label(frm_menu , text = "0" , width = 2 , style = "root_ntfc_cnt.TLabel")
 rad_dark = ttk.Checkbutton(frm_menu , command =   change_theme , style = "root_theme.TCheckbutton" )
-lbl_dark = ttk.Label(frm_menu , text = "Light Theme : " , style = "root_theme.TLabel")
+lbl_dark = ttk.Label(frm_menu , text = "Theme : " , style = "root_theme.TLabel")
 lbl_logout = ttk.Label(frm_menu , text = " Logout " , style = "root_menu_btn.TLabel")
 lbl_logout.bind("<Button-1>" , logout)
 
@@ -190,7 +205,7 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-
+#firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email])
 login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
-# = base_window.base_window(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] , "Apple" )
+
 root.mainloop()
