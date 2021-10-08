@@ -1,7 +1,6 @@
 from tkinter import ttk , constants as con
 
 class base_window:
-    main_frame = None
     def __init__(self , root ,frames , dmsn , lbls ,title ):
         self.lbls = lbls
         self.lbls[0].config(text = int(self.lbls[0].cget("text"))+1)
@@ -26,9 +25,6 @@ class base_window:
         self.btn_close = ttk.Label(self.title_frame , text = "X" , style = "window_close.TLabel")
         self.btn_close.bind("<Button-1>" , self.close )
         self.main_frame = ttk.Frame(self.base_frame , height = int(dmsn[0]*0.95) , width = int(dmsn[1])-2 ,  style = "root_main.TFrame")
-        base_window.main_frame = self.main_frame
-        self.main_hgt = self.main_frame.winfo_reqheight()
-        self.main_wdt = self.main_frame.winfo_reqwidth()
 
 
         self.acc_title.pack(side = con.LEFT)

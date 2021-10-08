@@ -115,7 +115,7 @@ def style(hgt,wdt):
                                },
           "window_btn_large.TButton":
                                 {
-                                   "configure" : {"background" : "#666666" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) },
+                                   "configure" : {"background" : "#666666" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) , "relief" : "solid" , "anchor" : "center" },
                                    "map"       : {
                                             "background" : [("hover","#B8B3BE")],
                                             "foreground" : [("hover","red")]
@@ -124,7 +124,7 @@ def style(hgt,wdt):
                                },
           "window_btn_medium.TButton":
                                 {
-                                   "configure" : {"background" : "#666666" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.025)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) },
+                                   "configure" : {"background" : "#666666" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.025)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) , "relief":"solid" , "anchor" : "center" },
                                    "map"       : {
                                             "background" : [("hover","#B8B3BE")],
                                             "foreground" : [("hover","red")]
@@ -242,7 +242,7 @@ def style(hgt,wdt):
                                },
           "window_btn_large.TButton":
                                 {
-                                   "configure" : {"background" : "#CAEDF6" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03)) , "padding" : (int(wdt*0.003) , int(hgt*0.008)) , "relief" : "solid" },
+                                   "configure" : {"background" : "#CAEDF6" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03)) , "padding" : (int(wdt*0.003) , int(hgt*0.008)) , "relief" : "solid" , "anchor" : "center" },
                                    "map"       : {
                                             "background" : [("hover","#ADFC92")],
                                             "foreground" : [("hover","red")]
@@ -251,7 +251,7 @@ def style(hgt,wdt):
                                },
           "window_btn_medium.TButton":
                                 {
-                                   "configure" : {"background" : "#CAEDF6" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.025)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) , "relief" : "solid" },
+                                   "configure" : {"background" : "#CAEDF6" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.025)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) , "relief" : "solid" , "anchor" : "center" },
                                    "map"       : {
                                             "background" : [("hover","#ADFC92")],
                                             "foreground" : [("hover","red")]

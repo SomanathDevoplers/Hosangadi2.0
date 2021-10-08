@@ -1,5 +1,5 @@
 from tkinter import Tk , Frame , Button , constants as con , ttk , Menu , Label , font as font , Canvas , PhotoImage , messagebox as msg
-import style , login , firm
+import style , login , firm , os.path
 
 theme_state = False             #False if dark
 task_place = False              #taskbar placement
@@ -84,6 +84,8 @@ def val_email(char):
     return flag
 
 def close():
+    root.destroy()
+    return
     if int(lbl_task_cnt.cget("text"))>0:
         msg.showinfo("Info" , "CLOSE ALL TABS BEFORE EXIT!")
         return
@@ -205,7 +207,7 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-#firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email])
-login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
+firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~')])
+#login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
 
 root.mainloop()
