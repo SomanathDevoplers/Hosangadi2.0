@@ -2,6 +2,8 @@ from tkinter import ttk
 
 def style(hgt,wdt):
     style = ttk.Style()
+
+
     style.theme_create( "dark_theme" ,"vista" ,  settings = {
 
           "root_menu.TFrame":{
@@ -39,15 +41,21 @@ def style(hgt,wdt):
                                    "configure" : {"background" : "#434447" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.025), 'bold')  , "padding" : (int( 0.002*wdt) ,0 )}
                               },
           "root_theme.TCheckbutton":{
-                                   "configure":{"background":"#434447" , "foreground" : "#B8B3BE"},
+                                   "configure":{"background":"#434447" , "foreground" : "#B8B3BE"}
+                                   ,
                                    },
           "root_theme.TLabel":{
-                                   "configure":{"background":"#434447" , "foreground" : "#B8B3BE"},
+                                   "configure":{"background":"#434447" , "foreground" : "#B8B3BE" , "padding" : (int(wdt*0.005),0)},
+                                   "map"       : {
+                                            "background" : [("hover","#B8B3BE")],
+                                            "foreground" : [("hover","#000")]
+
+                                             }
                                    },
           "root_menu.TMenubutton":
                             {    
                                 "configure" : {"font":('Tahoma', -int(hgt*0.024)) , "foreground":"#B8B3BE" , "background":"#434447" , "anchor":"center"},
-                                "layout":[("Menubutton.background", None),("Menubutton.button", {"children":
+                                "layout":[("Menubutton.button", {"children":
                                                                                                             [("Menubutton.focus", {"children":
                                                                                                                                                 [("Menubutton.padding" , {"children":
                                                                                                                                                                             [("Menubutton.label", {"side": "left", "expand": 1}
@@ -131,6 +139,13 @@ def style(hgt,wdt):
 
                                              }
                                },
+          "window.Treeview":{           
+                                   "configure":{ "rowheight" : int(hgt*0.042),"font" : ("Ariel",-(int(hgt*0.03)))},
+                                                  "map"       : {
+                                                                      "background" : [("selected","#0b6faa")],
+                                                                       "foreground" : [("selected","#FFF")]
+                                                                 }
+                            },
                 
     })
 
@@ -171,16 +186,18 @@ def style(hgt,wdt):
           "root_ntfc_cnt.TLabel":{
                                    "configure" : {"background" : "#7ee8fa" , "foreground" : "#000" , "font" : ('Tahoma',-int(hgt*0.025), 'bold') , "padding" : (int( 0.002*wdt) ,0 )}
                               },
-          "root_theme.TCheckbutton":{
-                                   "configure":{"background":"#7ee8fa" , "foreground" : "#B8B3BE"},
-                                   },
           "root_theme.TLabel":{
-                                   "configure":{"background":"#7ee8fa" , "foreground" : "#000"},
+                                   "configure":{"background":"#7ee8fa" , "foreground" : "#000", "padding" : (int(wdt*0.005),0)},
+                                   "map"       : {
+                                            "background" : [("hover","#ADFC92")],
+                                            "foreground" : [("hover","#000")]
+
+                                             }
                                    },
           "root_menu.TMenubutton":
                             {    
                                 "configure" : {"font":('Tahoma', -int(hgt*0.024)) , "foreground":"#3d3b30" , "background":"#7ee8fa" , "anchor":"center"},
-                                "layout":[("Menubutton.background", None),("Menubutton.button", {"children":
+                                "layout":[("Menubutton.button", {"children":
                                                                                                             [("Menubutton.focus", {"children":
                                                                                                                                                 [("Menubutton.padding" , {"children":
                                                                                                                                                                             [("Menubutton.label", {"side": "left", "expand": 1}
@@ -258,7 +275,20 @@ def style(hgt,wdt):
 
                                              }
                                },
+          "window.Treeview":{           
+                                   "configure":{ "rowheight" : int(hgt*0.042),"font" : ("Ariel",-(int(hgt*0.03)))},
+                                                  "map"       : {
+                                                                      "background" : [("selected","#FEFEFE")],
+                                                                       "foreground" : [("selected","#000")]
+                                                                 }                                                                                 
+                            },
  
     })
+
+    
+    
+    
+     
+
     return(style)
 

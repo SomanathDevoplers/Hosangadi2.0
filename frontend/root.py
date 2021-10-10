@@ -26,7 +26,7 @@ def view_ntfc(e):
         frm_ntfc.place(x = root_wdt+10, y = (0.034*root_hgt))
     noti_place = not noti_place
 
-def change_theme():
+def change_theme(e = None):
     global theme_state
     if theme_state:
         ans = msg.askyesno("Info","Do You Want to use Dark Theme?")
@@ -41,8 +41,12 @@ def change_theme():
     theme_state = not theme_state
     if not theme_state:
         style.theme_use('dark_theme')
+        lbl_theme.config(text = "Light Theme")
+        style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(root_hgt*0.03))))
     else:
         style.theme_use('light_theme')
+        lbl_theme.config(text = "Dark Theme ")
+        style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(root_hgt*0.03))))
 
 def logout(e):
     if lbl_user_type.cget("text") =="   -   ":
@@ -121,8 +125,7 @@ email = root.register(val_email)
 style = style.style(root_hgt , root_wdt)
 style.theme_use("dark_theme")  
 
-
-
+style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(root_hgt*0.03))))
 
 
 frm_menu = ttk.Frame(root , width = root_wdt , height = int(0.035*root_hgt) , style = "root_menu.TFrame")
@@ -141,8 +144,8 @@ menu_accounts_head['menu'] = menu_accounts
 
 
 lbl_ntfc_cnt = ttk.Label(frm_menu , text = "0" , width = 2 , style = "root_ntfc_cnt.TLabel")
-rad_dark = ttk.Checkbutton(frm_menu , command =   change_theme , style = "root_theme.TCheckbutton" )
-lbl_dark = ttk.Label(frm_menu , text = "Theme : " , style = "root_theme.TLabel")
+lbl_theme = ttk.Label(frm_menu , text = "Light Theme" , style = "root_theme.TLabel")
+lbl_theme.bind("<Button-1>" , change_theme)
 lbl_logout = ttk.Label(frm_menu , text = " Logout " , style = "root_menu_btn.TLabel")
 lbl_logout.bind("<Button-1>" , logout)
 
@@ -152,8 +155,7 @@ frm_menubar.pack(side = con.LEFT , anchor = con.W , padx = int(root_wdt*0.005))
 menu_settings_head.grid(row = 0 , column = 0 , ipadx = int(root_wdt*0.003))
 menu_accounts_head.grid(row = 0 , column = 1 , ipadx = int(root_wdt*0.003))
 lbl_ntfc_cnt.pack(side = con.RIGHT , anchor = con.CENTER)
-rad_dark.pack(side = con.RIGHT , anchor = con.CENTER)
-lbl_dark.pack(side = con.RIGHT)
+lbl_theme.pack(side = con.RIGHT)
 lbl_logout.pack(side = con.RIGHT , padx = int(root_wdt*0.003))
 
 
@@ -207,7 +209,7 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~')])
+firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
 #login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
 
 root.mainloop()

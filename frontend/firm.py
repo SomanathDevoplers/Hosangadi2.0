@@ -1,4 +1,5 @@
 from tkinter import ttk , constants as con , Text , filedialog , Frame
+
 from base_window import base_window
 from PIL import Image , ImageTk
 from image_viewer import image_viewer
@@ -14,6 +15,10 @@ class firm(base_window):
         self.image_logo = None
         self.image_photo = None
         self.others = others
+        self.style = others[1]
+
+        #self.style.configure("window.Treeview.Heading",background = "blue",foreground="white")
+
 
         self.lbl_firm_tax = ttk.Label(self.main_frame , text = "Tax Method        :" , style = "window_text_medium.TLabel")
         self.lbl_firm_name = ttk.Label(self.main_frame , text = "Firm Name         :" , style = "window_text_medium.TLabel")
@@ -83,7 +88,38 @@ class firm(base_window):
         self.btn_firm_photo_vw = ttk.Button(self.main_frame , text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_photo(None))
         self.btn_firm_photo_vw.bind("<Return>" , self.view_photo)
 
-        self.tree_frame = ttk.Frame(self.main_frame , height = int(self.main_hgt*0.754) , width = int(self.main_wdt*0.45) , style = "root_menu.TFrame")
+        
+
+        if root.winfo_screenheight()>1000:
+            self.tree_frame = ttk.Frame(self.main_frame , height = int(self.main_hgt*0.865) , width = int(self.main_wdt*0.45) , style = "root_menu.TFrame")
+        else:
+            self.tree_frame = ttk.Frame(self.main_frame , height = int(self.main_hgt*0.871) , width = int(self.main_wdt*0.45) , style = "root_menu.TFrame")
+        self.tree_frame.pack_propagate(False)
+        self.tree_frame.grid_propagate(False)
+
+        #self.tree_header_frame = ttk.Frame(self.tree_frame)
+
+        self.tree = ttk.Treeview(self.tree_frame ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview")
+        self.tree.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
+        self.tree.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
+        self.scroll_y = ttk.Scrollbar(self.tree_frame , orient = con.VERTICAL , command = self.tree.yview)
+        self.scroll_x = ttk.Scrollbar(self.tree_frame , orient = con.HORIZONTAL , command = self.tree.xview)
+        self.tree.config(yscrollcommand = self.scroll_y.set , xscrollcommand = self.scroll_x.set)
+
+        
+
+        self.tree['columns'] = ('id','sfx','name')
+        self.tree.heading('id' , text = 'ID')
+        self.tree.heading('sfx' , text = 'Sfx')
+        self.tree.heading('name' , text = 'name')
+        #self.tree['show'] = 'headings'
+
+
+        for i in range(100):
+            if i%2 == 0:
+                self.tree.insert('','end' ,tags=('a',), values = ("SMS"+str(i) , "Vijay" , "Somanath Stores" ))
+            else:
+                self.tree.insert('','end' ,tags=('b',), values = ("SMS"+str(i) , "Vijay", "Somanath Stores" ))
 
         self.btn_frame = ttk.Frame(self.main_frame , style = "root_main.TFrame")
         self.btn_new = ttk.Button(self.btn_frame , text = "New" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.new(None))
@@ -133,13 +169,22 @@ class firm(base_window):
         self.btn_firm_photo_brw.grid(row = 15 , column = 2)
         self.btn_firm_photo_vw.grid(row = 15 , column = 3 , padx = int(self.main_wdt*0.002))
 
-        self.tree_frame.grid(row = 0 , column = 4 , rowspan = 13 , padx = int(self.main_wdt*0.01))
+        self.tree_frame.grid(row = 0 , column = 4 , rowspan = 15 , padx = int(self.main_wdt*0.01))
+        self.scroll_y.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
+        self.scroll_x.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
+        #self.tree_header_frame.pack(anchor = con.N , side = con.LEFT , fill = con.Y)
+        self.tree.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
+
         self.btn_frame.grid(row = 15 , column = 4 , sticky = con.E)
         self.btn_new.grid(row = 0 , column = 0 , padx = int(self.main_wdt*0.01))
         self.btn_edit.grid(row = 0 , column = 1 , padx = int(self.main_wdt*0.01))
         self.btn_save.grid(row = 0 , column = 2 , padx = int(self.main_wdt*0.01))
 
-
+        self.tree_wdt = self.tree_frame.winfo_reqwidth()-self.scroll_y.winfo_reqwidth()
+        
+        self.tree.column('id' , width = int(self.tree_wdt*0.15) ,minwidth = int(self.tree_wdt*0.15) , anchor = "w")
+        self.tree.column('sfx' , width = int(self.tree_wdt*0.15) , minwidth = int(self.tree_wdt*0.15) , anchor = "w")
+        self.tree.column('name' , width = int(self.tree_wdt*0.70) , minwidth = int(self.tree_wdt*0.70) , anchor = "w")
 
     def combo_entry_out(self , e):
         e.widget.select_clear()
