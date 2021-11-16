@@ -26,28 +26,6 @@ def view_ntfc(e):
         frm_ntfc.place(x = root_wdt+10, y = (0.034*root_hgt))
     noti_place = not noti_place
 
-def change_theme(e = None):
-    global theme_state
-    if theme_state:
-        ans = msg.askyesno("Info","Do You Want to use Dark Theme?")
-        if not ans:
-            return
-    else:
-        ans = msg.askyesno("Info","Do You Want to use Light Theme?")
-        if not ans:
-            return
-
-
-    theme_state = not theme_state
-    if not theme_state:
-        style.theme_use('dark_theme')
-        lbl_theme.config(text = "Light Theme")
-        style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(root_hgt*0.03))))
-    else:
-        style.theme_use('light_theme')
-        lbl_theme.config(text = "Dark Theme ")
-        style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(root_hgt*0.03))))
-
 def logout(e):
     if lbl_user_type.cget("text") =="   -   ":
         return
@@ -109,7 +87,7 @@ def firms(e = None):
         #ask if mesagebox required
         return
     
-    window = firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,val_email])
+    firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
 
 #1{
 root = Tk()
@@ -144,8 +122,6 @@ menu_accounts_head['menu'] = menu_accounts
 
 
 lbl_ntfc_cnt = ttk.Label(frm_menu , text = "0" , width = 2 , style = "root_ntfc_cnt.TLabel")
-lbl_theme = ttk.Label(frm_menu , text = "Light Theme" , style = "root_theme.TLabel")
-lbl_theme.bind("<Button-1>" , change_theme)
 lbl_logout = ttk.Label(frm_menu , text = " Logout " , style = "root_menu_btn.TLabel")
 lbl_logout.bind("<Button-1>" , logout)
 
@@ -155,7 +131,6 @@ frm_menubar.pack(side = con.LEFT , anchor = con.W , padx = int(root_wdt*0.005))
 menu_settings_head.grid(row = 0 , column = 0 , ipadx = int(root_wdt*0.003))
 menu_accounts_head.grid(row = 0 , column = 1 , ipadx = int(root_wdt*0.003))
 lbl_ntfc_cnt.pack(side = con.RIGHT , anchor = con.CENTER)
-lbl_theme.pack(side = con.RIGHT)
 lbl_logout.pack(side = con.RIGHT , padx = int(root_wdt*0.003))
 
 
@@ -209,7 +184,7 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
-#login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
+#firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
+login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
 
 root.mainloop()
