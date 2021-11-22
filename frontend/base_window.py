@@ -3,6 +3,9 @@ from tkinter import ttk , constants as con
 class base_window:
     def __init__(self , root ,frames , dmsn , lbls ,title ):
         self.lbls = lbls
+        self.root_hgt = root.winfo_screenheight()-34
+        self.root_wdt = root.winfo_screenwidth()-10 
+        self.frm_task = frames[2]                                                                                                                                                     
         self.lbls[0].config(text = int(self.lbls[0].cget("text"))+1)
         self.access_frame = ttk.Frame(frames[1], width = frames[1].winfo_reqwidth() , height = int(frames[1].winfo_reqheight()*0.05) , style = "window_access.TFrame")
         self.access_frame.pack_propagate(False)
@@ -56,3 +59,4 @@ class base_window:
     def pack_top(self,e):
         self.base_frame.grid(row = 0 , column = 0)
         self.base_frame.lift()
+        self.frm_task.place(x = int(-0.5*self.root_wdt) , y = (0.034*self.root_hgt))

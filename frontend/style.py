@@ -40,8 +40,8 @@ def style(hgt,wdt):
           "root_ntfc_cnt.TLabel":{
                                    "configure" : {"background" : "#434447" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.025), 'bold')  , "padding" : (int( 0.002*wdt) ,0 )}
                               },
-          "root_theme.TCheckbutton":{
-                                   "configure":{"background":"#434447" , "foreground" : "#B8B3BE"}
+          "window_check.TCheckbutton":{
+                                   "configure":{"background":"#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.024) , 'bold')}
                                    ,
                                    },
           "root_theme.TLabel":{
@@ -115,7 +115,7 @@ def style(hgt,wdt):
                                },
           "window_text_medium.TLabel":
                                 {
-                                   "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.024)) },
+                                   "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.024) , 'bold') },
                                },
           "window_text_small.TLabel":
                                 {
@@ -146,6 +146,17 @@ def style(hgt,wdt):
                                                                        "foreground" : [("selected","#FFF")]
                                                                  }
                             },
+          "window_radio.TRadiobutton":
+                                {
+                                   "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') },
+                               },
+          "window_lbl_ent.TLabel":{
+                                    "configure" : {"background" : "#fff" ,"relief" : "SOLID" , "borderwidth" : 1 , "border" : 1 , "font" : ('Lucida Grande' , -int(hgt*0.025)) },
+                              },
+          "window_combo.TCombobox":
+                                {
+                                   "configure" : { "border" : 10 , "background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') , "borderwidth" : 10 , "bd" : 10},
+                               },
                 
     })
 

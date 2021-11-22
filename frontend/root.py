@@ -1,5 +1,5 @@
 from tkinter import Tk , Frame , Button , constants as con , ttk , Menu , Label , font as font , Canvas , PhotoImage , messagebox as msg
-import style , login , firm , os.path
+import os.path, style , login , firm , taxes , cats , users , accounts , employs , products
 
 theme_state = False             #False if dark
 task_place = False              #taskbar placement
@@ -86,7 +86,7 @@ def firms(e = None):
     if not (user_type == "ADMIN" or user_type == "OWNER"):
         #ask if mesagebox required
         return
-    
+    #taxes.taxes(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal] , [os.path.expanduser('~') , style])
     firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
 
 #1{
@@ -184,7 +184,13 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-#firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
-login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
+#firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
+#login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
+#taxes.taxes(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal])
+#cats.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [num_alpha,email] , [os.path.expanduser('~') , style])
+#users.users(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Users" , [num_alpha,email] , [os.path.expanduser('~') , style])
+#accounts.acc(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha,email] , [os.path.expanduser('~') , style])
+employs.emp(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Employees" , [num_alpha,email] , [os.path.expanduser('~') , style])
+products.prods(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha,email] , [os.path.expanduser('~') , style])
 
 root.mainloop()

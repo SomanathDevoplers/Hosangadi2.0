@@ -1,4 +1,4 @@
-from tkinter import ttk , constants as con , Text , filedialog , Frame
+from tkinter import ttk , constants as con , Text , filedialog
 
 from base_window import base_window
 from PIL import Image , ImageTk
@@ -15,9 +15,6 @@ class firm(base_window):
         self.image_logo = None
         self.image_photo = None
         self.others = others
-        self.style = others[1]
-
-        #self.style.configure("window.Treeview.Heading",background = "blue",foreground="white")
 
 
         self.lbl_firm_tax = ttk.Label(self.main_frame , text = "Tax Method        :" , style = "window_text_medium.TLabel")
@@ -43,7 +40,7 @@ class firm(base_window):
         self.ent_firm_name = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
         self.ent_firm_name.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.lbl_firm_suff = ttk.Label(self.main_frame , width = 30, background = "#fff" ,relief = con.SOLID , borderwidth = 1 , border = 1 , font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
+        self.lbl_firm_suff = ttk.Label(self.main_frame , width = 30,  style = "window_lbl_ent.TLabel")
         self.ent_firm_email = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         self.ent_firm_email.bind("<FocusOut>" , self.combo_entry_out)
 
@@ -76,13 +73,13 @@ class firm(base_window):
         self.btn_firm_upiqr_vw = ttk.Button(self.main_frame , text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_qr(None))
         self.btn_firm_upiqr_vw.bind("<Return>" , self.view_qr)
         
-        self.lbl_firm_logo = ttk.Label(self.main_frame  , width = 30 , background = "#fff" ,relief = con.SOLID , borderwidth = 1 , border = 1 , font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
+        self.lbl_firm_logo = ttk.Label(self.main_frame  , width = 30 , style = "window_lbl_ent.TLabel")
         self.btn_firm_logo_brw = ttk.Button(self.main_frame , text = "Browse" , style = "window_btn_medium.TButton" ,command = lambda : self.file_dialog_logo(None))
         self.btn_firm_logo_brw.bind("<Return>" , self.file_dialog_logo)
         self.btn_firm_logo_vw = ttk.Button(self.main_frame , text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_logo(None))
         self.btn_firm_logo_vw.bind("<Return>" , self.view_logo)
 
-        self.lbl_firm_photo = ttk.Label(self.main_frame  , width = 30 , background = "#fff" ,relief = con.SOLID , borderwidth = 1 , border = 1 , font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
+        self.lbl_firm_photo = ttk.Label(self.main_frame  , width = 30, style = "window_lbl_ent.TLabel")
         self.btn_firm_photo_brw = ttk.Button(self.main_frame , text = "Browse" , style = "window_btn_medium.TButton" ,command = lambda : self.file_dialog_photo(None))
         self.btn_firm_photo_brw.bind("<Return>" , self.file_dialog_photo)
         self.btn_firm_photo_vw = ttk.Button(self.main_frame , text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_photo(None))
@@ -200,6 +197,8 @@ class firm(base_window):
                 text = "/"+file_lbl[-1]
             self.lbl_firm_upiqr.config(text = text)
             self.image_qr = ImageTk.PhotoImage(Image.open(file))
+        else:
+            self.lbl_firm_upiqr.config(text = "")
         
 
     def file_dialog_logo(self , e):
@@ -213,6 +212,8 @@ class firm(base_window):
                 text = "/"+file_lbl[-1]
             self.lbl_firm_logo.config(text = text)
             self.image_logo = ImageTk.PhotoImage(Image.open(file))
+        else:
+            self.lbl_firm_logo.config(text = "")
 
     def file_dialog_photo(self , e):
         file = filedialog.askopenfilename(initialdir = self.others[0]+"\Pictures",title = "Select a File",filetypes = [["Image ","*.*"]])
@@ -226,6 +227,8 @@ class firm(base_window):
 
             self.lbl_firm_photo.config(text = text)
             self.image_photo = ImageTk.PhotoImage(Image.open(file))
+        else:
+            self.lbl_firm_photo.config(text = "")
 
     def view_qr(self , e):
         if self.image_qr != None or self.lbl_firm_upiqr.cget("text") != "":
