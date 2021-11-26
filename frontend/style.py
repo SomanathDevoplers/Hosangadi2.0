@@ -155,7 +155,7 @@ def style(hgt,wdt):
                               },
           "window_combo.TCombobox":
                                 {
-                                   "configure" : { "border" : 10 , "background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') , "borderwidth" : 10 , "bd" : 10},
+                                   "configure" : { "border" : 10 , "background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') , "borderwidth" : 10 , "bd" : 10 , "arrowsize" : 300},
                                },
                 
     })

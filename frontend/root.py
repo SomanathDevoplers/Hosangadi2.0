@@ -89,6 +89,8 @@ def firms(e = None):
     #taxes.taxes(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal] , [os.path.expanduser('~') , style])
     firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
 
+
+
 #1{
 root = Tk()
 root.resizable(con.FALSE , con.FALSE)
@@ -103,6 +105,7 @@ email = root.register(val_email)
 style = style.style(root_hgt , root_wdt)
 style.theme_use("dark_theme")  
 
+root.option_add("*TCombobox*Listbox*Font", ('Lucida Console', -int(root_hgt*0.025), 'bold'))
 style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(root_hgt*0.03))))
 
 
@@ -184,12 +187,12 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-#firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
-#login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
-#taxes.taxes(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal])
-#cats.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [num_alpha,email] , [os.path.expanduser('~') , style])
-#users.users(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Users" , [num_alpha,email] , [os.path.expanduser('~') , style])
-#accounts.acc(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha,email] , [os.path.expanduser('~') , style])
+firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
+login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
+taxes.taxes(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal])
+cats.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [num_alpha,email] , [os.path.expanduser('~') , style])
+users.users(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Users" , [num_alpha,email] , [os.path.expanduser('~') , style])
+accounts.acc(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha,email] , [os.path.expanduser('~') , style])
 employs.emp(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Employees" , [num_alpha,email] , [os.path.expanduser('~') , style])
 products.prods(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha,email] , [os.path.expanduser('~') , style])
 
