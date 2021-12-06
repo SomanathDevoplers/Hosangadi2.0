@@ -140,7 +140,7 @@ def style(hgt,wdt):
                                              }
                                },
           "window.Treeview":{           
-                                   "configure":{ "rowheight" : int(hgt*0.042),"font" : ("Ariel",-(int(hgt*0.03)))},
+                                   "configure":{"rowheight" : int(hgt*0.042),"font" : ("Ariel",-(int(hgt*0.03)))},
                                                   "map"       : {
                                                                       "background" : [("selected","#0b6faa")],
                                                                        "foreground" : [("selected","#FFF")]

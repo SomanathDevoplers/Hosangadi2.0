@@ -1,4 +1,5 @@
-from tkinter import ttk , constants as con , Text , filedialog
+from tkinter import ttk , constants as con , Text , filedialog , messagebox as msg
+import requests
 
 from base_window import base_window
 from PIL import Image , ImageTk
@@ -10,11 +11,22 @@ class firm(base_window):
         self.main_frame.grid_propagate(False)
         self.main_hgt = self.main_frame.winfo_reqheight()
         self.main_wdt = self.main_frame.winfo_reqwidth()
-        self.combo_values = ["REGULAR" , "COMPOSITION" , "CASH"]
         self.image_qr = None
         self.image_logo = None
         self.image_photo = None
-        self.others = others
+        self.image_qr_loc = ""
+        self.image_logo_loc = ""
+        self.image_photo_loc = ""
+        self.others = others                                      #home dir , ipaddr 
+        print(others)
+        self.tax_check = others[2]
+        if self.tax_check:
+            self.combo_values = ["REGULAR" , "COMPOSITION"]
+        else:
+            self.combo_values = ["REGULAR" , "COMPOSITION" , "CASH"]
+        
+        self.new_state = False
+        self.edit_state = False
 
 
         self.lbl_firm_tax = ttk.Label(self.main_frame , text = "Tax Method        :" , style = "window_text_medium.TLabel")
@@ -28,61 +40,61 @@ class firm(base_window):
         self.lbl_firm_pan = ttk.Label(self.main_frame , text = "Firm PAN          :" , style = "window_text_medium.TLabel")
         self.lbl_firm_bank = ttk.Label(self.main_frame , text = "Firm Bank Name    :" , style = "window_text_medium.TLabel")
         self.lbl_firm_ifsc = ttk.Label(self.main_frame , text = "Firm Bank IFSC    :" , style = "window_text_medium.TLabel")
-        self.lbl_firm_accno = ttk.Label(self.main_frame , text = "Firm Bank AC/NO   :" , style = "window_text_medium.TLabel")
+        self.lbl_firm_accno = ttk.Label(self.main_frame , text = "Firm Bank A/C NO  :" , style = "window_text_medium.TLabel")
         self.lbl_firm_upiid = ttk.Label(self.main_frame , text = "Firm UPI ID       :" , style = "window_text_medium.TLabel")
         self.lbl_firm_upiqr_txt = ttk.Label(self.main_frame , text = "Firm UPI QR       :" , style = "window_text_medium.TLabel")
         self.lbl_firm_logo_txt = ttk.Label(self.main_frame , text = "Firm Logo         :" , style = "window_text_medium.TLabel")
         self.lbl_firm_photo_txt = ttk.Label(self.main_frame , text = "Firm Photo        :" , style = "window_text_medium.TLabel")
 
-        self.combo_tax = ttk.Combobox(self.main_frame  ,values = self.combo_values, font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30) 
+        self.combo_tax = ttk.Combobox(self.main_frame  ,values = self.combo_values , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30) 
         self.combo_tax.bind("<FocusOut>" , self.combo_entry_out)
-        self.combo_tax.insert(0,self.combo_values[0])
-        self.ent_firm_name = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_firm_name = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED  ,font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
         self.ent_firm_name.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.lbl_firm_suff = ttk.Label(self.main_frame , width = 30,  style = "window_lbl_ent.TLabel")
-        self.ent_firm_email = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
+        self.ent_firm_suff = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
+        self.ent_firm_suff.bind("<FocusOut>" , self.combo_entry_out)
+        self.ent_firm_email = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         self.ent_firm_email.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.ent_firm_mob = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_firm_mob = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
         self.ent_firm_mob.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.ent_firm_web = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_firm_web = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
         self.ent_firm_web.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.ent_firm_address = Text(self.main_frame  , width = 30 , height = 4 ,  font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
-        self.ent_firm_gstin = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_firm_address = Text(self.main_frame  , state = con.DISABLED, width = 30 , height = 4 ,  font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
+        self.ent_firm_gstin = ttk.Entry(self.main_frame  , width = 30, state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
         self.ent_firm_gstin.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.ent_firm_pan = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_firm_pan = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
         self.ent_firm_pan.bind("<FocusOut>" , self.combo_entry_out)
-        self.ent_firm_bank = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_firm_bank = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
         self.ent_firm_bank.bind("<FocusOut>" , self.combo_entry_out)
         
-        self.ent_firm_ifsc = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_firm_ifsc = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
         self.ent_firm_ifsc.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.ent_firm_accno = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_firm_accno = ttk.Entry(self.main_frame  , width = 30, state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
         self.ent_firm_accno.bind("<FocusOut>" , self.combo_entry_out)
-        self.ent_firm_upiid = ttk.Entry(self.main_frame  , width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
+        self.ent_firm_upiid = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
         self.ent_firm_upiid.bind("<FocusOut>" , self.combo_entry_out)
 
         self.lbl_firm_upiqr = ttk.Label(self.main_frame  , width = 30 , background = "#fff", justify = con.RIGHT ,relief = con.SOLID , borderwidth = 1 , border = 1 , font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
-        self.btn_firm_upiqr_brw = ttk.Button(self.main_frame , text = "Browse" , style = "window_btn_medium.TButton" ,command = lambda : self.file_dialog_qr(None))
+        self.btn_firm_upiqr_brw = ttk.Button(self.main_frame , state = con.DISABLED, text = "Browse" , style = "window_btn_medium.TButton" ,command = lambda : self.file_dialog_qr(None))
         self.btn_firm_upiqr_brw.bind("<Return>" , self.file_dialog_qr)
-        self.btn_firm_upiqr_vw = ttk.Button(self.main_frame , text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_qr(None))
+        self.btn_firm_upiqr_vw = ttk.Button(self.main_frame  , state = con.DISABLED, text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_qr(None))
         self.btn_firm_upiqr_vw.bind("<Return>" , self.view_qr)
         
         self.lbl_firm_logo = ttk.Label(self.main_frame  , width = 30 , style = "window_lbl_ent.TLabel")
-        self.btn_firm_logo_brw = ttk.Button(self.main_frame , text = "Browse" , style = "window_btn_medium.TButton" ,command = lambda : self.file_dialog_logo(None))
+        self.btn_firm_logo_brw = ttk.Button(self.main_frame , state = con.DISABLED, text = "Browse" , style = "window_btn_medium.TButton" ,command = lambda : self.file_dialog_logo(None))
         self.btn_firm_logo_brw.bind("<Return>" , self.file_dialog_logo)
-        self.btn_firm_logo_vw = ttk.Button(self.main_frame , text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_logo(None))
+        self.btn_firm_logo_vw = ttk.Button(self.main_frame , state = con.DISABLED, text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_logo(None))
         self.btn_firm_logo_vw.bind("<Return>" , self.view_logo)
 
         self.lbl_firm_photo = ttk.Label(self.main_frame  , width = 30, style = "window_lbl_ent.TLabel")
-        self.btn_firm_photo_brw = ttk.Button(self.main_frame , text = "Browse" , style = "window_btn_medium.TButton" ,command = lambda : self.file_dialog_photo(None))
+        self.btn_firm_photo_brw = ttk.Button(self.main_frame , state = con.DISABLED, text = "Browse" , style = "window_btn_medium.TButton" ,command = lambda : self.file_dialog_photo(None))
         self.btn_firm_photo_brw.bind("<Return>" , self.file_dialog_photo)
-        self.btn_firm_photo_vw = ttk.Button(self.main_frame , text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_photo(None))
+        self.btn_firm_photo_vw = ttk.Button(self.main_frame , state = con.DISABLED, text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_photo(None))
         self.btn_firm_photo_vw.bind("<Return>" , self.view_photo)
 
         
@@ -96,7 +108,7 @@ class firm(base_window):
 
         #self.tree_header_frame = ttk.Frame(self.tree_frame)
 
-        self.tree = ttk.Treeview(self.tree_frame ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview")
+        self.tree = ttk.Treeview(self.tree_frame ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" )
         self.tree.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
         self.tree.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
         self.scroll_y = ttk.Scrollbar(self.tree_frame , orient = con.VERTICAL , command = self.tree.yview)
@@ -112,19 +124,21 @@ class firm(base_window):
         #self.tree['show'] = 'headings'
 
 
-        for i in range(100):
+        """for i in range(100):
             if i%2 == 0:
                 self.tree.insert('','end' ,tags=('a',), values = ("SMS"+str(i) , "Vijay" , "Somanath Stores" ))
             else:
-                self.tree.insert('','end' ,tags=('b',), values = ("SMS"+str(i) , "Vijay", "Somanath Stores" ))
+                self.tree.insert('','end' ,tags=('b',), values = ("SMS"+str(i) , "Vijay", "Somanath Stores" ))"""
 
         self.btn_frame = ttk.Frame(self.main_frame , style = "root_main.TFrame")
         self.btn_new = ttk.Button(self.btn_frame , text = "New" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.new(None))
         self.btn_new.bind("<Return>" , self.new) 
         self.btn_edit = ttk.Button(self.btn_frame , text = "Edit" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.edit(None))
         self.btn_edit.bind("<Return>" , self.edit)
-        self.btn_save = ttk.Button(self.btn_frame , text = "Save" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.save(None))
+        self.btn_save = ttk.Button(self.btn_frame , state = con.DISABLED, text = "Save" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.save(None))
         self.btn_save.bind("<Return>" , self.save)
+        self.btn_cancel = ttk.Button(self.btn_frame , state = con.DISABLED, text = "Cancel" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.cancel(None))
+        self.btn_cancel.bind("<Return>" , self.cancel)
 
 
         self.lbl_firm_tax.grid(row = 0 , column = 0 , pady = int(self.main_hgt*0.01))
@@ -132,7 +146,7 @@ class firm(base_window):
         self.lbl_firm_name.grid(row = 1 , column = 0 , pady = int(self.main_hgt*0.012))
         self.ent_firm_name.grid(row = 1 , column = 1 , sticky = con.W)
         self.lbl_firm_suff_txt.grid(row = 2 , column = 0 , pady = int(self.main_hgt*0.01))
-        self.lbl_firm_suff.grid(row = 2 , column = 1 , sticky = con.W)
+        self.ent_firm_suff.grid(row = 2 , column = 1 , sticky = con.W)
         self.lbl_firm_email.grid(row = 3 , column = 0 , pady = int(self.main_hgt*0.01))
         self.ent_firm_email.grid(row = 3 , column = 1 , sticky = con.W)
         self.lbl_firm_mob.grid(row = 4 , column = 0 , pady = int(self.main_hgt*0.01))
@@ -176,12 +190,15 @@ class firm(base_window):
         self.btn_new.grid(row = 0 , column = 0 , padx = int(self.main_wdt*0.01))
         self.btn_edit.grid(row = 0 , column = 1 , padx = int(self.main_wdt*0.01))
         self.btn_save.grid(row = 0 , column = 2 , padx = int(self.main_wdt*0.01))
+        self.btn_cancel.grid(row = 0 , column = 3 , padx = int(self.main_wdt*0.01))
 
         self.tree_wdt = self.tree_frame.winfo_reqwidth()-self.scroll_y.winfo_reqwidth()
         
         self.tree.column('id' , width = int(self.tree_wdt*0.15) ,minwidth = int(self.tree_wdt*0.15) , anchor = "w")
         self.tree.column('sfx' , width = int(self.tree_wdt*0.15) , minwidth = int(self.tree_wdt*0.15) , anchor = "w")
         self.tree.column('name' , width = int(self.tree_wdt*0.70) , minwidth = int(self.tree_wdt*0.70) , anchor = "w")
+
+        self.btn_new.focus_set()
 
     def combo_entry_out(self , e):
         e.widget.select_clear()
@@ -190,6 +207,7 @@ class firm(base_window):
         file = filedialog.askopenfilename(initialdir = self.others[0]+"\Pictures",title = "Select a File",filetypes = [["Image ","*.*"]])
         file_lbl = file.split("/")
         if file!= "":
+            self.image_qr_loc = file
             text = "/"+file_lbl[-3]+"/"+file_lbl[-2]+"/"+file_lbl[-1]
             if len(text)>30:
                 text = "/"+file_lbl[-2]+"/"+file_lbl[-1]
@@ -197,14 +215,16 @@ class firm(base_window):
                 text = "/"+file_lbl[-1]
             self.lbl_firm_upiqr.config(text = text)
             self.image_qr = ImageTk.PhotoImage(Image.open(file))
+
         else:
             self.lbl_firm_upiqr.config(text = "")
+            self.image_qr_loc = ""
         
-
     def file_dialog_logo(self , e):
         file = filedialog.askopenfilename(initialdir = self.others[0]+"\Pictures",title = "Select a File",filetypes = [["Image ","*.*"]])
         file_lbl = file.split("/")
         if file!= "":
+            self.image_logo_loc = file
             text = "/"+file_lbl[-3]+"/"+file_lbl[-2]+"/"+file_lbl[-1]
             if len(text)>30:
                 text = "/"+file_lbl[-2]+"/"+file_lbl[-1]
@@ -214,11 +234,13 @@ class firm(base_window):
             self.image_logo = ImageTk.PhotoImage(Image.open(file))
         else:
             self.lbl_firm_logo.config(text = "")
+            self.image_logo_loc =""
 
     def file_dialog_photo(self , e):
         file = filedialog.askopenfilename(initialdir = self.others[0]+"\Pictures",title = "Select a File",filetypes = [["Image ","*.*"]])
         file_lbl = file.split("/")
         if file!= "":
+            self.image_photo_loc = file
             text = "/"+file_lbl[-3]+"/"+file_lbl[-2]+"/"+file_lbl[-1]
             if len(text)>30:
                 text = "/"+file_lbl[-2]+"/"+file_lbl[-1]
@@ -229,6 +251,7 @@ class firm(base_window):
             self.image_photo = ImageTk.PhotoImage(Image.open(file))
         else:
             self.lbl_firm_photo.config(text = "")
+            self.image_photo_loc = ""
 
     def view_qr(self , e):
         if self.image_qr != None or self.lbl_firm_upiqr.cget("text") != "":
@@ -243,10 +266,195 @@ class firm(base_window):
             image_viewer(self.image_photo,"Photo Image")
 
     def new(self , e):
-        pass
+        self.btn_new.config(state = con.DISABLED)
+        self.btn_edit.config(state = con.DISABLED)
+        self.btn_save.config(state = con.NORMAL)
+        self.btn_cancel.config(state = con.NORMAL)
+
+        self.new_state = True
+        self.edit_state = False
+
+        self.enable_all()
+        self.clear_all()
+
+        self.combo_tax.focus_set()
 
     def edit(self , e):
-        pass
+        self.btn_new.config(state = con.DISABLED)
+        self.btn_edit.config(state = con.DISABLED)
+        self.btn_save.config(state = con.NORMAL)
+        self.btn_cancel.config(state = con.NORMAL)
+
+        self.new_state = False
+        self.edit_state = True
+
+        self.enable_all()
 
     def save(self , e):
-        pass
+        
+        tax_method = self.combo_tax.get()
+        firm_name = self.ent_firm_name.get()
+        firm_suffix = self.ent_firm_suff.get()
+        firm_email = self.ent_firm_email.get()
+        firm_mobile = self.ent_firm_mob.get()
+        firm_website = self.ent_firm_web.get()
+        firm_address = self.ent_firm_address.get(0.0 , 10.30)
+        firm_gst = self.ent_firm_gstin.get()
+        firm_pan = self.ent_firm_pan.get()
+        firm_bank = self.ent_firm_bank.get()
+        firm_ifsc = self.ent_firm_ifsc.get()
+        firm_acno = self.ent_firm_accno.get()
+        firm_upiid = self.ent_firm_upiid.get()
+
+
+
+
+        if self.new_state:                                                  #newsave
+            if tax_method == "" or tax_method not in self.combo_values:
+                msg.showinfo("Info" , "Select tax method")
+                return
+
+            if firm_name == "":
+                msg.showinfo("Info" , "Add firm Name")
+                return
+
+            if len(firm_suffix) != 3:
+                msg.showinfo("Info" , "Firm Suffix must be 3 characters")
+                self.ent_firm_suff.select_range(0,con.END)
+                self.ent_firm_suff.focus_set()
+                return
+
+            if tax_method != "CASH" and (firm_gst == "" or firm_pan == ""):
+                msg.showinfo("Info" , "GST and PAN no cannot be empty")
+                self.ent_firm_gstin.select_range(0,con.END)
+                self.ent_firm_gstin.focus_set()
+                return
+
+            parameters = {
+                "firm_type" : tax_method ,
+                "firm_name" : firm_name , 
+                "firm_suffix" : firm_suffix ,
+                "firm_email" : firm_email ,
+                "firm_mobile" : firm_mobile ,
+                "firm_website" : firm_website ,
+                "firm_address" : firm_address ,
+                "firm_gst" : self.ent_firm_gstin.get() ,
+                "firm_pan" : self.ent_firm_pan.get() ,
+                "firm_bank" : self.ent_firm_bank.get() ,
+                "firm_ifsc" : self.ent_firm_ifsc.get() ,
+                "firm_acno" : self.ent_firm_accno.get() ,
+                "firm_upiid" : self.ent_firm_upiid.get() ,
+                "firm_qr" : False , 
+                "firm_logo" : False , 
+                "firm_photo" : False
+                }
+
+            files = {}
+
+            print(self.image_qr_loc , self.image_photo_loc , self.image_logo_loc)
+
+            if self.image_qr_loc != "" and self.image_qr_loc != None:
+                firm_upi_qr = open(self.image_qr_loc,'rb')
+                parameters['firm_qr'] = True
+                files['media'] = firm_upi_qr
+
+            if self.image_logo_loc != "" and self.image_logo_loc != None:
+                firm_logo = open(self.image_logo_loc,'rb')
+                parameters['firm_logo'] = True
+                #files['firm_logo'] = firm_logo
+
+            if self.image_photo_loc != "" and  self.image_photo_loc != None:
+                firm_photo = open(self.image_photo_loc,'rb')
+                parameters['firm_photo'] = True
+                #files['firm_photo'] = firm_photo
+
+
+            #r = requests.post("http://"+self.others[1]+"/firms/newSave" , params = parameters , files = files)
+            r = requests.post("http://localhost:6000/firms/newSave" , params = parameters , files = files)
+            
+
+        else:                                                               #edit save
+            pass
+        
+
+    def cancel(self , e):
+        self.btn_new.config(state = con.NORMAL)
+        self.btn_edit.config(state = con.NORMAL)
+        self.btn_save.config(state = con.DISABLED)
+        self.btn_cancel.config(state = con.DISABLED)
+
+        self.clear_all()
+        self.disable_all()
+
+        self.new_state = False
+        self.edit_state = False
+
+    def enable_all(self):
+        self.combo_tax.config(state = con.NORMAL)
+        self.ent_firm_name.config(state = con.NORMAL)
+        self.ent_firm_suff.config(state = con.NORMAL)
+        self.ent_firm_email.config(state = con.NORMAL)
+        self.ent_firm_mob.config(state = con.NORMAL)
+        self.ent_firm_web.config(state = con.NORMAL)
+        self.ent_firm_address.config(state = con.NORMAL)
+        self.ent_firm_gstin.config(state = con.NORMAL)
+        self.ent_firm_pan.config(state = con.NORMAL)
+        self.ent_firm_bank.config(state = con.NORMAL)
+        self.ent_firm_ifsc.config(state = con.NORMAL)
+        self.ent_firm_accno.config(state = con.NORMAL)
+        self.ent_firm_upiid.config(state = con.NORMAL)
+        self.btn_firm_upiqr_brw.config(state = con.NORMAL)
+        self.btn_firm_upiqr_vw.config(state = con.NORMAL)
+        self.btn_firm_logo_brw.config(state = con.NORMAL)
+        self.btn_firm_logo_vw.config(state = con.NORMAL)
+        self.btn_firm_photo_brw.config(state = con.NORMAL)
+        self.btn_firm_photo_vw.config(state = con.NORMAL)
+    
+    def disable_all(self):
+        self.combo_tax.config(state = con.DISABLED)
+        self.ent_firm_name.config(state = con.DISABLED)
+        self.ent_firm_suff.config(state = con.DISABLED)
+        self.ent_firm_email.config(state = con.DISABLED)
+        self.ent_firm_mob.config(state = con.DISABLED)
+        self.ent_firm_web.config(state = con.DISABLED)
+        self.ent_firm_address.config(state = con.DISABLED)
+        self.ent_firm_gstin.config(state = con.DISABLED)
+        self.ent_firm_pan.config(state = con.DISABLED)
+        self.ent_firm_bank.config(state = con.DISABLED)
+        self.ent_firm_ifsc.config(state = con.DISABLED)
+        self.ent_firm_accno.config(state = con.DISABLED)
+        self.ent_firm_upiid.config(state = con.DISABLED)
+        self.btn_firm_upiqr_brw.config(state = con.DISABLED)
+        self.btn_firm_upiqr_vw.config(state = con.DISABLED)
+        self.btn_firm_logo_brw.config(state = con.DISABLED)
+        self.btn_firm_logo_vw.config(state = con.DISABLED)
+        self.btn_firm_photo_brw.config(state = con.DISABLED)
+        self.btn_firm_photo_vw.config(state = con.DISABLED)
+
+    def clear_all(self):
+        self.combo_tax.delete(0,con.END)
+        self.ent_firm_name.delete(0,con.END)
+        self.ent_firm_suff.delete(0,con.END)
+        self.ent_firm_email.delete(0,con.END)
+        self.ent_firm_mob.delete(0,con.END)
+        self.ent_firm_web.delete(0,con.END)
+        self.ent_firm_address.delete(0.0,10.100)
+        self.ent_firm_gstin.delete(0,con.END)
+        self.ent_firm_pan.delete(0,con.END)
+        self.ent_firm_bank.delete(0,con.END)
+        self.ent_firm_ifsc.delete(0,con.END)
+        self.ent_firm_accno.delete(0,con.END)
+        self.ent_firm_upiid.delete(0,con.END)
+        self.lbl_firm_upiqr.config(text = "")
+        self.lbl_firm_logo.config(text = "")
+        self.lbl_firm_photo.config(text = "")
+
+
+        self.image_qr = None
+        self.image_logo = None
+        self.image_photo = None
+        self.image_qr_loc = None
+        self.image_logo_loc = None
+        self.image_photo_loc = None
+
+    

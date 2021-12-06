@@ -1,104 +1,133 @@
-from tkinter import  Event, Tk, ttk , constants as con , messagebox as msg
+from tkinter import Tk , constants as con , ttk , messagebox as msg
+import requests , style
 from datetime import datetime as date
+import os
 
+def val_num_alpha(char):
+    flag = True
+    for each in char:
+        if not (each.isalpha() or each.isdigit() or each.isspace() or each == "_"):
+            flag = False
+    return flag
 
+def combo_entry_out(e):
+    e.widget.select_clear()
 
-class login:
-    def __init__(self ,frames , lbl_btn , dmsn , val_num_alpha):
-        self.main = frames[0]
-        self.lbl_btn = lbl_btn
-        start_year = 2020
-        cur_year = int(date.today().strftime("%Y"))
-        cur_mon = int(date.today().strftime("%m"))
+def submit(e):
+    user_name = ent_user_name.get().upper()
+    user_pass = ent_user_pass.get()
+    year = combo_year.get()
+    server = "server"
+    if len(rad_system.state())>0:
+        print(rad_system.state())
+        server = "system"
+        
 
-        if cur_mon<4:
-            end_year = cur_year
+    if user_name == "" or user_pass =="":
+        msg.showerror("Error" , "ENTER ALL DETAILS!")
+        ent_user_name.focus_set()
+        ent_user_name.select_range(0,con.END)
+        return
+
+    if year not in fin_years:
+        msg.showerror("Error" , "SELECT YEAR FROM DROP DOWN!")
+        combo_year.focus_set()
+        combo_year.select_range(0,con.END)
+        return
+    try:
+        if server == 'server':
+            resp = requests.get("http://192.168.1.35:5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year})            #ipchange
         else:
-            end_year = cur_year+1
-
-        self.fin_years = []
-
-        for i in range(start_year , end_year):
-            self.fin_years.append(str(i)+"-"+str(i+1))
-            
-
-        self.base_frame = ttk.Frame(frames[1] , height = int(dmsn[0]*0.3) , width = int(dmsn[1]*0.3) , style = "window_base.TFrame")
-        self.base_frame.pack_propagate(False)
-
-        self.title_frame = ttk.Frame(self.base_frame , height = int(dmsn[0]*0.3*0.12)-2 , width = int(dmsn[1]*0.3)-4 ,  style = "root_menu.TFrame")
-        self.title_frame.pack_propagate(False)
-        self.lbl_title = ttk.Label(self.title_frame , text = "Login" , style = "window_title.TLabel")
-        self.btn_close = ttk.Label(self.title_frame , text = "X" , style = "window_close.TLabel")
-        self.btn_close.bind("<Button-1>" , self.close )
-
-        self.main_frame = ttk.Frame(self.base_frame , height = int(dmsn[0]*0.3*0.88)-3 , width = int(dmsn[1]*0.3)-4 ,  style = "root_main.TFrame")
-        self.main_hgt = self.main_frame.winfo_reqheight()
-        self.main_wdt = self.main_frame.winfo_reqwidth()
-
-        
-        self.lbl_user_name = ttk.Label(self.main_frame , text = "User Name :" , style = "window_text_large.TLabel")
-        self.lbl_user_pass = ttk.Label(self.main_frame , text = "Password  :" , style = "window_text_large.TLabel")
-        self.lbl_year = ttk.Label(self.main_frame , text = "Year      :" ,  style = "window_text_large.TLabel")
-        
-        self.ent_user_name = ttk.Entry(self.main_frame , width = 12 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.13)) ,  validate="key", validatecommand=(val_num_alpha, '%P'))
-        self.ent_user_name.bind("<FocusOut>" , self.combo_entry_out)
-        self.ent_user_pass = ttk.Entry(self.main_frame  , width = 12 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.13)) , show = "*" , validate="key", validatecommand=(val_num_alpha, '%P')) 
-        self.ent_user_pass.bind("<Return>" , self.submit)
-        self.ent_user_pass.bind("<FocusOut>" , self.combo_entry_out)
-        self.combo_year = ttk.Combobox(self.main_frame , width = 12  ,values =self.fin_years , font = ('Lucida Grande' , -int(self.main_hgt*0.13)))
-        self.combo_year.bind("<FocusOut>" , self.combo_entry_out)
-        self.combo_year.bind("<Return>" , self.submit)
-        self.combo_year.insert(con.END , self.fin_years[-1])
-
-        self.btn_submit = ttk.Button(self.main_frame , text = "Submit" , style = "window_btn_large.TButton" ,command = lambda : self.submit(None))
-        self.btn_submit.bind("<Return>" , self.submit)
-
-        self.base_frame.grid(padx = int(dmsn[1]/3) , pady = int(dmsn[0]/4))
-        self.title_frame.pack(anchor = con.N , pady = 2)
-        self.lbl_title.pack(side = con.LEFT)
-        self.btn_close.pack(side = con.RIGHT)
-        self.main_frame.pack(anchor = con.S)
-
-
-        self.lbl_user_name.place(x = int(self.main_wdt*0.08) , y = int(self.main_hgt*0.03))
-        self.ent_user_name.place(x = int(self.main_wdt*0.5) , y = int(self.main_hgt*0.02))
-        self.lbl_user_pass.place(x = int(self.main_wdt*0.08) , y = int(self.main_hgt*0.22))
-        self.ent_user_pass.place(x = int(self.main_wdt*0.5) , y = int(self.main_hgt*0.22))
-        self.lbl_year.place(x = int(self.main_wdt*0.08) , y = int(self.main_hgt*0.42))
-        self.combo_year.place(x = int(self.main_wdt*0.5) , y = int(self.main_hgt*0.42))
-        
-        self.btn_submit.place(x = int(self.main_wdt*0.1) , y = int(self.main_hgt*0.7))
-
-        self.ent_user_name.focus_set()
-
-
-    def submit(self , e):
-        user_name = self.ent_user_name.get().upper()
-        user_pass = self.ent_user_pass.get()
-        fin_year = self.combo_year.get()
-
-        if user_name == "" or user_pass =="":
-            msg.showerror("Error" , "ENTER ALL DETAILS!")
-            self.ent_user_name.focus_set()
-            self.ent_user_name.select_range(0,con.END)
-            return
-
-        if fin_year not in self.fin_years:
-            msg.showerror("Error" , "SELECT YEAR FROM DROP DOWN!")
-            self.combo_year.focus_set()
-            self.combo_year.select_range(0,con.END)
-            return
-        
-        user_type = "ADMIN"  #get from backend
-        
-        self.lbl_btn[0].config(text = user_name)
-        self.lbl_btn[1].config(text = user_type)
-        self.lbl_btn[2].config(text = fin_year)
-        self.base_frame.destroy()
-
-    def combo_entry_out(self , e):
-        e.widget.select_clear()
-
-    def close(self ,e):
-        self.main.quit() 
+            resp = requests.get("http://127.0.0.1:5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year})            #ipchange
+    except:
+        msg.showinfo("Info","Server Not Available")
+        return
     
+    if resp.status_code == 200:
+        resp = resp.json()
+        if len(resp)>0: 
+            user_type = resp[0]['user_type']
+        else:
+            msg.showerror("ERROR" , "Username Or Password Incorrect!")
+            return
+    else:                                                                                                                                          #response code = 101
+        msg.showerror("ERROR" , "Application is already running")
+        return
+
+
+    root = os.path.expanduser('~')+"\\desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)
+    login.destroy()
+    os.system(root)
+
+
+login = Tk()
+num_alpha = login.register(val_num_alpha)
+login_hgt = login.winfo_screenheight()-34
+login_wdt = login.winfo_screenwidth()-10
+login.geometry(str(int(login_wdt*0.3))+"x"+str(int(login_hgt*0.3))+"+"+str(int(login_wdt*0.3))+"+"+str(int(login_hgt*0.3)))
+
+style = style.style(login_hgt , login_wdt)
+style.theme_use("dark_theme")  
+
+login.option_add("*TCombobox*Listbox*Font", ('Lucida Console', -int(login_hgt*0.025), 'bold'))
+style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(login_hgt*0.03))))
+
+
+rad_server_name = None
+start_year = 2020                                       
+cur_year = int(date.today().strftime("%Y"))
+cur_mon = int(date.today().strftime("%m"))
+
+if cur_mon<4:
+    end_year = cur_year
+else:
+    end_year = cur_year+1
+
+fin_years = []                                     #all financial year record available
+
+for i in range(start_year , end_year):
+    fin_years.append(str(i)+"-"+str(i+1))
+
+
+
+main_frame = ttk.Frame(login , height = str(int(login_hgt*0.3)) , width =int(login_wdt*0.3) ,  style = "root_main.TFrame")
+main_frame.grid_propagate(False)
+
+
+lbl_user_name = ttk.Label(main_frame , text = "User Name :" , style = "window_text_large.TLabel")
+lbl_user_pass = ttk.Label(main_frame , text = "Password  :" , style = "window_text_large.TLabel")
+lbl_year = ttk.Label(main_frame , text = "Year      :" ,  style = "window_text_large.TLabel")
+
+ent_user_name = ttk.Entry(main_frame , width = 12 ,   font = ('Lucida Grande' , -int(login_hgt*0.025)) ,  validate="key", validatecommand=(num_alpha, '%P'))
+ent_user_name.bind("<FocusOut>" , combo_entry_out)
+ent_user_pass = ttk.Entry(main_frame  , width = 12 ,   font = ('Lucida Grande' , -int(login_hgt*0.025)) , show = "*" , validate="key", validatecommand=(num_alpha, '%P')) 
+ent_user_pass.bind("<Return>" , submit)
+ent_user_pass.bind("<FocusOut>" , combo_entry_out)
+combo_year = ttk.Combobox(main_frame , width = 12  ,values =fin_years , font = ('Lucida Grande' , -int(login_hgt*0.025)))
+combo_year.bind("<FocusOut>" , combo_entry_out)
+combo_year.bind("<Return>" , submit)
+combo_year.insert(con.END , fin_years[-1])
+
+rad_server = ttk.Radiobutton(main_frame , variable = rad_server_name ,value = 0 ,  style = "window_radio.TRadiobutton" , text = "SERVER")
+rad_system = ttk.Radiobutton(main_frame , variable = rad_server_name ,value = 1 ,  style = "window_radio.TRadiobutton" , text = "SYSTEM")
+
+btn_submit = ttk.Button(main_frame , text = "Submit" , style = "window_btn_large.TButton" ,command = lambda : submit(None))
+btn_submit.bind("<Return>" , submit)
+
+
+main_frame.pack()
+lbl_user_name.grid(row = 0 , column = 0 , pady = int(login_hgt*0.01) )
+ent_user_name.grid(row = 0 , column = 1 , columnspan = 2 , sticky = con.W)
+lbl_user_pass.grid(row = 1 , column = 0, pady = int(login_hgt*0.01))
+ent_user_pass.grid(row = 1 , column = 1, columnspan = 2 , sticky = con.W)
+lbl_year.grid(row = 2 , column = 0, pady = int(login_hgt*0.01))
+combo_year.grid(row = 2 , column = 1, columnspan = 2 , sticky = con.W)
+rad_system.grid(row = 3 , column = 1, pady = int(login_hgt*0.01))
+rad_server.grid(row = 3 , column = 2 , padx = int(login_wdt*0.01))
+
+btn_submit.grid(row = 4 , column = 0 )
+
+rad_server.invoke()
+ent_user_name.focus_set()
+
+login.mainloop()

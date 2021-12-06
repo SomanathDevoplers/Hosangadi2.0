@@ -1,0 +1,21 @@
+{
+  "name": "report_server",
+  "version": "1.0.0",
+  "description": "servs the reports and updates databases",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "\"https://github.com/SomanathDevoplers/Hosangadi2.0"
+  },
+  "author": "krishnanandshenoy",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "multer": "^1.4.3",
+    "mysql": "^2.18.1",
+    "socket.io-client": "^4.4.0"
+  }
+}

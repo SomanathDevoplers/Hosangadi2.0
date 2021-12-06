@@ -1,10 +1,14 @@
 from tkinter import Tk , Frame , Button , constants as con , ttk , Menu , Label , font as font , Canvas , PhotoImage , messagebox as msg
-import os.path, style , login , firm , taxes , cats , users , accounts , employs , products
+import os.path , style ,firm , taxes , cats , users , accounts , employs , products
+import socketio
+import sys
 
+sio = socketio.Client()
 theme_state = False             #False if dark
 task_place = False              #taskbar placement
 noti_place = False              #notification placement
-
+ip = None                       #server address
+tax_check = False
 
 def view_task(e):
     global task_place,root_hgt ,root_wdt
@@ -25,24 +29,6 @@ def view_ntfc(e):
     else:
         frm_ntfc.place(x = root_wdt+10, y = (0.034*root_hgt))
     noti_place = not noti_place
-
-def logout(e):
-    if lbl_user_type.cget("text") =="   -   ":
-        return
-
-    if int(lbl_task_cnt.cget("text")) != 0:
-        msg.showinfo("Info" , "CLOSE ALL TABS BEFORE LOGGING OUT")
-        return
-    
-    ans = msg.askokcancel("Logout" , "DO YOU WANT TO LOG OUT?")
-    if not ans: 
-        return
-
-    lbl_user_name.config(text = "   -   ")
-    lbl_user_type.config(text = "   -   ")
-    lbl_fin_year.config(text = "   -   ")
-    login_main =  login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
-    #remaining
 
 def val_num_alpha(char):
     flag = True
@@ -65,14 +51,13 @@ def val_email(char):
             flag = False
     return flag
 
-def close():
-    root.destroy()
-    return
+def close(): 
     if int(lbl_task_cnt.cget("text"))>0:
         msg.showinfo("Info" , "CLOSE ALL TABS BEFORE EXIT!")
         return
-    else:
-        root.quit()
+    
+    root.quit()
+    sio.disconnect()
 
 #----------------------Admin menu-----------------------#     
 def admin_panel():
@@ -83,11 +68,10 @@ def admin_panel():
 #---------------------settings menu---------------------#
 def firms(e = None):
     user_type = lbl_user_type.cget("text")
-    if not (user_type == "ADMIN" or user_type == "OWNER"):
-        #ask if mesagebox required
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You donot have the access to open this file")
         return
-    #taxes.taxes(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal] , [os.path.expanduser('~') , style])
-    firm.firm(root, [frm_main , frm_task_others] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
+    firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , ip , tax_check])
 
 
 
@@ -125,8 +109,6 @@ menu_accounts_head['menu'] = menu_accounts
 
 
 lbl_ntfc_cnt = ttk.Label(frm_menu , text = "0" , width = 2 , style = "root_ntfc_cnt.TLabel")
-lbl_logout = ttk.Label(frm_menu , text = " Logout " , style = "root_menu_btn.TLabel")
-lbl_logout.bind("<Button-1>" , logout)
 
 frm_menu.pack_propagate(False)
 lbl_task_cnt.pack(side = con.LEFT , anchor = con.CENTER)
@@ -134,8 +116,6 @@ frm_menubar.pack(side = con.LEFT , anchor = con.W , padx = int(root_wdt*0.005))
 menu_settings_head.grid(row = 0 , column = 0 , ipadx = int(root_wdt*0.003))
 menu_accounts_head.grid(row = 0 , column = 1 , ipadx = int(root_wdt*0.003))
 lbl_ntfc_cnt.pack(side = con.RIGHT , anchor = con.CENTER)
-lbl_logout.pack(side = con.RIGHT , padx = int(root_wdt*0.003))
-
 
 frm_task_view = ttk.Frame(root , width = int(0.01*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 frm_task_view.bind("<Enter>" , view_task)
@@ -153,6 +133,8 @@ lbl_user_name_txt = ttk.Label(frm_status , text = "User :" , style = "status_tex
 lbl_user_name = ttk.Label(frm_status , text = "   -   " , width = 10 , style = "status_text.TLabel")
 lbl_user_type_txt = ttk.Label(frm_status , text = "Type :" , style = "status_text.TLabel")
 lbl_user_type = ttk.Label(frm_status , text = "   -   " , width = 10 , style = "status_text.TLabel")
+lbl_server_name_txt = ttk.Label(frm_status , text = "Server :" , style = "status_text.TLabel")
+lbl_server_name = ttk.Label(frm_status , text = "   -   " , width = 10 , style = "status_text.TLabel")
 
 lbl_fin_year_txt.grid(row = 0 , column = 0)
 lbl_fin_year.grid(row = 0 , column = 1)
@@ -160,6 +142,8 @@ lbl_user_name_txt.grid(row = 1 , column = 0)
 lbl_user_name.grid(row = 1 , column = 1)
 lbl_user_type_txt.grid(row = 2 , column = 0)
 lbl_user_type.grid(row = 2 , column = 1)
+lbl_server_name_txt.grid(row = 0 , column = 3)
+lbl_server_name.grid(row = 0 , column = 4)
 
 frm_task = ttk.Frame(root , width = int(0.4*root_wdt) , height = int(0.865*root_hgt) , style = "root_task.TFrame")
 frm_task.bind("<Leave>" , view_task)
@@ -187,13 +171,35 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , style])
-login_main = login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year] ,[0.98*root_hgt , root_wdt] , num_alpha)
-taxes.taxes(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal])
-cats.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [num_alpha,email] , [os.path.expanduser('~') , style])
-users.users(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Users" , [num_alpha,email] , [os.path.expanduser('~') , style])
-accounts.acc(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha,email] , [os.path.expanduser('~') , style])
-employs.emp(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Employees" , [num_alpha,email] , [os.path.expanduser('~') , style])
-products.prods(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha,email] , [os.path.expanduser('~') , style])
+#firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , ip])
+#login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year , lbl_server_name] ,[0.98*root_hgt , root_wdt] , num_alpha)
+#taxes.taxes(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal])
+#cats.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [num_alpha,email] , [os.path.expanduser('~') , style])
+#users.users(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Users" , [num_alpha,email] , [os.path.expanduser('~') , style])
+#accounts.acc(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha,email] , [os.path.expanduser('~') , style])
+#employs.emp(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Employees" , [num_alpha,email] , [os.path.expanduser('~') , style])
+#products.prods(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha,email] , [os.path.expanduser('~') , style])
+try:
+    lbl_user_name.config(text = sys.argv[1])    
+    lbl_user_type.config(text = sys.argv[2])
+    if(sys.argv[2]) == "admin":
+        tax_check = True
+    lbl_fin_year.config(text = sys.argv[3])
+    lbl_server_name.config(text = sys.argv[4])
+    if sys.argv[4] == "server":
+        sio.connect("http://192.168.1.35:5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : sys.argv[2] , "fin_year":sys.argv[3]})
+        ip = "192.168.1.35"
+    else:
+        sio.connect("http://localhost:5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : sys.argv[2] , "fin_year":sys.argv[3]})
+        ip = "127.0.0.1"
+    
+
+except:
+    lbl_user_name.config(text = "ADMIN")    
+    lbl_user_type.config(text = "ADMIN")
+    lbl_fin_year.config(text = "2021-2022")
+    lbl_server_name.config(text = "server")
+    sio.connect("http://192.168.1.35:5000/" , headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN" , "fin_year":"2021-2022"})
+    ip = "192.168.1.35"
 
 root.mainloop()
