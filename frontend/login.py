@@ -1,7 +1,13 @@
-from tkinter import Tk , constants as con , ttk , messagebox as msg
-import requests , style
-from datetime import datetime as date
 import os
+import requests
+import style
+from datetime import datetime as date
+from tkinter import Tk
+from tkinter import constants as con
+from tkinter import messagebox as msg
+from tkinter import ttk
+
+ip = "192.168.1.35"
 
 def val_num_alpha(char):
     flag = True
@@ -14,12 +20,13 @@ def combo_entry_out(e):
     e.widget.select_clear()
 
 def submit(e):
+    global ip
     user_name = ent_user_name.get().upper()
     user_pass = ent_user_pass.get()
     year = combo_year.get()
+
     server = "server"
     if len(rad_system.state())>0:
-        print(rad_system.state())
         server = "system"
         
 
@@ -34,15 +41,18 @@ def submit(e):
         combo_year.focus_set()
         combo_year.select_range(0,con.END)
         return
+
     try:
         if server == 'server':
-            resp = requests.get("http://192.168.1.35:5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year})            #ipchange
+            resp = requests.get("http://"+ip+":5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year , "server" : server })           
         else:
-            resp = requests.get("http://127.0.0.1:5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year})            #ipchange
+            resp = requests.get("http://localhost:5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year , "server" : server })  
+            ip = "localhost"       
     except:
         msg.showinfo("Info","Server Not Available")
         return
     
+    #for successful login
     if resp.status_code == 200:
         resp = resp.json()
         if len(resp)>0: 
@@ -50,12 +60,18 @@ def submit(e):
         else:
             msg.showerror("ERROR" , "Username Or Password Incorrect!")
             return
-    else:                                                                                                                                          #response code = 101
+
+    #response code = 101 for same system login twice        
+    elif resp.status_code == 101:                                                                                                     
         msg.showerror("ERROR" , "Application is already running")
         return
 
+    #response code = 102 for same user login twice
+    else:                                                                                                                               
+        msg.showerror("ERROR" , "This User has logged in already!")
+        return
 
-    root = os.path.expanduser('~')+"\\desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)
+    root = os.path.expanduser('~')+"\\desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
     login.destroy()
     os.system(root)
 
