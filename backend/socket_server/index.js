@@ -6,6 +6,7 @@ const io = require('socket.io')(server)
 const mysql = require('mysql'); 
 const { time } = require('console');
 const { exit } = require('process');
+
 const con = mysql.createConnection({
   host: "localhost",
   port: "3306",
@@ -43,18 +44,22 @@ let getTime = () => {
 
 
 //global variables end
-
-
    
 
 
 io.on('connection', function (socket) {
     //connection event starts here
     //adds data to usersLogged when login is approved
+
+    
+    
+    clientIp = socket.handshake.address
+
+    console.log()
+    //all the params passed pushed to usersLogged
     socketData = socket.handshake.headers
-    if(socketData.host[0] == "l")
-      socketData.host = socketData.host.replace("localhost","127.0.0.1")
-    usersLogged.push({"ip" : socketData['host'] , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime()})
+    usersLogged.push({"ip" : clientIp , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime()})
+
     console.log(usersLogged);
     //connection evenrt ends here
 
@@ -62,17 +67,15 @@ io.on('connection', function (socket) {
           socket.on('disconnect' , (data)=> {
                   socketData = socket.handshake.headers
 
-                  if(socketData.host[0] == "l")
-                      socketData.host = socketData.host.replace("localhost","127.0.0.1")
+                  
 
                   for (user = 0 ; user<usersLogged.length ; user ++)
                       {
                           console.log(usersLogged[user]);
-                          if(usersLogged[user].ip == socketData.host)
+                          if(usersLogged[user].ip == socket.handshake.address)
                             usersLogged.splice(user , 1)
                       }
                     
-                  console.log(usersLogged)
           });   
     //root window disconnect event ends here
 
@@ -85,12 +88,21 @@ app.get('/login' , (req,res) => {                                               
   sql = "select user_type from somanath.users where user_name = '"+ req.query.user_name + "' and user_pass = '"+req.query.user_pass+"'"
   responseSent = false
   
+  console.log(req.query.user_name);
+
   usersLogged.forEach( user => {
-      if(user.ip == req.headers.host)
+    if(user.ip == req.socket.remoteAddress)
+       {
           responseSent = true
           res.sendStatus(101)
-          return
-    });                                                                                                                                      //checks if same two clients are from same ip
+       }
+    if(!responseSent && user.userName == req.query.user_name)
+       {
+          responseSent = true
+          res.sendStatus(102)
+       }
+          
+    });                                                                                                                                     //checks if same two clients are from same ip or from same user name
                                                                                                                                            //responds {"NOT FOUND"}
   if(!responseSent)
         con.query(sql, (err , userType)=>{

@@ -1,7 +1,21 @@
-from tkinter import Tk , Frame , Button , constants as con , ttk , Menu , Label , font as font , Canvas , PhotoImage , messagebox as msg
-import os.path , style ,firm , taxes , cats , users , accounts , employs , products
-import socketio
+import os.path
 import sys
+from tkinter import Button, Canvas, Frame, Label, Menu, PhotoImage, Tk
+from tkinter import constants as con
+from tkinter import font as font
+from tkinter import messagebox as msg
+from tkinter import ttk
+
+import socketio
+
+import accounts
+import cats
+import employs
+import firm
+import products
+import style
+import taxes
+import users
 
 sio = socketio.Client()
 theme_state = False             #False if dark
@@ -69,7 +83,7 @@ def admin_panel():
 def firms(e = None):
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
-        msg.showerror("Error" , "You donot have the access to open this file")
+        msg.showerror("Error" , "You do not have the access to open this file")
         return
     firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , ip , tax_check])
 
@@ -186,20 +200,15 @@ try:
         tax_check = True
     lbl_fin_year.config(text = sys.argv[3])
     lbl_server_name.config(text = sys.argv[4])
-    if sys.argv[4] == "server":
-        sio.connect("http://192.168.1.35:5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : sys.argv[2] , "fin_year":sys.argv[3]})
-        ip = "192.168.1.35"
-    else:
-        sio.connect("http://localhost:5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : sys.argv[2] , "fin_year":sys.argv[3]})
-        ip = "127.0.0.1"
+    ip = sys.argv[5]
+    sio.connect("http://"+ip+":5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : sys.argv[2] , "fin_year":sys.argv[3]})
     
-
 except:
+    print("Except Here")
     lbl_user_name.config(text = "ADMIN")    
     lbl_user_type.config(text = "ADMIN")
     lbl_fin_year.config(text = "2021-2022")
     lbl_server_name.config(text = "server")
-    sio.connect("http://192.168.1.35:5000/" , headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN" , "fin_year":"2021-2022"})
-    ip = "192.168.1.35"
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN" , "fin_year":"2021-2022"})
 
 root.mainloop()

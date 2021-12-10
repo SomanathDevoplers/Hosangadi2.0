@@ -279,6 +279,10 @@ class firm(base_window):
 
         self.combo_tax.focus_set()
 
+        self.combo_tax.insert(0,"CASH")
+        self.ent_firm_name.insert(0,"Somanath Stores")
+        self.ent_firm_suff.insert(0 , "SFX")
+
     def edit(self , e):
         self.btn_new.config(state = con.DISABLED)
         self.btn_edit.config(state = con.DISABLED)
@@ -331,6 +335,7 @@ class firm(base_window):
                 return
 
             parameters = {
+                "form_name" : "firm",
                 "firm_type" : tax_method ,
                 "firm_name" : firm_name , 
                 "firm_suffix" : firm_suffix ,
@@ -349,29 +354,33 @@ class firm(base_window):
                 "firm_photo" : False
                 }
 
-            files = {}
+            multiple_files = [
+                                    ('images', (self.image_qr_loc, open(self.image_qr_loc, 'rb'), 'image/png')),
+                                    ('images', (self.image_qr_loc, open(self.image_qr_loc, 'rb'), 'image/png'))
+                             ]
 
             print(self.image_qr_loc , self.image_photo_loc , self.image_logo_loc)
 
-            if self.image_qr_loc != "" and self.image_qr_loc != None:
-                firm_upi_qr = open(self.image_qr_loc,'rb')
+            """ if self.image_qr_loc != "" and self.image_qr_loc != None:
+                files.append(open(self.image_qr_loc,'rb'))
                 parameters['firm_qr'] = True
-                files['media'] = firm_upi_qr
+                
 
             if self.image_logo_loc != "" and self.image_logo_loc != None:
-                firm_logo = open(self.image_logo_loc,'rb')
+                files.append(open(self.image_logo_loc,'rb'))
                 parameters['firm_logo'] = True
-                #files['firm_logo'] = firm_logo
 
             if self.image_photo_loc != "" and  self.image_photo_loc != None:
-                firm_photo = open(self.image_photo_loc,'rb')
-                parameters['firm_photo'] = True
-                #files['firm_photo'] = firm_photo
+                files.append(open(self.image_photo_loc,'rb'))
+                parameters['firm_photo'] = True"""
+                
 
+            
 
             #r = requests.post("http://"+self.others[1]+"/firms/newSave" , params = parameters , files = files)
-            r = requests.post("http://localhost:6000/firms/newSave" , params = parameters , files = files)
+            r = requests.post("http://localhost:6000/firms/newSave" , params = parameters , files = multiple_files )
             
+            #print(files)
 
         else:                                                               #edit save
             pass
