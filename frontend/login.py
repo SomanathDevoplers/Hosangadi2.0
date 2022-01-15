@@ -9,6 +9,8 @@ from tkinter import ttk
 
 ip = "192.168.1.35"
 
+
+
 def val_num_alpha(char):
     flag = True
     for each in char:
@@ -121,6 +123,7 @@ ent_user_pass.bind("<Return>" , submit)
 ent_user_pass.bind("<FocusOut>" , combo_entry_out)
 combo_year = ttk.Combobox(main_frame , width = 12  ,values =fin_years , font = ('Lucida Grande' , -int(login_hgt*0.025)))
 combo_year.bind("<FocusOut>" , combo_entry_out)
+#combo_year.bind("<KeyPress>" , dropdown)
 combo_year.bind("<Return>" , submit)
 combo_year.insert(con.END , fin_years[-1])
 
@@ -144,6 +147,12 @@ rad_server.grid(row = 3 , column = 2 , padx = int(login_wdt*0.01))
 btn_submit.grid(row = 4 , column = 0 )
 
 rad_server.invoke()
+#rad_system.invoke()
 ent_user_name.focus_set()
+
+#ent_user_name.insert(0 , "VIJAY")
+#ent_user_pass.insert(0,"9902")
+
+#btn_submit.invoke()
 
 login.mainloop()

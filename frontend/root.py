@@ -5,17 +5,10 @@ from tkinter import constants as con
 from tkinter import font as font
 from tkinter import messagebox as msg
 from tkinter import ttk
-
 import socketio
-
-import accounts
-import cats
-import employs
-import firm
-import products
+import forms
 import style
-import taxes
-import users
+import purchase
 
 sio = socketio.Client()
 theme_state = False             #False if dark
@@ -23,6 +16,17 @@ task_place = False              #taskbar placement
 noti_place = False              #notification placement
 ip = None                       #server address
 tax_check = False
+
+
+#-------form open counts----------#
+prod_form = [0 , 3 , "Already 3 Product Forms are open"]
+firm_form = [0 , 1 , "Already Firm Form is open"]
+category_form = [0 , 1 , "Already Category Form is open"]
+account_form = [0 , 3 , "Already 3 Account Forms are open"]
+employ_form = [0 , 1 , "Already Employee Form is open"]
+tax_form = [0 , 1 , "Already Tax Form is open"]
+purchase_form = [0 , 1 , "Already Purchase Form is open"]
+#---------------------------------#
 
 def view_task(e):
     global task_place,root_hgt ,root_wdt
@@ -44,19 +48,84 @@ def view_ntfc(e):
         frm_ntfc.place(x = root_wdt+10, y = (0.034*root_hgt))
     noti_place = not noti_place
 
+#------------------------validations-------------------------------#
 def val_num_alpha(char):
     flag = True
     for each in char:
         if not (each.isalpha() or each.isdigit() or each.isspace() or each == "_"):
             flag = False
     return flag
-            
-def val_dec(char):
+
+def val_pos_int(char):
     flag = True
     for each in char:
-        if not ( each.isdigit() or each == "."):
+        if not (each.isdigit()):
             flag = False
     return flag
+
+def val_int(char):
+    flag = True
+
+    if len(char)>0:
+        if "-" in char[1:]:
+            return False
+
+    for each in char:
+        if not (each.isdigit()):
+            flag = False
+    return flag
+
+def val_barcode(char):
+    flag = True
+    for each in char:
+        if not (each.isalpha() or each.isdigit()):
+            flag = False
+    return flag
+
+def val_name(char):
+    flag = True
+    for each in char:
+        if not (each.isalpha() or each.isdigit() or each.isspace()):
+            flag = False
+    return flag
+
+def val_pos_dec(char):
+    flag = True
+    points = 0
+    for each in char:
+        if each == ".":
+            points += 1
+    
+
+    for each in char:
+        if not (each.isdigit() or each == "."):
+            flag = False
+
+    if points>1:
+        return False
+
+    return flag
+
+def val_dec(char):
+    flag = True
+    points = 0
+    for each in char:
+        if each == ".":
+            points += 1
+
+    if len(char)>0:
+        if "-" in char[1:]:
+            return False
+
+    for each in char:
+        if not (each.isdigit() or each == "." or each == "-"):
+            flag = False
+
+    if points>1:
+        return False
+        
+    return flag
+
 
 def val_email(char):
     flag = True
@@ -64,6 +133,26 @@ def val_email(char):
         if not (each.isalpha() or each.isdigit() or each == "_" or each == "@" or each == "."):
             flag = False
     return flag
+
+def val_mobile(char):
+    flag = True
+    
+    if len(char)>0:
+        if "+" in char[1:]:
+            return False
+
+    for each in char:
+        if not (each.isdigit() or each == "+"):
+            flag = False
+    return flag
+
+def val_none(char):
+    return False
+
+
+
+#------------------------validations ends---------------------------#
+
 
 def close(): 
     if int(lbl_task_cnt.cget("text"))>0:
@@ -80,26 +169,85 @@ def admin_panel():
         return
 
 #---------------------settings menu---------------------#
-def firms(e = None):
+def firms(e = None): 
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , ip , tax_check])
+    if firm_form[0] == 'True':
+        msg.showinfo('Info' , "It is already open")
+        return
+    forms.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer , mobile]  , [os.path.expanduser('~') , ip , tax_check , user] , firm_form)
 
+def products(e = None): 
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    if prod_form[0] == 'True':
+        msg.showinfo('Info' , "It is already open")
+        return
+    forms.prods(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer ] , [os.path.expanduser('~') , ip , user] , prod_form)
 
+def taxes(e = None): 
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    forms.taxes(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [pos_integer],ip,user , tax_form)
 
+def categories(e = None): 
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    forms.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [name] , [os.path.expanduser('~')  ,ip,user] ,  category_form)
+
+def employees(e = None): 
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    forms.emp(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Employees" , [num_alpha  , name , mobile] , [os.path.expanduser('~') , ip , user] , employ_form)
+
+def accounts(e = None): 
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    forms.acc(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha  , name , mobile , email , barcode] , [os.path.expanduser('~') , ip ,tax_check, user] , account_form )
+
+ 
 #1{
 root = Tk()
 root.resizable(con.FALSE , con.FALSE)
 root.protocol("WM_DELETE_WINDOW" , close)
-root.bind_all("<Control-h>", firms)
+
+root.bind_all("<Control-f>", firms)
+root.bind_all("<Control-p>", products)
+root.bind_all("<Control-t>", taxes)
+root.bind_all("<Control-g>", categories)
+root.bind_all("<Control-e>", employees)
+root.bind_all("<Control-q>", accounts)
+
+
 root_hgt = root.winfo_screenheight()-34
 root_wdt = root.winfo_screenwidth()-10
 root.geometry(str(int(root_wdt))+"x"+str(int(root_hgt))+"-0-0")
+
+
 num_alpha = root.register(val_num_alpha)
+pos_integer = root.register(val_pos_int)
+integer = root.register(val_int)
+pos_decimal = root.register(val_pos_dec)
 decimal = root.register(val_dec)
 email = root.register(val_email)
+none = root.register(val_none)
+barcode = root.register(val_barcode)
+name = root.register(val_name)
+mobile = root.register(val_mobile)
+
+
 style = style.style(root_hgt , root_wdt)
 style.theme_use("dark_theme")  
 
@@ -118,7 +266,12 @@ menu_settings_head['menu'] = menu_settings
 
 menu_accounts_head = ttk.Menubutton(frm_menubar , text = "Settings" , direction = 'below',style = "root_menu.TMenubutton" )
 menu_accounts = Menu(menu_accounts_head , tearoff = 0 , font = ('Tahoma' , 13 ) )
-menu_accounts.add_command(label = "Firms" , command = firms , accelerator = "Ctrl+s" , underline = 1)
+menu_accounts.add_command(label = "Firms" , command = firms , accelerator = "Ctrl+f" , underline = 1)
+menu_accounts.add_command(label = "Products" , command = products , accelerator = "Ctrl+p" , underline = 1)
+menu_accounts.add_command(label = "Categories" , command = categories , accelerator = "Ctrl+g" , underline = 1)
+menu_accounts.add_command(label = "Taxes" , command = taxes , accelerator = "Ctrl+t" , underline = 1)
+menu_accounts.add_command(label = "Employees" , command = employees , accelerator = "Ctrl+e" , underline = 1)
+menu_accounts.add_command(label = "Accounts" , command = accounts , accelerator = "Ctrl+q" , underline = 1)
 menu_accounts_head['menu'] = menu_accounts
 
 
@@ -170,9 +323,8 @@ frm_ntfc = ttk.Frame(root , width = int(0.4*root_wdt) , height = int(0.865*root_
 frm_ntfc.bind("<Leave>" , view_ntfc)
 
 frm_task.pack_propagate(False)
-frm_task_sales.pack(side = con.LEFT , padx = 1)
-frm_task_others.pack(side = con.RIGHT , padx = 1)
-
+frm_task_others.pack(side = con.LEFT , padx = 1)
+frm_task_sales.pack(side = con.RIGHT , padx = 1)
 
 
 
@@ -185,30 +337,35 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-#firm.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha,email] , [os.path.expanduser('~') , ip])
-#login.login([root,frm_main], [lbl_user_name , lbl_user_type , lbl_fin_year , lbl_server_name] ,[0.98*root_hgt , root_wdt] , num_alpha)
-#taxes.taxes(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Taxes" , [decimal])
-#cats.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [num_alpha,email] , [os.path.expanduser('~') , style])
-#users.users(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Users" , [num_alpha,email] , [os.path.expanduser('~') , style])
-#accounts.acc(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha,email] , [os.path.expanduser('~') , style])
-#employs.emp(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Employees" , [num_alpha,email] , [os.path.expanduser('~') , style])
-#products.prods(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha,email] , [os.path.expanduser('~') , style])
+ 
 try:
     lbl_user_name.config(text = sys.argv[1])    
     lbl_user_type.config(text = sys.argv[2])
-    if(sys.argv[2]) == "admin":
+    if(sys.argv[2]) == "TAXI":
+        print("taxTrue")
+        userType = "ADMIN"
         tax_check = True
+    else:
+        userType = sys.argv[2]
+
     lbl_fin_year.config(text = sys.argv[3])
     lbl_server_name.config(text = sys.argv[4])
     ip = sys.argv[5]
-    sio.connect("http://"+ip+":5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : sys.argv[2] , "fin_year":sys.argv[3]})
+    sio.connect("http://"+ip+":5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : userType , "fin_year":sys.argv[3]})
     
 except:
-    print("Except Here")
+    #print("Except Here")
+
+    ip = "192.168.1.35"
+    #ip = "127.0.0.1"
     lbl_user_name.config(text = "ADMIN")    
     lbl_user_type.config(text = "ADMIN")
     lbl_fin_year.config(text = "2021-2022")
     lbl_server_name.config(text = "server")
     sio.connect("http://"+ip+":5000/", headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN" , "fin_year":"2021-2022"})
+
+    
+user =lbl_user_name.cget("text")
+#purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha  , name , mobile , email , barcode] , [os.path.expanduser('~') , ip ,tax_check, user] , purchase_form )
 
 root.mainloop()

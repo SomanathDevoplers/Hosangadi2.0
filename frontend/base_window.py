@@ -1,7 +1,14 @@
-from tkinter import ttk , constants as con
+from tkinter import ttk , constants as con , messagebox as msg
 
 class base_window:
-    def __init__(self , root ,frames , dmsn , lbls ,title ):
+    def __init__(self , root ,frames , dmsn , lbls ,title , form_count):
+        if form_count[0] == form_count[1]:
+            msg.showinfo("Info" , form_count[2])
+            return
+
+        self.form_count = form_count
+
+        self.form_count[0] +=1
         self.lbls = lbls
         self.root_hgt = root.winfo_screenheight()-34
         self.root_wdt = root.winfo_screenwidth()-10 
@@ -40,15 +47,17 @@ class base_window:
         self.main_frame.pack()
         self.base_frame.grid(column = 0 , row = 0)
         self.base_frame.lift()
+        return(self)
 
     def close(self,e):
         self.base_frame.destroy()
         self.access_frame.destroy()
         self.lbls[0].config(text = int(self.lbls[0].cget("text"))-1)
+        self.form_count[0] -= 1
+        self.__del__()
     
     def minimize(self , e):
         self.base_frame.grid_forget()
-        
 
     def acc_lbl_config_enter(self , e):
         self.acc_title.config(background = "#AEC1B5" , foreground = "#000")
@@ -60,3 +69,6 @@ class base_window:
         self.base_frame.grid(row = 0 , column = 0)
         self.base_frame.lift()
         self.frm_task.place(x = int(-0.5*self.root_wdt) , y = (0.034*self.root_hgt))
+
+    def __del__(self):
+        pass

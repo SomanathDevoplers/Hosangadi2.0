@@ -111,7 +111,7 @@ def style(hgt,wdt):
                
          "window_text_large.TLabel":
                                 {
-                                   "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03)) },
+                                   "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') },
                                },
           "window_text_medium.TLabel":
                                 {
@@ -123,7 +123,7 @@ def style(hgt,wdt):
                                },
           "window_btn_large.TButton":
                                 {
-                                   "configure" : {"background" : "#666666" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03)) , "padding" : (int(wdt*0.002) , int(hgt*0.004)) , "relief" : "solid" , "anchor" : "center" },
+                                   "configure" : {"background" : "#666666" , "foreground" : "#000" , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') , "padding" : (int(wdt*0.002) , int(hgt*0.004)) , "relief" : "solid" , "anchor" : "center" },
                                    "map"       : {
                                             "background" : [("hover","#B8B3BE")],
                                             "foreground" : [("hover","red")]
@@ -155,7 +155,7 @@ def style(hgt,wdt):
                               },
           "window_combo.TCombobox":
                                 {
-                                   "configure" : { "border" : 10 , "background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') , "borderwidth" : 10 , "bd" : 10 , "arrowsize" : 300},
+                                   "configure" : { "border" : 10 , "background" : "#333333"  , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') , "borderwidth" : 10 , "bd" : 10 , "arrowsize" : 300},
                                },
                 
     })

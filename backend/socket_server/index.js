@@ -11,7 +11,7 @@ const con = mysql.createConnection({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "mysqlpassword5"
+  password: "#mysqlpassword5"
 });
 
 con.connect()
@@ -55,10 +55,14 @@ io.on('connection', function (socket) {
     
     clientIp = socket.handshake.address
 
-    console.log()
+    
     //all the params passed pushed to usersLogged
     socketData = socket.handshake.headers
-    usersLogged.push({"ip" : clientIp , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime()})
+
+    
+
+    if ( socketData['user-agent']!= "node-XMLHttpRequest")
+      usersLogged.push({"ip" : clientIp , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime()})
 
     console.log(usersLogged);
     //connection evenrt ends here
@@ -66,11 +70,9 @@ io.on('connection', function (socket) {
     //root window disconnect event
           socket.on('disconnect' , (data)=> {
                   socketData = socket.handshake.headers
-
-                  
-
                   for (user = 0 ; user<usersLogged.length ; user ++)
-                      {
+                      {   
+                          console.log("logged out user : ");
                           console.log(usersLogged[user]);
                           if(usersLogged[user].ip == socket.handshake.address)
                             usersLogged.splice(user , 1)
