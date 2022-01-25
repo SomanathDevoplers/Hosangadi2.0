@@ -99,7 +99,7 @@ def style(hgt,wdt):
                            },
           "window_title.TLabel":
                               {
-                                   "configure" : {"background" : "#434447" , "foreground" : "#d9cc99" , "font" : ('Tahoma',-int(hgt*0.024)) , "padding" : ( int(wdt*0.008), 0)},
+                                   "configure" : {"background" : "#434447" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',  -int(hgt*0.024) , 'bold') , "padding" : ( int(wdt*0.008), 0)},
                               },
           "window_close.TLabel":
                                 {

@@ -1,7 +1,8 @@
 from tkinter import  Listbox, StringVar, Text , constants as con , filedialog , messagebox as msg , ttk , Listbox , Canvas
-from turtle import Turtle, bgcolor, width
+from turtle import Turtle, width
 from requests import get , post
 from base_window import base_window
+
 
 class purchase(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations, others , pur_form):
@@ -15,169 +16,49 @@ class purchase(base_window):
         self.ip = others[0]  
         self.tax_check = others[1] 
 
-        #----------------------------------------prod_name toplevel------------------------------------------------------------------------------#
-        if root.winfo_screenheight()>1000:
-            self.frm_prod_name = ttk.Frame( self.root_frame , height = self.main_hgt*0.594 , width = self.main_wdt*0.232 )#to give white border
-        else:
-            self.frm_prod_name = ttk.Frame( self.root_frame , height = self.main_hgt*0.608 , width = self.main_wdt*0.237 )#to give white border
-        self.frm_prod_name.pack_propagate(False)
-
-        self.frm_prod_name_2 = ttk.Frame( self.frm_prod_name , height = self.main_hgt*0.608-8 , width = self.main_wdt*0.4-8 , style = "root_menu.TFrame")
-        self.frm_prod_name_2.grid_propagate(False)
-
-        self.list_prod_name = Listbox(self.frm_prod_name_2 , height = 16 , width = 30 , font = ('Lucida Grande'  , -int(self.main_hgt*0.03) , "bold"))
-        """self.list_prod_name.bind('<Escape>',forget_suggestion_cust_name)
-        self.list_prod_name.bind('<Return>',enter_to_custname)
-        self.list_prod_name.bind('<Tab>',enter_to_custname)
-        self.list_prod_name.bind('<Double-1>',enter_to_custname)"""
-
         
-        self.list_prod_name.grid(row = 1 , column = 0 , padx = 1 , pady = 1)
-        self.frm_prod_name_2.pack(pady = 4 , padx = 4)
 
-
-        if root.winfo_screenheight()>1000:
-            self.frm_prod_name.place( x = self.main_wdt*0.113 , y = self.main_hgt*0.123)
-        else:
-            self.frm_prod_name.place( x = self.main_wdt*0.106 , y = self.main_hgt*0.128)
-
-        
-        
-        #----------------------------------------prod_name toplevel ends here--------------------------------------------------------------------#
-
-        #----------------------------------------prod_stock toplevel-----------------------------------------------------------------------------#
-        self.frm_stk_sug = ttk.Frame( self.root_frame , height = self.main_hgt*0.5 , width = self.main_wdt) #to give white border
-        self.frm_stk_sug.pack_propagate(False)
-
-        self.frm_stk_sug_2 = ttk.Frame( self.frm_stk_sug , height = self.main_hgt*0.5-8 , width = self.main_wdt-8 , style = "root_menu.TFrame")
-        self.frm_stk_sug_2.grid_propagate(False)
-
-        self.lbl_tot_stk = ttk.Label(self.frm_stk_sug_2 , text = "Total stock = " , width = 27  , style = "window_title.TLabel")
-
-        self.btn_upd_prod = ttk.Button(self.frm_stk_sug_2 , text = "Update Product"  , style = "window_btn_medium.TButton" ,command = lambda : self.upd_prod(None))
-        self.btn_upd_prod.bind("<Return>" , self.upd_prod)
-
-        self.btn_upd_price = ttk.Button(self.frm_stk_sug_2 , text = "Update Selling Price"  , style = "window_btn_medium.TButton" ,command = lambda : self.upd_price(None))
-        self.btn_upd_price.bind("<Return>" , self.upd_price)
-
-        self.btn_sales_sum = ttk.Button(self.frm_stk_sug_2 , text = "Sales Summary" , style = "window_btn_medium.TButton" ,command = lambda : self.sales_summary(None))
-        self.btn_sales_sum.bind("<Return>" , self.sales_summary)
-
-        self.frm_tree_old_stock = ttk.Frame(self.frm_stk_sug_2 , width = self.main_wdt-16 , height = int(self.main_hgt*0.43))
-        self.frm_tree_old_stock.pack_propagate(False)
-    
-        self.tree_old_stk = ttk.Treeview(self.frm_tree_old_stock ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 6)
-        self.tree_old_stk.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
-        self.tree_old_stk.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
-        self.scroll_y_old_stk = ttk.Scrollbar(self.frm_tree_old_stock , orient = con.VERTICAL , command = self.tree_old_stk.yview)
-        self.scroll_x_old_stk = ttk.Scrollbar(self.frm_tree_old_stock , orient = con.HORIZONTAL , command = self.tree_old_stk.xview)
-        self.tree_old_stk.config(yscrollcommand = self.scroll_y_old_stk.set , xscrollcommand = self.scroll_x_old_stk.set)
-
-        self.tree_old_stk['columns'] = ('date','sup','cp','qty','nml1','nml2','nml3','nml4','htl1','htl2','htl3','htl4','spl1','spl2','spl3','spl4','ang1','ang2','ang3','ang4')
-        self.tree_old_stk.heading('date' , text = 'DATE')
-        self.tree_old_stk.heading('sup' , text = 'SUPPLIER')
-        self.tree_old_stk.heading('cp' , text = 'COST')
-        self.tree_old_stk.heading('qty' , text = 'QTY')
-        self.tree_old_stk.heading('nml1' , text = 'NRM 1')
-        self.tree_old_stk.heading('nml2' , text = 'NRM 2')
-        self.tree_old_stk.heading('nml3' , text = 'NRM 3')
-        self.tree_old_stk.heading('nml4' , text = 'NRM 4')
-        self.tree_old_stk.heading('htl1' , text = 'HTL 1')
-        self.tree_old_stk.heading('htl2' , text = 'HTL 2')
-        self.tree_old_stk.heading('htl3' , text = 'HTL 3')
-        self.tree_old_stk.heading('htl4' , text = 'HTL 4')
-        self.tree_old_stk.heading('spl1' , text = 'SPL 1')
-        self.tree_old_stk.heading('spl2' , text = 'SPL 2')
-        self.tree_old_stk.heading('spl3' , text = 'SPL 3')
-        self.tree_old_stk.heading('spl4' , text = 'SPL 4')
-        self.tree_old_stk.heading('ang1' , text = 'ANG 1')
-        self.tree_old_stk.heading('ang2' , text = 'ANG 2')
-        self.tree_old_stk.heading('ang3' , text = 'ANG 3')
-        self.tree_old_stk.heading('ang4' , text = 'ANG 4')
-
-
-        self.tree_old_stk_wdt = self.frm_tree_old_stock.winfo_reqwidth()-self.scroll_y_old_stk.winfo_reqwidth()
-        self.tree_old_stk.column('date' , width = int(self.tree_old_stk_wdt*0.17) ,minwidth = int(self.tree_old_stk_wdt*0.17) , anchor = "e")
-        self.tree_old_stk.column('sup' , width = int(self.tree_old_stk_wdt*0.35) , minwidth = int(self.tree_old_stk_wdt*0.35) , anchor = "w")
-        self.tree_old_stk.column('cp' , width = int(self.tree_old_stk_wdt*0.1) , minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('qty' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('nml1' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('nml2' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('nml3' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('nml4' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('htl1' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('htl2' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('htl3' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('htl4' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('ang1' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('ang2' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('ang3' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('ang4' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('spl1' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('spl2' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('spl3' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-        self.tree_old_stk.column('spl4' , width = int(self.tree_old_stk_wdt*0.1) ,minwidth = int(self.tree_old_stk_wdt*0.1) , anchor = "e")
-
-
-        self.scroll_y_old_stk.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
-        self.scroll_x_old_stk.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
-        self.tree_old_stk.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
-
-        self.lbl_tot_stk.grid(row = 0 , column = 0)
-        self.btn_upd_prod.grid(row = 0 , column = 1)
-        self.btn_upd_price.grid(row = 0 , column = 2)
-        self.btn_sales_sum.grid(row = 0 , column = 3)
-        self.frm_tree_old_stock.grid(row = 1 , column = 0 , columnspan = 4 , padx = 4)
-        self.frm_stk_sug_2.pack(padx = 4 , pady = 4)
-        #self.frm_stk_sug.place( x = 0, y = self.main_hgt*0.22)
-        #----------------------------------------prod_stock toplevel ends here-------------------------------------------------------------------#
-        
         #----------------------------------------purchase_detail_toplevel------------------------------------------------#
-        self.frm_pur_details = ttk.Frame( self.root_frame , height = self.main_hgt*0.5 , width = self.main_wdt*0.4) #to give white border
-        self.frm_pur_details.pack_propagate(False)
+        self.frm_pur_details = ttk.Frame( self.root_frame , height = self.main_hgt*0.5 , width = self.main_wdt*0.4  , style = "root_menu.TFrame")
+        self.frm_pur_details.grid_propagate(False)
+        #self.frm_pur_details.bind("<Leave>" , self.destroy_pur_details)
 
-        self.frm_pur_details_2 = ttk.Frame( self.frm_pur_details , height = self.main_hgt*0.5-8 , width = self.main_wdt*0.4-8 , style = "root_menu.TFrame")
-        self.frm_pur_details_2.grid_propagate(False)
-
-
-
-
-        self.lbl_sup = ttk.Label(self.frm_pur_details_2 , text = "Supplier      :" , style = "window_title.TLabel")
-        self.lbl_sup_gst_txt = ttk.Label(self.frm_pur_details_2 , text = "Supplier GST  :" , style = "window_title.TLabel")
-        self.lbl_tax_meth = ttk.Label(self.frm_pur_details_2 , text = "Tax Method    :" , style = "window_title.TLabel")
-        self.lbl_firm_name = ttk.Label(self.frm_pur_details_2 , text = "Firm          :" , style = "window_title.TLabel")
-        self.lbl_firm_gst_txt = ttk.Label(self.frm_pur_details_2 , text = "Firm GST      :" , style = "window_title.TLabel")
-        self.lbl_pur_date = ttk.Label(self.frm_pur_details_2 , text = "Date          :" , style = "window_title.TLabel")
-        self.lbl_inv_no = ttk.Label(self.frm_pur_details_2 , text = "Invoice No    :" , style = "window_title.TLabel")
+        self.lbl_sup = ttk.Label(self.frm_pur_details , text = "Supplier      :" , style = "window_title.TLabel")
+        self.lbl_sup_gst_txt = ttk.Label(self.frm_pur_details , text = "Supplier GST  :" , style = "window_title.TLabel")
+        self.lbl_tax_meth = ttk.Label(self.frm_pur_details , text = "Tax Method    :" , style = "window_title.TLabel")
+        self.lbl_firm_name = ttk.Label(self.frm_pur_details , text = "Firm          :" , style = "window_title.TLabel")
+        self.lbl_firm_gst_txt = ttk.Label(self.frm_pur_details , text = "Firm GST      :" , style = "window_title.TLabel")
+        self.lbl_pur_date = ttk.Label(self.frm_pur_details , text = "Date          :" , style = "window_title.TLabel")
+        self.lbl_inv_no = ttk.Label(self.frm_pur_details , text = "Invoice No    :" , style = "window_title.TLabel")
         
-        self.combo_supplier = ttk.Combobox(self.frm_pur_details_2 , validate="key", validatecommand=(validations[4], '%P') , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
+        self.combo_supplier = ttk.Combobox(self.frm_pur_details , validate="key", validatecommand=(validations[4], '%P') , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
         self.combo_supplier.bind("<FocusOut>" , self.combo_entry_out)
-        self.combo_supplier.bind("<<ComboboxSelected>>" , self.get_sup_gst)
+        self.combo_supplier.bind("<FocusOut>" , self.get_sup_gst)
         self.combo_supplier.bind("<Escape>" , self.destroy_pur_details)
         self.combo_supplier.bind("<Down>" , self.get_suppliers)
         self.combo_supplier.bind("<Button-1>" , self.get_suppliers)
 
-        self.lbl_sup_gst = ttk.Label(self.frm_pur_details_2  , width = 30 , style = "window_lbl_ent.TLabel")
+        self.lbl_sup_gst = ttk.Label(self.frm_pur_details  , width = 30 , style = "window_lbl_ent.TLabel")
 
-        self.combo_tax_meth = ttk.Combobox(self.frm_pur_details_2 , values = ['In-State' , 'Out-Of-State'] ,validate="key", validatecommand=(validations[4], '%P') , state = "readonly" ,font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
+        self.combo_tax_meth = ttk.Combobox(self.frm_pur_details , values = ['In-State' , 'Out-Of-State'] ,validate="key", validatecommand=(validations[4], '%P') , state = "readonly" ,font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
         self.combo_tax_meth.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_tax_meth.bind("<Escape>" , self.destroy_pur_details)
 
 
-        self.combo_firms = ttk.Combobox(self.frm_pur_details_2 , validate="key", validatecommand=(validations[4], '%P') , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
+        self.combo_firms = ttk.Combobox(self.frm_pur_details , validate="key", validatecommand=(validations[4], '%P') , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
         self.combo_firms.bind("<FocusOut>" , self.combo_entry_out)
-        self.combo_firms.bind("<<ComboboxSelected>>" , self.get_firm_gst)
+        self.combo_firms.bind("<FocusOut>" , self.get_firm_gst)
         self.combo_firms.bind("<Escape>" , self.destroy_pur_details)
         self.combo_firms.bind("<Down>" , self.get_firms)
         self.combo_firms.bind("<Button-1>" , self.get_firms)
 
-        self.lbl_firm_gst = ttk.Label(self.frm_pur_details_2  , width = 30 , style = "window_lbl_ent.TLabel")
+        self.lbl_firm_gst = ttk.Label(self.frm_pur_details  , width = 30 , style = "window_lbl_ent.TLabel")
 
-        self.ent_pur_date = ttk.Entry(self.frm_pur_details_2  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[8], '%P'))
+        self.ent_pur_date = ttk.Entry(self.frm_pur_details  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[8], '%P'))
         self.ent_pur_date.bind("<FocusOut>" , self.combo_entry_out)
         self.ent_pur_date.bind("<Escape>" , self.destroy_pur_details)
 
-        self.ent_inv_no = ttk.Entry(self.frm_pur_details_2  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[7], '%P'))
+        self.ent_inv_no = ttk.Entry(self.frm_pur_details  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[7], '%P'))
         self.ent_inv_no.bind("<FocusOut>" , self.combo_entry_out)
         self.ent_inv_no.bind("<Escape>" , self.destroy_pur_details)
 
@@ -196,8 +77,7 @@ class purchase(base_window):
         self.lbl_firm_gst.grid(row = 4 , column = 1 , sticky = con.W)
         self.ent_pur_date.grid(row = 5 , column = 1, sticky = con.W)
         self.ent_inv_no.grid(row = 6 , column = 1, sticky = con.W)
-
-        self.frm_pur_details_2.pack(anchor = con.CENTER , pady = 4)
+        #self.btn_add_sup.grid(row = 0 , column = 1)
         #----------------------------------------purchase_detail_toplevel Ends here------------------------------------------------#
 
 
@@ -449,7 +329,7 @@ class purchase(base_window):
         self.frm_row4 = ttk.Frame( self.main_frame  , style = "root_main.TFrame" , height = int(self.main_hgt * 0.33) , width = int(self.main_wdt * 0.985) )
         self.frm_row4.pack_propagate(False)
 
-        self.tree_frame = ttk.Frame(self.frm_row4 , height = int(self.main_hgt * 0.3) , width = int(self.main_wdt * 0.5) , style = "root_menu.TFrame")
+        self.tree_frame = ttk.Frame(self.frm_row4 , height = int(self.main_hgt * 0.3) , width = int(self.main_wdt * 0.3) , style = "root_menu.TFrame")
         self.tree_frame.pack_propagate(False)
         self.tree_tax = ttk.Treeview(self.tree_frame ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview")
         self.tree_tax.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
@@ -468,13 +348,13 @@ class purchase(base_window):
         self.tree_tax.heading('cessamt' , text = 'AMT')
 
         self.tree_tax_wdt = self.tree_frame.winfo_reqwidth()-self.scroll_y_pur.winfo_reqwidth()
-        self.tree_tax.column('gstPer' , width = int(self.tree_tax_wdt*0.15) ,minwidth = int(self.tree_tax_wdt*0.15) , anchor = "e")
-        self.tree_tax.column('sgst' , width = int(self.tree_tax_wdt*0.15) ,minwidth = int(self.tree_tax_wdt*0.15) , anchor = "e")
-        self.tree_tax.column('cgst' , width = int(self.tree_tax_wdt*0.15) ,minwidth = int(self.tree_tax_wdt*0.15) , anchor = "e")
-        self.tree_tax.column('igst' , width = int(self.tree_tax_wdt*0.15) ,minwidth = int(self.tree_tax_wdt*0.15) , anchor = "e")
-        self.tree_tax.column('mt' , width = int(self.tree_tax_wdt*0.1) ,minwidth = int(self.tree_tax_wdt*0.1) , anchor = "e")
-        self.tree_tax.column('cessper' , width = int(self.tree_tax_wdt*0.15) ,minwidth = int(self.tree_tax_wdt*0.15) , anchor = "e")
-        self.tree_tax.column('cessamt' , width = int(self.tree_tax_wdt*0.15) ,minwidth = int(self.tree_tax_wdt*0.15) , anchor = "e")
+        self.tree_tax.column('gstPer' , width = int(self.tree_tax_wdt*0.2) ,minwidth = int(self.tree_tax_wdt*0.2) , anchor = "e")
+        self.tree_tax.column('sgst' , width = int(self.tree_tax_wdt*0.3) ,minwidth = int(self.tree_tax_wdt*0.3) , anchor = "e")
+        self.tree_tax.column('cgst' , width = int(self.tree_tax_wdt*0.3) ,minwidth = int(self.tree_tax_wdt*0.3) , anchor = "e")
+        self.tree_tax.column('igst' , width = int(self.tree_tax_wdt*0.3) ,minwidth = int(self.tree_tax_wdt*0.3) , anchor = "e")
+        self.tree_tax.column('mt' , width = int(self.tree_tax_wdt*0.08) ,minwidth = int(self.tree_tax_wdt*0.08) , anchor = "e")
+        self.tree_tax.column('cessper' , width = int(self.tree_tax_wdt*0.3) ,minwidth = int(self.tree_tax_wdt*0.3) , anchor = "e")
+        self.tree_tax.column('cessamt' , width = int(self.tree_tax_wdt*0.3) ,minwidth = int(self.tree_tax_wdt*0.3) , anchor = "e")
 
         self.scroll_y_tax.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
         self.scroll_x_tax.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
@@ -516,8 +396,6 @@ class purchase(base_window):
 
         #----------------------------------------ROW 4 items ends here-----------------------------------------------------------------------#
 
-        
-
         self.btn_frame = ttk.Frame(self.main_frame , style = "root_main.TFrame")
 
         self.btn_add_dets = ttk.Button(self.btn_frame, state = con.DISABLED ,text = " Add Details "  , style = "window_btn_medium.TButton" , command = lambda : self.show_pur_details(None))
@@ -552,14 +430,16 @@ class purchase(base_window):
         self.frm_row4.grid(row = 3 , column = 0 , pady = int(self.main_wdt*0.004))
         self.btn_frame.grid(row = 4 ,column = 0 , sticky = con.E)
 
-
+        #-----Intial Setting-----------#
+        self.btn_save.config(state = con.DISABLED)
+        self.btn_add_dets.config( state = con.DISABLED)
+        
         #------temporary settings-------#
-        self.btn_add_dets.config(state = con.NORMAL)
+        #self.btn_add_dets.config(state = con.NORMAL)
         self.combo_supplier.config(state = con.NORMAL)
         self.combo_firms.config(state = con.NORMAL)
         self.ent_pur_date.config(state = con.NORMAL)
         self.ent_inv_no.config(state = con.NORMAL)
-        self.frm_prod_name.lift()
         #-temporary settings ends here--#
 
 
@@ -603,6 +483,7 @@ class purchase(base_window):
                 self.lbl_sup_gst.config(text = resp[0]['acc_gstin'])
 
     def get_firms(self,e):
+        
         text = self.combo_firms.get()
         if text == "" :
             sql = "select firm_name from somanath.firms"
@@ -635,18 +516,9 @@ class purchase(base_window):
                 resp = req.json()
                 self.lbl_firm_gst.config(text = resp[0]['firm_gstin'])
 
+    def date_format(self,e):
+        pass
     """--------------------------Purchase detail functions-----------------------------------------------"""
-
-
-    
-    def upd_price(self , e):
-        pass
-
-    def upd_prod(self , e):
-        pass
-
-    def sales_summary(self , e):
-        pass
 
     def new(self , e):
         self.btn_edit.config(state = con.DISABLED)
@@ -675,14 +547,10 @@ class purchase(base_window):
 
     def refresh(self , e):
         pass
-    
-
-
 
     def minimize(self, e):
         self.frm_pur_details.place_forget()
         base_window.minimize(self,e)
-
 
     def close(self , e):
         self.frm_pur_details.place_forget()

@@ -2990,7 +2990,7 @@ class prods(base_window):
         elif sup3 == "":
             self.ent_sup3.insert(0,supplier)
         else:
-            msg.showinfo("Error" , "Empty any of the categories")
+            msg.showinfo("Error" , "Empty any of the suppliers")
             return
     """supplier entry functions ends here"""
     

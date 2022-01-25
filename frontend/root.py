@@ -126,7 +126,6 @@ def val_dec(char):
         
     return flag
 
-
 def val_email(char):
     flag = True
     for each in char:
@@ -143,6 +142,15 @@ def val_mobile(char):
 
     for each in char:
         if not (each.isdigit() or each == "+"):
+            flag = False
+    return flag
+
+def val_date(char):
+    flag = True
+
+
+    for each in char:
+        if not (each.isdigit() or each != "-" or each != "/"):
             flag = False
     return flag
 
@@ -246,6 +254,7 @@ none = root.register(val_none)
 barcode = root.register(val_barcode)
 name = root.register(val_name)
 mobile = root.register(val_mobile)
+date = root.register(val_date)
 
 
 style = style.style(root_hgt , root_wdt)
@@ -289,7 +298,7 @@ frm_task_view.bind("<Enter>" , view_task)
 frm_main = ttk.Frame(root , width = int(0.98*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 frm_main.grid_propagate(False)
 frm_ntfc_view = ttk.Frame(root , width = int(0.011*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
-frm_ntfc_view.bind("<Enter>" , view_ntfc)
+#frm_ntfc_view.bind("<Enter>" , view_ntfc)
 
 frm_status = ttk.Frame(root , width = root_wdt , height = int(0.105*root_hgt) , style = "root_status.TFrame")
 frm_status.grid_propagate(False)
@@ -356,7 +365,7 @@ try:
 except:
     #print("Except Here")
 
-    ip = "192.168.1.35"
+    ip = "192.168.0.100"
     #ip = "127.0.0.1"
     lbl_user_name.config(text = "ADMIN")    
     lbl_user_type.config(text = "ADMIN")
@@ -366,6 +375,8 @@ except:
 
     
 user =lbl_user_name.cget("text")
-#purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha  , name , mobile , email , barcode] , [os.path.expanduser('~') , ip ,tax_check, user] , purchase_form )
+tax_check = True
+
+purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer , mobile , val_date] , [ip , tax_check,os.path.expanduser('~') , user] , purchase_form )
 
 root.mainloop()
