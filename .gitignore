@@ -904,3 +904,12 @@ frontend/__pycache__/style.cpython-38.pyc
 frontend/__pycache__/style.cpython-39.pyc
 frontend/__pycache__/taxes.cpython-38.pyc
 frontend/__pycache__/users.cpython-38.pyc
+/backend/product_server/node_modules
+backend/report_server/images-1639002054727-142496305
+.gitignore
+purchase.py
+frontend/__pycache__/sales_bill.cpython-38.pyc
+.gitignore
+.gitignore
+.gitignore
+frontend/__pycache__/other_classes.cpython-38.pyc

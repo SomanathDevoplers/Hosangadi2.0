@@ -1,4 +1,7 @@
+from calendar import month
+import datetime
 import os.path
+from pickle import FALSE
 import sys
 from tkinter import Button, Canvas, Frame, Label, Menu, PhotoImage, Tk
 from tkinter import constants as con
@@ -9,6 +12,7 @@ import socketio
 import forms
 import style
 import purchase
+import sales_bill
 
 sio = socketio.Client()
 theme_state = False             #False if dark
@@ -26,6 +30,8 @@ account_form = [0 , 3 , "Already 3 Account Forms are open"]
 employ_form = [0 , 1 , "Already Employee Form is open"]
 tax_form = [0 , 1 , "Already Tax Form is open"]
 purchase_form = [0 , 1 , "Already Purchase Form is open"]
+sales_form = [0 , 1 , "Already Sales Form is open"]
+report_form = [0 , 3 , "Already 3 Report Forms are open"]
 #---------------------------------#
 
 def view_task(e):
@@ -85,7 +91,7 @@ def val_barcode(char):
 def val_name(char):
     flag = True
     for each in char:
-        if not (each.isalpha() or each.isdigit() or each.isspace()):
+        if not (each.isalpha() or each.isdigit() or each.isspace() or each == "."):
             flag = False
     return flag
 
@@ -147,8 +153,6 @@ def val_mobile(char):
 
 def val_date(char):
     flag = True
-
-
     for each in char:
         if not (each.isdigit() or each != "-" or each != "/"):
             flag = False
@@ -225,7 +229,14 @@ def accounts(e = None):
         return
     forms.acc(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha  , name , mobile , email , barcode] , [os.path.expanduser('~') , ip ,tax_check, user] , account_form )
 
- 
+def purch(e = None): 
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date] , [ip , tax_check, user , year] , purchase_form , sio)
+
+
 #1{
 root = Tk()
 root.resizable(con.FALSE , con.FALSE)
@@ -261,6 +272,7 @@ style = style.style(root_hgt , root_wdt)
 style.theme_use("dark_theme")  
 
 root.option_add("*TCombobox*Listbox*Font", ('Lucida Console', -int(root_hgt*0.025), 'bold'))
+
 style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(root_hgt*0.03))))
 
 
@@ -281,6 +293,7 @@ menu_accounts.add_command(label = "Categories" , command = categories , accelera
 menu_accounts.add_command(label = "Taxes" , command = taxes , accelerator = "Ctrl+t" , underline = 1)
 menu_accounts.add_command(label = "Employees" , command = employees , accelerator = "Ctrl+e" , underline = 1)
 menu_accounts.add_command(label = "Accounts" , command = accounts , accelerator = "Ctrl+q" , underline = 1)
+menu_accounts.add_command(label = "Purchases" , command = purch  , underline = 1)
 menu_accounts_head['menu'] = menu_accounts
 
 
@@ -346,7 +359,9 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
- 
+year = datetime.datetime.now().strftime("%y")
+if(int(datetime.datetime.now().strftime("%m")) >3 ) : year = int(year)+1 
+
 try:
     lbl_user_name.config(text = sys.argv[1])    
     lbl_user_type.config(text = sys.argv[2])
@@ -360,23 +375,24 @@ try:
     lbl_fin_year.config(text = sys.argv[3])
     lbl_server_name.config(text = sys.argv[4])
     ip = sys.argv[5]
-    sio.connect("http://"+ip+":5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : userType , "fin_year":sys.argv[3]})
+    sio.connect("http://"+ip+":5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : userType, "form_type" : "root"  , "fin_year":sys.argv[3]})
     
 except:
     #print("Except Here")
 
-    ip = "192.168.0.100"
-    #ip = "127.0.0.1"
+    #ip = "192.168.1.33"
+    ip = "127.0.0.1"
     lbl_user_name.config(text = "ADMIN")    
     lbl_user_type.config(text = "ADMIN")
     lbl_fin_year.config(text = "2021-2022")
     lbl_server_name.config(text = "server")
-    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN" , "fin_year":"2021-2022"})
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN", "form_type" : "root" , "fin_year":"2021-2022"})
 
     
 user =lbl_user_name.cget("text")
-tax_check = True
+#tax_check = False
 
-purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer , mobile , val_date] , [ip , tax_check,os.path.expanduser('~') , user] , purchase_form )
+#sales_bill.sales_bill(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Sales Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date] , [ip , tax_check, user , year] , sales_form , sio)
+#purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date] , [ip , tax_check, user , year] , purchase_form , sio)
 
 root.mainloop()

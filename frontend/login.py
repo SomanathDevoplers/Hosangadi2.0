@@ -7,7 +7,7 @@ from tkinter import constants as con
 from tkinter import messagebox as msg
 from tkinter import ttk
 
-ip = "192.168.1.35"
+ip = "192.168.0.100"
 
 
 

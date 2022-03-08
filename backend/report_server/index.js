@@ -1,7 +1,7 @@
 const path = require('path')
 const ip = "localhost"
 const io = require('socket.io-client')
-const socket = io.connect('http://'+ip+':5000' ,  headers = {"user_type" : "none" })
+const socket = io.connect('http://'+ip+':5000' )
 const express = require('express')
 const app = express()
 const mysql = require('mysql') 
@@ -16,11 +16,14 @@ const homeDir = require('os').homedir()
 let photos = []
 let barcodeInUse = []
 
+ 
+
+
 const con = mysql.createConnection({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#MYsqlpassword5"
+  password: "mysqlpassword5"
 });
 
 const storage = multer.diskStorage({
@@ -38,7 +41,9 @@ const storage = multer.diskStorage({
   
 })
 
+
 con.connect()
+
 
 
 const files = multer({storage : storage})
@@ -88,8 +93,7 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
                               {
 
                                     Time = new Date
-                                    Time = String(Time.getDate()).padStart(2 , '0')+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+Time.getFullYear()+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
-
+                                    Time = Time.getFullYear()+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+String(Time.getDate()).padStart(2 , '0')+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
                                     if (!edit)
                                     {
                                                   sql1 = "select max(firm_id) from somanath.firms"
@@ -141,7 +145,7 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
                                                       console.log(sql2);
                                                       con.query(sql2 , (err2 , result2)=>{
                                                             console.log(err2);
-                                                            con.commit()
+                                                            //con.commit()
                                                             res.sendStatus(200)
                                                         })
 
@@ -254,7 +258,7 @@ app.post('/taxes/save' , (req,res) => {
         else
         {
           Time = new Date
-          Time = String(Time.getDate()).padStart(2 , '0')+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+Time.getFullYear()+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
+          Time = Time.getFullYear()+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+String(Time.getDate()).padStart(2 , '0')+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
 
           if(edit)
             {
@@ -340,7 +344,7 @@ app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
               else
               {
                 Time = new Date
-                Time = String(Time.getDate()).padStart(2 , '0')+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+Time.getFullYear()+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
+                Time = Time.getFullYear()+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+String(Time.getDate()).padStart(2 , '0')+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
                 console.log(edit);
                 if(edit)
                     {
@@ -445,11 +449,11 @@ app.get('/cat/getSelectedCat' , (req,res) => {
 
 
 //products
-app.post('/products/save' , files.array('images' , 3) , (req,res) =>{
+app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
   let sqlInputs = req.query  
   ID = sqlInputs['prod_id']
   edit = false
-  console.log(sqlInputs);
+  
   sql = "select prod_name from somanath.products where (prod_name = '"+sqlInputs.prod_name+"'"
   
   barcode = sqlInputs['prod_bar'].split(":")
@@ -467,9 +471,9 @@ app.post('/products/save' , files.array('images' , 3) , (req,res) =>{
       sql += " and prod_id !="+ ID
       edit = true
     }  
-    console.log(sql);
+    
     con.query(sql , (err1 , result1) => {
-                          console.log(err1 , result1);
+                          
                           if (result1.length > 0)
                             {
                                  res.sendStatus(201)
@@ -480,13 +484,13 @@ app.post('/products/save' , files.array('images' , 3) , (req,res) =>{
                             {
 
                                   Time = new Date
-                                  Time = String(Time.getDate()).padStart(2 , '0')+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+Time.getFullYear()+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
+                                  Time = Time.getFullYear()+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+String(Time.getDate()).padStart(2 , '0')+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
 
                                   if (!edit)
                                   {
                                                 sql1 = "select max(prod_id) from somanath.products"
                                                   con.query(sql1 , (err1 , result1)=>{
-                                                    console.log(result1);
+                                                    
                                                     if (result1 == null)
                                                       ID = 1
                                                     else
@@ -530,12 +534,15 @@ app.post('/products/save' , files.array('images' , 3) , (req,res) =>{
 
                                     
                                                       sql2 = "insert into somanath.products values (" + String(ID) + ",'" + sqlInputs.prod_bar + "','"+ sqlInputs.prod_name + "','"+ sqlInputs.prod_cat + "','" + sqlInputs.prod_hsn + "','" + sqlInputs.prod_shelf + "','" +sqlInputs.prod_name_eng + "'," + sqlInputs.prod_min_qty + "," + sqlInputs.prod_expiry + "," + sqlInputs.prod_mrp + "," + sqlInputs.prod_mrp_old + ",'" + sqlInputs.prod_sup + "', (select tax_id from somanath.taxes where tax_type = 0 and tax_per = " + sqlInputs.prod_gst + ") , (select tax_id from somanath.taxes where tax_type = 1 and tax_per = " + sqlInputs.prod_cess + "),'" + sqlInputs.prod_unit_type +"','" + sqlInputs.nml_unit + "','"   + sqlInputs.htl_unit + "','"  + sqlInputs.spl_unit + "','"  + sqlInputs.ang_unit + "','False','" + sqlInputs.prod_desc + "','" + sqlInputs.img_kan + "','" + sqlInputs.img_high + "','" + sqlInputs.img_low +"','" + Time + "',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') , NULL , NULL)"
-                                                      console.log(sql2);
-                                                      con.query(sql2 , (err2 , result2)=>{
-                                                            console.log(err2);
-                                                            con.commit()
-                                                            res.sendStatus(200)
-                                                        })
+                                                      
+                                                      con.query(sql2,  (err2 , result2)=>{
+                                                           
+                                                          con.commit()
+                                                          
+                                                          
+                                                          res.sendStatus(200)
+                                                          socket.emit("refresh")
+                                                       })
 
                                               })
 
@@ -583,8 +590,9 @@ app.post('/products/save' , files.array('images' , 3) , (req,res) =>{
                                             console.log(sql2);
                                             con.query(sql2 , (err2 , result2)=>{
                                                   console.log(err2);
-                                                  con.commit()
+                                                  con.commit()                          
                                                   res.sendStatus(200)
+                                                  socket.emit("refresh")
                                               })
 
                                           }
@@ -736,7 +744,7 @@ app.post('/employs/save' , files.array('images', 1),(req,res) => {
               else
               {
                 Time = new Date
-                Time = String(Time.getDate()).padStart(2 , '0')+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+Time.getFullYear()+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
+                Time = Time.getFullYear()+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+String(Time.getDate()).padStart(2 , '0')+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
             
                 if(edit)
                     {
@@ -864,7 +872,7 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                             {
 
                                   Time = new Date
-                                  Time = String(Time.getDate()).padStart(2 , '0')+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+Time.getFullYear()+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
+                                  Time = Time.getFullYear()+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+String(Time.getDate()).padStart(2 , '0')+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
 
                                   if (!edit)
                                   {
@@ -951,7 +959,7 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
 app.get('/accounts/getAccList' , (req , res )=>{
   
   sql = req.query['sql']
-
+  console.log(req.query['tax_check'])
   if (req.query['tax_check'] == "True")
     sql = "SELECT acc_id,acc_name,acc_type FROM somanath.accounts where acc_id not in (select acc_id from somanath.accounts where acc_type = 'SUPP' and acc_gstin = '') order by acc_type , acc_name"
   

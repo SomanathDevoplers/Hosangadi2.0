@@ -18,5 +18,8 @@
     "mv": "^2.1.1",
     "mysql": "^2.18.1",
     "socket.io-client": "^4.4.0"
+  },
+  "devDependencies": {
+    "prettier": "2.5.1"
   }
 }

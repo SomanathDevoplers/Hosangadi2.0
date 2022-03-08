@@ -3,8 +3,7 @@ from tkinter import Text , constants as con , filedialog , ttk , messagebox as m
 from requests import get , post
 from PIL import Image,ImageTk
 import os
-from base_window import base_window
-from image_viewer import image_viewer
+from other_classes import base_window , image_viewer
 
 
 
@@ -75,7 +74,7 @@ class firm(base_window):
         self.ent_firm_web = ttk.Entry(self.main_frame  , width = 30 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)))
         self.ent_firm_web.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.ent_firm_address = Text(self.main_frame  , state = con.DISABLED, width = 30 , height = 4 ,  font = ('Lucida Grande' , -int(self.main_hgt*0.03)) )
+        
 
         self.ent_firm_gstin = ttk.Entry(self.main_frame  , width = 30, state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) ,  validate="key", validatecommand=(validations[3], '%P'))
         self.ent_firm_gstin.bind("<FocusOut>" , self.check_gstin)
@@ -111,6 +110,7 @@ class firm(base_window):
         self.btn_firm_photo_vw = ttk.Button(self.main_frame , state = con.DISABLED, text = "View" , style = "window_btn_medium.TButton" ,command = lambda : self.view_photo(None))
         self.btn_firm_photo_vw.bind("<Return>" , self.view_photo)
 
+        self.ent_firm_address = Text(self.main_frame  , state = con.DISABLED, width = 30 , height = 4 ,  font = ('Lucida Grande' , -int(self.main_hgt*0.03)) )
         
 
         if root.winfo_screenheight()>1000:
@@ -577,7 +577,7 @@ class firm(base_window):
         self.image_photo_loc = ""
 
     def firm_list(self):
-        req = get("http://"+self.ip+":6000/firms/getFirmList" , params = {"tax_check" : self.tax_check})
+        req = get("http://"+self.ip+":5000/firms/getFirmList" , params = {"tax_check" : self.tax_check})
         
         for each in self.tree.get_children():
             self.tree.delete(each)
@@ -703,7 +703,7 @@ class firm(base_window):
         gstin = gstin.split()[0]
         if len(gstin)!= 15:
            msg.showerror("Info" , "GSTIN MUST BE 15 CHARECTARS")
-           self.ent_firm_gstin.select_from(0,con.END)
+           self.ent_firm_gstin.select_range(0,con.END)
            self.ent_firm_gstin.focus_set()
            return
         self.ent_firm_pan.delete(0,con.END)
@@ -1999,6 +1999,10 @@ class acc(base_window):
                 msg.showinfo("Info" , "GSTIN must be 15 charecters")
                 return
 
+        if gst == "":
+            gst = 'CASH'
+
+
         if cus_type == 0:
             cus_type = 'NRM'
         elif cus_type == 1:
@@ -2093,9 +2097,9 @@ class acc(base_window):
             else:
                 sql += " order by acc_type , acc_name  "
                 
+        print(sql)
 
-
-        self.tax_check == False
+        self.tax_check = False
 
         req = get("http://"+self.ip+":6000/accounts/getAccList" , params = {'sql': sql , "tax_check" : self.tax_check})
         
@@ -2106,6 +2110,7 @@ class acc(base_window):
             resp = req.json()
             tag_index = 0
             for each in resp:
+                #print(each)
                 if tag_index%2:
                     tag = 'a'
                 else:
@@ -3020,8 +3025,9 @@ class prods(base_window):
         self.img_kan_loc = file
 
     def view_kan(self , e):
-        if self.img_kan_loc != None or self.lbl_kan.cget("text") != "":
-            image_viewer(self.img_kan,"Kannada Image" ,  self.root_frame)
+        if self.img_kan != None or self.lbl_kan.cget("text") != "":
+            image_viewer(self.img_kan_loc,"Kannada Image" ,  self.root_frame)
+            
    
     def file_dialog_img1(self , e):
         file = filedialog.askopenfilename(initialdir = self.homeDir+"\Pictures",title = "Select a File",filetypes = [["Image ","*.*"]])
@@ -3069,7 +3075,7 @@ class prods(base_window):
 
     def view_img2(self , e):
         if self.img_low != None or self.lbl_img2.cget("text") != "":
-            image_viewer(self.img_low,"Low Quality Image" , self.root_frame)
+            image_viewer(self.img_low_loc,"Low Quality Image" , self.root_frame)
     """image editing ends here"""
 
     def check_name(self, e):
@@ -3509,8 +3515,8 @@ class prods(base_window):
         if nrm4 == "":
             nrm4 = nrm3
 
-        units_nrm = [round(float(nrm1) , 3) , round(float(nrm2) , 3) , round(float(nrm3) , 3) , round(float(nrm4) , 3)]
-        if not units_nrm == sorted(units_nrm , key = float):
+        units_nrm = ["{:.3f}".format(round(float(nrm1) , 3)) , "{:.3f}".format(round(float(nrm2) , 3)) , "{:.3f}".format(round(float(nrm3) , 3)) , "{:.3f}".format(round(float(nrm4) , 3))]
+        if not units_nrm == sorted(units_nrm , key = str):
             msg.showerror("error" , "Enter NRM units in increasing order")
             return
 
@@ -3533,8 +3539,8 @@ class prods(base_window):
             if htl4 == "":
                 htl4 = htl3
 
-            units_htl = [round(float(htl1) , 3) , round(float(htl2) , 3) , round(float(htl3) , 3) , round(float(htl4) , 3)]
-            if not units_htl == sorted(units_htl , key = float):
+            units_htl = ["{:.3f}".format(round(float(htl1) , 3)) , "{:.3f}".format(round(float(htl2) , 3)) , "{:.3f}".format(round(float(htl3) , 3)) , "{:.3f}".format(round(float(htl4) , 3))]
+            if not units_htl == sorted(units_htl , key = str):
                 msg.showerror("error" , "Enter HTL units in increasing order")
                 return            
         else:
@@ -3542,7 +3548,8 @@ class prods(base_window):
             htl2 = nrm2
             htl3 = nrm3
             htl4 = nrm4
-            units_htl = [round(float(htl1) , 3) , round(float(htl2) , 3) , round(float(htl3) , 3) , round(float(htl4) , 3)]
+            units_htl = ["{:.3f}".format(round(float(htl1) , 3)) , "{:.3f}".format(round(float(htl2) , 3)) , "{:.3f}".format(round(float(htl3) , 3)) , "{:.3f}".format(round(float(htl4) , 3))]
+
         
         if self.chk_spl.instate(['selected']) == False:
             spl1 = self.ent_spl1.get()
@@ -3562,16 +3569,17 @@ class prods(base_window):
         
             if spl4 == "":
                 spl4 = spl3
-            units_spl = [round(float(spl1) , 3) , round(float(spl2) , 3) , round(float(spl3) , 3) , round(float(spl4) , 3)]
-            if not units_spl == sorted(units_spl , key = float):
+            units_spl = ["{:.3f}".format(round(float(spl1) , 3)) , "{:.3f}".format(round(float(spl2) , 3)) , "{:.3f}".format(round(float(spl3) , 3)) , "{:.3f}".format(round(float(spl4) , 3))]
+            if not units_spl == sorted(units_spl , key = str):
                 msg.showerror("error" , "Enter SPL units in increasing order")
                 return
         else:
-            spl1 = nrm1
-            spl2 = nrm2
-            spl3 = nrm3
-            spl4 = nrm4
-            units_spl = [round(float(spl1) , 3) , round(float(spl2) , 3) , round(float(spl3) , 3) , round(float(spl4) , 3)]
+            spl1 = htl1
+            spl2 = htl2
+            spl3 = htl3
+            spl4 = htl4
+            units_spl = ["{:.3f}".format(round(float(spl1) , 3)) , "{:.3f}".format(round(float(spl2) , 3)) , "{:.3f}".format(round(float(spl3) , 3)) , "{:.3f}".format(round(float(spl4) , 3))]
+
 
         if self.chk_ang.instate(['selected']) == False:
             ang1 = self.ent_ang1.get()
@@ -3592,16 +3600,17 @@ class prods(base_window):
             if ang4 == "":
                 ang4 = ang3
 
-            units_ang = [round(float(ang1) , 3) , round(float(ang2) , 3) , round(float(ang3) , 3) , round(float(ang4) , 3)]
-            if not units_ang == sorted(units_ang , key = float):
+            units_ang = ["{:.3f}".format(round(float(ang1) , 3)) , "{:.3f}".format(round(float(ang2) , 3)) , "{:.3f}".format(round(float(ang3) , 3)) , "{:.3f}".format(round(float(ang4) , 3))]
+            if not units_ang == sorted(units_ang , key = str):
                 msg.showerror("error" , "Enter ANG units in increasing order")
                 return       
         else:
-            ang1 = nrm1
-            ang2 = nrm2
-            ang3 = nrm3
-            ang4 = nrm4
-            units_ang = [round(float(ang1) , 3) , round(float(ang2) , 3) , round(float(ang3) , 3) , round(float(ang4) , 3)]
+            ang1 = spl1
+            ang2 = spl2
+            ang3 = spl3
+            ang4 = spl4
+            units_ang = ["{:.3f}".format(round(float(ang1) , 3)) , "{:.3f}".format(round(float(ang2) , 3)) , "{:.3f}".format(round(float(ang3) , 3)) , "{:.3f}".format(round(float(ang4) , 3))]
+
         #arramging units ends here
         
 
@@ -4007,19 +4016,19 @@ class prods(base_window):
                     self.lbl_kan.config(text = "Kan.png")
                     file = get("http://"+self.ip+":6000/images/products/"+str(cur_item[2])+"/kan.png")
                     self.img_kan = ImageTk.PhotoImage(Image.open(io.BytesIO(file.content)))
-                    self.btn_kan_vw.config(state = con.NORMAL)
+                    #self.btn_kan_vw.config(state = con.NORMAL)
                 
                 if resp['high_img'] == 'True':
                     self.lbl_img1.config(text = "high.png")
                     file = get("http://"+self.ip+":6000/images/products/"+str(cur_item[2])+"/high.png")
                     self.img_high = ImageTk.PhotoImage(Image.open(io.BytesIO(file.content)))
-                    self.btn_img1_vw.config(state = con.NORMAL)
+                    #self.btn_img1_vw.config(state = con.NORMAL)
                 
                 if resp['low_img'] == 'True':
                     self.lbl_img2.config(text = "low.png")
                     file = get("http://"+self.ip+":6000/images/products/"+str(cur_item[2])+"/low.png")
                     self.img_low = ImageTk.PhotoImage(Image.open(io.BytesIO(file.content)))
-                    self.btn_img2_vw.config(state = con.NORMAL)
+                    #self.btn_img2_vw.config(state = con.NORMAL)
                 
                 self.btn_add_bar.config(state = con.NORMAL)
                 self.btn_add_cat.config(state = con.NORMAL)
