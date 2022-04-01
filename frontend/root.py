@@ -1,18 +1,16 @@
-from calendar import month
-import datetime
 import os.path
-from pickle import FALSE
 import sys
-from tkinter import Button, Canvas, Frame, Label, Menu, PhotoImage, Tk
 from tkinter import constants as con
 from tkinter import font as font
 from tkinter import messagebox as msg
-from tkinter import ttk
+from tkinter import ttk , Frame,  Menu , Tk
 import socketio
 import forms
 import style
 import purchase
-import sales_bill
+import sales
+import reports
+from threading import Thread
 
 sio = socketio.Client()
 theme_state = False             #False if dark
@@ -30,8 +28,12 @@ account_form = [0 , 3 , "Already 3 Account Forms are open"]
 employ_form = [0 , 1 , "Already Employee Form is open"]
 tax_form = [0 , 1 , "Already Tax Form is open"]
 purchase_form = [0 , 1 , "Already Purchase Form is open"]
-sales_form = [0 , 1 , "Already Sales Form is open"]
-report_form = [0 , 3 , "Already 3 Report Forms are open"]
+sales_form = [0 , 6 , "Already 6 Sales Form are open"]
+return_report_form = [0 , 1 , "Already GST RETURN Form is open"]
+update_sp_form = [0 , 3 , "Already 3 Update SP Forms are open"]
+order_list_form = [0 , 1 , "Already Order List Form is open"]
+
+
 #---------------------------------#
 
 def view_task(e):
@@ -174,13 +176,8 @@ def close():
     root.quit()
     sio.disconnect()
 
-#----------------------Admin menu-----------------------#     
-def admin_panel():
-    if lbl_user_type.cget("text") != "ADMIN":
-        #ask if mesagebox required
-        return
 
-#---------------------settings menu---------------------#
+
 def firms(e = None): 
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
@@ -200,7 +197,7 @@ def products(e = None):
         msg.showinfo('Info' , "It is already open")
         return
     forms.prods(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer ] , [os.path.expanduser('~') , ip , user] , prod_form)
-
+  
 def taxes(e = None): 
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
@@ -227,14 +224,38 @@ def accounts(e = None):
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    forms.acc(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha  , name , mobile , email , barcode] , [os.path.expanduser('~') , ip ,tax_check, user] , account_form )
+    forms.acc(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha  , name , mobile , email , barcode] , [os.path.expanduser('~') , ip ,tax_check, user , year] , account_form )
 
 def purch(e = None): 
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date] , [ip , tax_check, user , year] , purchase_form , sio)
+    purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , os.path.expanduser('~')] , purchase_form , sio , prod_form , update_sp_form)
+
+def sales_bill(e = None):
+    sales.sales(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Sales Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , os.path.expanduser('~')] , sales_form , sio , account_form)
+
+def updatesp(e = None):
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    forms.update_sp(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Update SP" , [ name , pos_decimal] , [ip ,tax_check, user , year] , update_sp_form )
+    
+def orderList(e = None):
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    forms.order_list(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Order List" , [ name , pos_decimal] , [ip ,tax_check, user , year] , order_list_form )
+
+def return_report(e = None):
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    reports.return_reports(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"GST Returns" , [ name  , date, pos_decimal] , [ip ,tax_check, user , year] , return_report_form )
 
 
 #1{
@@ -242,17 +263,24 @@ root = Tk()
 root.resizable(con.FALSE , con.FALSE)
 root.protocol("WM_DELETE_WINDOW" , close)
 
-root.bind_all("<Control-f>", firms)
-root.bind_all("<Control-p>", products)
-root.bind_all("<Control-t>", taxes)
-root.bind_all("<Control-g>", categories)
-root.bind_all("<Control-e>", employees)
-root.bind_all("<Control-q>", accounts)
+
+root.bind_all("<Alt-s>", sales_bill)
+root.bind_all("<Alt-S>", sales_bill)
+root.bind_all("<Alt-p>", purch)
+root.bind_all("<Alt-P>", purch)
+root.bind_all("<Alt-u>", updatesp)
+root.bind_all("<Alt-U>", updatesp)
+root.bind_all("<Alt-r>", products)
+root.bind_all("<Alt-R>", products)
+root.bind_all("<Alt-a>", accounts)
+root.bind_all("<Alt-A>", accounts)
+
 
 
 root_hgt = root.winfo_screenheight()-34
 root_wdt = root.winfo_screenwidth()-10
 root.geometry(str(int(root_wdt))+"x"+str(int(root_hgt))+"-0-0")
+#root.geometry(str(int(root_wdt))+"x"+str(int(root_hgt))+"+900-0")
 
 
 num_alpha = root.register(val_num_alpha)
@@ -272,29 +300,50 @@ style = style.style(root_hgt , root_wdt)
 style.theme_use("dark_theme")  
 
 root.option_add("*TCombobox*Listbox*Font", ('Lucida Console', -int(root_hgt*0.025), 'bold'))
-
 style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel",-(int(root_hgt*0.03))))
 
 
-frm_menu = ttk.Frame(root , width = root_wdt , height = int(0.035*root_hgt) , style = "root_menu.TFrame")
+frm_menu = ttk.Frame(root , width = root_wdt , height = int(0.035*root_hgt) , style = "root_menu.TFrame" )
 
 lbl_task_cnt = ttk.Label(frm_menu , text = "0" , width = 2 , style = "root_task_cnt.TLabel")
 frm_menubar = Frame(frm_menu)
-menu_settings_head = ttk.Menubutton(frm_menubar , text = "Admin" , direction = 'below',style = "root_menu.TMenubutton")
-menu_settings = Menu(menu_settings_head , tearoff = 0 , font = ('Tahoma' , -18 ) )
-menu_settings.add_command(label = "Admin Panel" , command = admin_panel)
-menu_settings_head['menu'] = menu_settings
+menu_entry_head = ttk.Menubutton(frm_menubar , text = "ENTRIES" , direction = 'below',style = "root_menu.TMenubutton" , takefocus = False)
+menu_entry = Menu(menu_entry_head , tearoff = 0 , font = ('Lucida Console' , -int(root_hgt*0.022))) 
+menu_entry.add_command(label = "SALES ENTRY" , command = sales_bill , accelerator = "Alt+S" , underline = 1)
+menu_entry.add_command(label = "PURCHASE ENTRY" , command = purch , accelerator = "Alt+P" , underline = 1)
+menu_entry.add_command(label = "UPDATE SP" , command = updatesp , accelerator = "Alt+U" , underline = 1)
+menu_entry_head.config(menu = menu_entry)
 
-menu_accounts_head = ttk.Menubutton(frm_menubar , text = "Settings" , direction = 'below',style = "root_menu.TMenubutton" )
-menu_accounts = Menu(menu_accounts_head , tearoff = 0 , font = ('Tahoma' , 13 ) )
-menu_accounts.add_command(label = "Firms" , command = firms , accelerator = "Ctrl+f" , underline = 1)
-menu_accounts.add_command(label = "Products" , command = products , accelerator = "Ctrl+p" , underline = 1)
-menu_accounts.add_command(label = "Categories" , command = categories , accelerator = "Ctrl+g" , underline = 1)
-menu_accounts.add_command(label = "Taxes" , command = taxes , accelerator = "Ctrl+t" , underline = 1)
-menu_accounts.add_command(label = "Employees" , command = employees , accelerator = "Ctrl+e" , underline = 1)
-menu_accounts.add_command(label = "Accounts" , command = accounts , accelerator = "Ctrl+q" , underline = 1)
-menu_accounts.add_command(label = "Purchases" , command = purch  , underline = 1)
-menu_accounts_head['menu'] = menu_accounts
+menu_registry_head = ttk.Menubutton(frm_menubar , text = "REGISTRIES" , direction = 'below',style = "root_menu.TMenubutton" , takefocus = False)
+menu_registry = Menu(menu_registry_head , tearoff = 0 , font = ('Lucida Console' , -int(root_hgt*0.022)))
+menu_registry.add_command(label = "PRODUCTS" , command = products , accelerator = "Alt+R" , underline = 1)
+menu_registry.add_command(label = "ACCOUNTS" , command = accounts , accelerator = "Alt+A" , underline = 1)
+menu_registry_head.config(menu = menu_registry)
+
+
+menu_settings_head = ttk.Menubutton(frm_menubar , text = "SETTINGS" , direction = 'below',style = "root_menu.TMenubutton" , takefocus = False)
+menu_settings = Menu(menu_settings_head , tearoff = 0 , font = ('Lucida Console' , -int(root_hgt*0.022)))
+menu_settings.add_command(label = "CATEGORIES" , command = categories)
+menu_settings.add_command(label = "TAXES" , command = taxes)
+menu_settings.add_command(label = "EMPLOYEES" , command = employees)
+menu_settings.add_command(label = "FIRMS" , command = firms)
+menu_settings_head.config(menu = menu_settings)
+
+
+menu_reports_head = ttk.Menubutton(frm_menubar , text = "REPORTS" , direction = 'below',style = "root_menu.TMenubutton" , takefocus = False)
+menu_reports = Menu(menu_reports_head , tearoff = 0 , font = ('Lucida Console' , -int(root_hgt*0.022)))
+menu_reports.add_command(label = "GST REPORTS" , command = return_report)
+menu_reports.add_command(label = "STOCK REPORTS" )
+menu_reports.add_command(label = "ORDER LIST" ,  command = orderList)
+menu_reports_head.config(menu = menu_reports)
+
+
+
+
+
+
+
+
 
 
 lbl_ntfc_cnt = ttk.Label(frm_menu , text = "0" , width = 2 , style = "root_ntfc_cnt.TLabel")
@@ -302,15 +351,17 @@ lbl_ntfc_cnt = ttk.Label(frm_menu , text = "0" , width = 2 , style = "root_ntfc_
 frm_menu.pack_propagate(False)
 lbl_task_cnt.pack(side = con.LEFT , anchor = con.CENTER)
 frm_menubar.pack(side = con.LEFT , anchor = con.W , padx = int(root_wdt*0.005)) 
-menu_settings_head.grid(row = 0 , column = 0 , ipadx = int(root_wdt*0.003))
-menu_accounts_head.grid(row = 0 , column = 1 , ipadx = int(root_wdt*0.003))
+menu_settings_head.grid(row = 0 , column = 0 , ipadx = int(root_wdt*0.006))
+menu_reports_head.grid(row = 0 , column = 1 , ipadx = int(root_wdt*0.006))
+menu_registry_head.grid(row = 0 , column = 2 , ipadx = int(root_wdt*0.006))
+menu_entry_head.grid(row = 0 , column = 3 , ipadx = int(root_wdt*0.006))
 lbl_ntfc_cnt.pack(side = con.RIGHT , anchor = con.CENTER)
 
 frm_task_view = ttk.Frame(root , width = int(0.01*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 frm_task_view.bind("<Enter>" , view_task)
 frm_main = ttk.Frame(root , width = int(0.98*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 frm_main.grid_propagate(False)
-frm_ntfc_view = ttk.Frame(root , width = int(0.011*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
+frm_ntfc_view = ttk.Frame(root , width = int(0.012*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 #frm_ntfc_view.bind("<Enter>" , view_ntfc)
 
 frm_status = ttk.Frame(root , width = root_wdt , height = int(0.105*root_hgt) , style = "root_status.TFrame")
@@ -345,8 +396,8 @@ frm_ntfc = ttk.Frame(root , width = int(0.4*root_wdt) , height = int(0.865*root_
 frm_ntfc.bind("<Leave>" , view_ntfc)
 
 frm_task.pack_propagate(False)
-frm_task_others.pack(side = con.LEFT , padx = 1)
-frm_task_sales.pack(side = con.RIGHT , padx = 1)
+frm_task_sales.pack(side = con.LEFT , padx = 1)
+frm_task_others.pack(side = con.RIGHT , padx = 1)
 
 
 
@@ -359,12 +410,16 @@ frm_ntfc_view.grid(row = 1 , column = 2)
 
 frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
-year = datetime.datetime.now().strftime("%y")
-if(int(datetime.datetime.now().strftime("%m")) >3 ) : year = int(year)+1 
+#year = datetime.datetime.now().strftime("%y")
+#if(int(datetime.datetime.now().strftime("%m")) >3 ) : year = int(year)+1 
+
+
+
 
 try:
     lbl_user_name.config(text = sys.argv[1])    
     lbl_user_type.config(text = sys.argv[2])
+    year = sys.argv[3][2:4]
     if(sys.argv[2]) == "TAXI":
         print("taxTrue")
         userType = "ADMIN"
@@ -378,7 +433,6 @@ try:
     sio.connect("http://"+ip+":5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : userType, "form_type" : "root"  , "fin_year":sys.argv[3]})
     
 except:
-    #print("Except Here")
 
     #ip = "192.168.1.33"
     ip = "127.0.0.1"
@@ -387,12 +441,9 @@ except:
     lbl_fin_year.config(text = "2021-2022")
     lbl_server_name.config(text = "server")
     sio.connect("http://"+ip+":5000/", headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN", "form_type" : "root" , "fin_year":"2021-2022"})
-
+    year = "21"
     
 user =lbl_user_name.cget("text")
-#tax_check = False
-
-#sales_bill.sales_bill(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Sales Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date] , [ip , tax_check, user , year] , sales_form , sio)
-#purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date] , [ip , tax_check, user , year] , purchase_form , sio)
-
+return_report()
 root.mainloop()
+

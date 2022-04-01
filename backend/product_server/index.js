@@ -7,6 +7,9 @@ const mysql = require('mysql')
 
 let prod_list_show = []
 let prod_list_all = []
+
+let custList = []
+
  
 
 con = mysql.createConnection({
@@ -20,7 +23,7 @@ con.connect()
 
 
 
-socket.on("refreshProducts" , ()=>{
+socket.on("refreshProductServer" , ()=>{
 
   prod_list_show = []
   con.query("select  prod_id, prod_bar , prod_name from somanath.products where prod_hide = 'False' order by prod_name" , (err , result) =>{
@@ -36,24 +39,49 @@ socket.on("refreshProducts" , ()=>{
           prod_list_all.push(element['prod_name'])
       })
   });
+
+  custList = []
+  con.query("select  acc_name from somanath.accounts where acc_type = 'CUST' order by acc_name" , (err , result) => {
+    result.forEach(element => {
+      custList.push(element['acc_name'])
+    })
+  })
+
 console.log("refreshed!!");
 });
 
-con.query("select  prod_id, prod_bar , prod_name from somanath.products where prod_hide = 'False' order by prod_name" , (err , result) =>{
+
+con.query("select  prod_name from somanath.products where prod_hide = 'False' order by prod_name" , (err , result) =>{
     result.forEach(element => {
         prod_list_show.push(element['prod_name'])
     });
     //console.log(prod_list_show);
 })
 
-con.query("select  prod_id, prod_bar , prod_name from somanath.products order by prod_name" , (err , result) =>{
+con.query("select  prod_name from somanath.products order by prod_name" , (err , result) =>{
   result.forEach(element => {
       prod_list_all.push(element['prod_name'])
-  });
+  })
   //console.log(prod_list_show);
 });
 
+con.query("select  acc_name from somanath.accounts where acc_type = 'CUST' order by acc_name" , (err , result) => {
+      result.forEach(element => {
+        custList.push(element['acc_name'])
+    })
+})
 
+
+app.get('/onlySql' , (req , res)=>{
+
+  sql = req.query.sql
+
+  con.query(sql , (err , result)=>{
+    console.log(err);
+    console.log(result);
+    res.send(result)
+  })
+})
 
 app.get('/getNameAll' , (req,res) => {
   prod_name = req.query['prod_name']
@@ -91,6 +119,18 @@ app.get('/getProdByBar' , (req , res )=>{
     con.query(sql , (err , result)=>{
       res.send(result)
     })
+})
+
+
+app.get('/getCustName' , (req , res) => {
+  custName = req.query['cust_name']
+  matched_products = []
+  custList.forEach(element => {
+        matched = element.match(custName)
+        if (matched != null) 
+            matched_products.push(element)
+  })
+  res.send(matched_products)
 })
 
 

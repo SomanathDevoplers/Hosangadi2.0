@@ -18,6 +18,13 @@ def val_num_alpha(char):
             flag = False
     return flag
 
+def val_pos_int(char):
+    flag = True
+    for each in char:
+        if not (each.isdigit()):
+            flag = False
+    return flag
+
 def combo_entry_out(e):
     e.widget.select_clear()
 
@@ -73,6 +80,8 @@ def submit(e):
         msg.showerror("ERROR" , "This User has logged in already!")
         return
 
+    print(year)
+
     root = os.path.expanduser('~')+"\\desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
     login.destroy()
     os.system(root)
@@ -80,6 +89,7 @@ def submit(e):
 
 login = Tk()
 num_alpha = login.register(val_num_alpha)
+pos_int = login.register(val_pos_int)
 login_hgt = login.winfo_screenheight()-34
 login_wdt = login.winfo_screenwidth()-10
 login.geometry(str(int(login_wdt*0.3))+"x"+str(int(login_hgt*0.3))+"+"+str(int(login_wdt*0.3))+"+"+str(int(login_hgt*0.3)))
@@ -92,7 +102,7 @@ style.configure("window.Treeview.Heading", foreground="#333333" , font = ("Ariel
 
 
 rad_server_name = None
-start_year = 2020                                       
+start_year = 2021                                       
 cur_year = int(date.today().strftime("%Y"))
 cur_mon = int(date.today().strftime("%m"))
 
@@ -118,14 +128,18 @@ lbl_year = ttk.Label(main_frame , text = "Year      :" ,  style = "window_text_l
 
 ent_user_name = ttk.Entry(main_frame , width = 12 ,   font = ('Lucida Grande' , -int(login_hgt*0.025)) ,  validate="key", validatecommand=(num_alpha, '%P'))
 ent_user_name.bind("<FocusOut>" , combo_entry_out)
-ent_user_pass = ttk.Entry(main_frame  , width = 12 ,   font = ('Lucida Grande' , -int(login_hgt*0.025)) , show = "*" , validate="key", validatecommand=(num_alpha, '%P')) 
+
+ent_user_pass = ttk.Entry(main_frame  , width = 12 ,   font = ('Lucida Grande' , -int(login_hgt*0.025))  , show = "*", validate="key", validatecommand=(pos_int, '%P')) 
 ent_user_pass.bind("<Return>" , submit)
 ent_user_pass.bind("<FocusOut>" , combo_entry_out)
+
+
 combo_year = ttk.Combobox(main_frame , width = 12  ,values =fin_years , font = ('Lucida Grande' , -int(login_hgt*0.025)))
 combo_year.bind("<FocusOut>" , combo_entry_out)
 #combo_year.bind("<KeyPress>" , dropdown)
 combo_year.bind("<Return>" , submit)
 combo_year.insert(con.END , fin_years[-1])
+combo_year.config(state = 'readonly')
 
 rad_server = ttk.Radiobutton(main_frame , variable = rad_server_name ,value = 0 ,  style = "window_radio.TRadiobutton" , text = "SERVER")
 rad_system = ttk.Radiobutton(main_frame , variable = rad_server_name ,value = 1 ,  style = "window_radio.TRadiobutton" , text = "SYSTEM")

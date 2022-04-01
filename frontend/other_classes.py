@@ -8,12 +8,21 @@ class base_window:
             msg.showinfo("Info" , form_count[2])
             return
 
+        self.root_main_frame = frames[0]
+        
+        for each in self.root_main_frame.winfo_children():
+            each.forget()
+            each.grid_forget()
+            each.pack_forget()
+    
         self.form_count = form_count
-
         self.form_count[0] += 1
         self.lbls = lbls
         self.root_hgt = root.winfo_screenheight()-34
         self.root_wdt = root.winfo_screenwidth()-10 
+
+        
+
 
         self.frm_task = frames[2]
 
@@ -30,7 +39,7 @@ class base_window:
         self.acc_close_btn.bind("<Enter>" , self.acc_lbl_config_enter)
         self.acc_close_btn.bind("<Leave>" , self.acc_lbl_config_leave)
 
-        self.base_frame = ttk.Frame(frames[0] , height = int(dmsn[0]) , width = dmsn[1] , style = "window_base.TFrame")
+        self.base_frame = ttk.Frame(self.root_main_frame , height = int(dmsn[0]) , width = dmsn[1] , style = "window_base.TFrame")
         self.base_frame.pack_propagate(False)
         
         self.title_frame = ttk.Frame(self.base_frame , height = int(dmsn[0]*0.05)-2 , width = int(dmsn[1])-2 ,  style = "root_menu.TFrame")
@@ -53,18 +62,29 @@ class base_window:
         self.main_frame.pack()
         self.base_frame.grid(column = 0 , row = 0)
         self.base_frame.lift()
+         
         return(self)
 
+
     def close(self,e):
+        for each in self.root_main_frame.winfo_children():
+            each.grid_forget()
+            each.place_forget()
+            each.pack_forget()
         self.base_frame.destroy()
         self.access_frame.destroy()
         self.lbls[0].config(text = int(self.lbls[0].cget("text"))-1)
         self.form_count[0] -= 1
-        self.__del__()
+        del self
     
     def minimize(self , e):
+        for each in self.root_main_frame.winfo_children():
+            each.grid_forget()
+            each.place_forget()
+            each.pack_forget()
         self.base_frame.grid_forget()
-
+       
+        
     def acc_lbl_config_enter(self , e):
         self.acc_title.config(background = "#AEC1B5" , foreground = "#000")
     
@@ -72,12 +92,14 @@ class base_window:
         self.acc_title.config(background = "#000" , foreground = "#d9cc99")
 
     def pack_top(self,e):
+        for each in self.root_main_frame.winfo_children():
+            each.grid_forget()
+            each.place_forget()
+            each.pack_forget()
+
         self.base_frame.grid(row = 0 , column = 0)
         self.base_frame.lift()
         self.frm_task.place(x = int(-0.5*self.root_wdt) , y = (0.034*self.root_hgt))
-
-    def __del__(self):
-        pass
 
 class image_viewer:
     def __init__(self , image , image_name , main_frame ):

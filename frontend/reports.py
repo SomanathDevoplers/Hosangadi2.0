@@ -1,181 +1,163 @@
 from tkinter import  constants as con  , ttk , messagebox as msg , StringVar , IntVar
 from requests import get 
 from other_classes import base_window , image_viewer
+from datetime import timedelta,datetime as date
 
 
-class report(base_window):
-    def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , report_form):
-        base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , report_form)
+class return_reports(base_window):
+    def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , return_report_form):
+        base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , return_report_form)
         
         if base == None:
             return
-            
+        self.year = others[3]
         self.main_frame.grid_propagate(False)
         self.main_hgt = self.main_frame.winfo_reqheight()
         self.main_wdt = self.main_frame.winfo_reqwidth()
-        self.rad_rep = StringVar()
 
+        start_year = 2021                                       
+        cur_year = int(date.today().strftime("%Y"))
+        cur_mon = int(date.today().strftime("%m"))
+        if cur_mon<4:
+            end_year = cur_year
+        else:
+            end_year = cur_year+1
 
+        fin_years = []                                     #all financial year record available
 
-        self.frm_tree = ttk.Frame(self.main_frame , width = int(self.main_wdt*0.65), height = int(self.main_hgt*0.9))
-        #if self.root.winfo_screenheight() < 1000: self.frm_tree.config( height = int(self.main_hgt*0.224)) 
-        self.frm_tree.pack_propagate(False)
+        for i in range(start_year , end_year):
+            fin_years.append(str(i)+"-"+str(i+1)[2:])
 
-        self.ent_search = ttk.Entry(self.frm_tree  , width = 50 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
-        self.ent_search.bind('<FocusOut>' , self.combo_entry_out)
-        self.ent_search.bind('<Return>' , self.search)
-    
-        self.tree = ttk.Treeview(self.frm_tree ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 3)
-        self.tree.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
-        self.tree.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
-        self.scroll_y = ttk.Scrollbar(self.frm_tree , orient = con.VERTICAL , command = self.tree.yview)
-        self.scroll_x = ttk.Scrollbar(self.frm_tree , orient = con.HORIZONTAL , command = self.tree.xview)
-        self.tree.config(yscrollcommand = self.scroll_y.set , xscrollcommand = self.scroll_x.set)
+        self.lbl_firms = ttk.Label(self.main_frame , text = "Firm      :" , style = "window_text_medium.TLabel")
+        self.combo_firms = ttk.Combobox(self.main_frame , validate="key", values = ['SOMANATH STORES' , 'SOMANATH ENTERPRISES'] , state = "readonly" , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
+        self.combo_firms.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.tree['columns'] = ('date','sup','cp','qty')
-        self.tree.heading('date' , text = 'DATE')
-        self.tree.heading('sup' , text = 'SUPPLIER')
-        self.tree.heading('cp' , text = 'COST')
-        self.tree.heading('qty' , text = 'QTY')
-        
+        self.lbl_year = ttk.Label(self.main_frame , text = "Year      :" , style = "window_text_medium.TLabel")
+        self.combo_year = ttk.Combobox(self.main_frame , validate="key", values = fin_years , state = "readonly" , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
+        self.combo_year.bind("<FocusOut>" , self.combo_entry_out)
 
+        self.lbl_quarter = ttk.Label(self.main_frame , text = "Quarter   :"  ,style = "window_text_medium.TLabel")
+        self.combo_quarter = ttk.Combobox(self.main_frame , validate="key",values = ['1st - APRIL-JUNE' , '2nd - JULY-SEPTEMBER' , '3rd - OCTOBER-DECEMBER' , '4th - JANUARY-MARCH'] , state = "readonly" , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
+        self.combo_quarter.bind("<FocusOut>" , self.combo_entry_out)
+        self.combo_quarter.bind("<<ComboboxSelected>>" , self.filter_months)
 
-        self.tree_wdt = self.frm_tree.winfo_reqwidth()-self.scroll_y.winfo_reqwidth()
-        self.tree.column('date' , width = int(self.tree_wdt*0.17) ,minwidth = int(self.tree_wdt*0.17) , anchor = "e")
-        self.tree.column('sup' , width = int(self.tree_wdt*0.35) , minwidth = int(self.tree_wdt*0.35) , anchor = "w")
-        self.tree.column('cp' , width = int(self.tree_wdt*0.1) , minwidth = int(self.tree_wdt*0.1) , anchor = "e")
-        self.tree.column('qty' , width = int(self.tree_wdt*0.1) ,minwidth = int(self.tree_wdt*0.1) , anchor = "e")
-        
+        self.lbl_month = ttk.Label(self.main_frame , text = "Month     :"  ,style = "window_text_medium.TLabel")
+        self.combo_month = ttk.Combobox(self.main_frame , validate="key",values = ['APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER' ,'JANUARY','FEBRUARY','MARCH'] , state = "readonly" , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30 , style = "window_combo.TCombobox") 
+        self.combo_month.bind("<FocusOut>" , self.combo_entry_out)
 
-        self.scroll_y.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
-        self.ent_search.pack()
-        self.scroll_x.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
-        self.tree.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
+        self.btn_sales = ttk.Button(self.main_frame , text = "Sales Report" , width = 18 , style = "window_btn_medium.TButton" ,command = lambda : self.sales(None))
+        self.btn_sales.bind("<Return>" , self.sales)
 
-        self.tree.insert('','end' ,tags=("a",), values = ('000' , 'SOMANATH STORES MARAVANTHE' ))
-        self.tree.insert('','end' ,tags=("a",), values = ('000' , 'SOMANATH STORES MARAVANTHE' , '00' , '99999.99', '99999.99','99999.99','999999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99',))
-        self.tree.insert('','end' ,tags=("a",), values = ('000' , 'SOMANATH STORES MARAVANTHE' , '00' , '99999.99', '99999.99','99999.99','999999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99','99999.99',))
+        self.btn_purchase = ttk.Button(self.main_frame , text = "Purchase Report" , width = 18 , style = "window_btn_medium.TButton" ,command = lambda : self.purchase(None))
+        self.btn_purchase.bind("<Return>" , self.purchase)
 
-
-
-
-
-
-
-        self.frm_cust_wise = ttk.Frame( self.main_frame , height = int(self.main_hgt*0.2) , width = int(self.main_wdt*0.3)) #to give white border
-        self.frm_cust_wise.pack_propagate(False)
-
-        self.frm_cust_wise_2 = ttk.Frame( self.frm_cust_wise , height = int(self.main_hgt*0.2-8) , width = int(self.main_wdt*0.30-8) , style = "root_main.TFrame")
-        self.frm_cust_wise_2.grid_propagate(False)
-
-        self.rad_cust = ttk.Radiobutton(self.frm_cust_wise_2 , variable = self.rad_rep , value = 0 , style = "window_radio.TRadiobutton" , text = "Customer Wise")
-        self.lbl_cust_name = ttk.Label(self.frm_cust_wise_2 , text = "Name :" , style = "window_text_medium.TLabel")
-
-        self.combo_cust_name = ttk.Combobox(self.frm_cust_wise_2  , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30) 
-        self.combo_cust_name.bind("<FocusOut>" , self.combo_entry_out)
-
-        self.lbl_cust_from = ttk.Label(self.frm_cust_wise_2 , text = "From :" , style = "window_text_medium.TLabel")
-        self.ent_cust_from = ttk.Entry(self.frm_cust_wise_2  , width = 10 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
-        self.ent_cust_from.bind('<FocusOut>' , self.combo_entry_out)
-
-        self.lbl_cust_to = ttk.Label(self.frm_cust_wise_2 , text = "To :" , style = "window_text_medium.TLabel")
-        self.ent_cust_to = ttk.Entry(self.frm_cust_wise_2  , width = 10 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
-        self.ent_cust_to.bind('<FocusOut>' , self.combo_entry_out)
-
-        self.lbl_cust_sale = ttk.Label(self.frm_cust_wise_2 , text = "Sale :" , style = "window_text_medium.TLabel")
-        self.combo_cust_sale = ttk.Combobox(self.frm_cust_wise_2  , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30) 
-        self.combo_cust_sale.bind("<FocusOut>" , self.combo_entry_out)
-
-
-        self.rad_cust.grid(row = 0 , column = 0 , columnspan = 2 )
-        self.lbl_cust_name.grid(row = 1 , column = 0 , pady = self.main_hgt * 0.01)
-        self.combo_cust_name.grid(row = 1 , column = 1 , columnspan=3)
-        self.lbl_cust_from.grid(row = 2 , column = 0)
-        self.ent_cust_from.grid(row = 2 , column = 1, sticky = con.W)
-        self.lbl_cust_to.grid(row = 2 , column = 2)
-        self.ent_cust_to.grid(row = 2 , column = 3 , sticky = con.E)
-        self.lbl_cust_sale.grid(row = 3 , column = 0, pady = self.main_hgt * 0.01)
-        self.combo_cust_sale.grid(row = 3 , column = 1 , columnspan = 3)
-        self.frm_cust_wise_2.pack(padx = 4 , pady = 4)
-
-
-
-
-        self.frm_supp_wise = ttk.Frame( self.main_frame , height = int(self.main_hgt*0.2) , width = self.main_wdt*0.3) #to give white border
-        self.frm_supp_wise.pack_propagate(False)
-
-        self.frm_supp_wise_2 = ttk.Frame( self.frm_supp_wise , height = int(self.main_hgt*0.2-8) , width = int(self.main_wdt*0.30-8) , style = "root_main.TFrame")
-        self.frm_supp_wise_2.grid_propagate(False)
-
-        self.rad_supp = ttk.Radiobutton(self.frm_supp_wise_2 , variable = self.rad_rep , value = 0 , style = "window_radio.TRadiobutton" , text = "Supplier Wise")
-        self.lbl_supp_name = ttk.Label(self.frm_supp_wise_2 , text = "Name :" , style = "window_text_medium.TLabel")
-
-        self.combo_supp_name = ttk.Combobox(self.frm_supp_wise_2  , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30) 
-        self.combo_supp_name.bind("<FocusOut>" , self.combo_entry_out)
-
-        self.lbl_supp_from = ttk.Label(self.frm_supp_wise_2 , text = "From :" , style = "window_text_medium.TLabel")
-        self.ent_supp_from = ttk.Entry(self.frm_supp_wise_2  , width = 10 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
-        self.ent_supp_from.bind('<FocusOut>' , self.combo_entry_out)
-
-        self.lbl_supp_to = ttk.Label(self.frm_supp_wise_2 , text = "To :" , style = "window_text_medium.TLabel")
-        self.ent_supp_to = ttk.Entry(self.frm_supp_wise_2  , width = 10 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
-        self.ent_supp_to.bind('<FocusOut>' , self.combo_entry_out)
-
-        self.lbl_supp_sale = ttk.Label(self.frm_supp_wise_2 , text = "Sale :" , style = "window_text_medium.TLabel")
-        self.combo_supp_sale = ttk.Combobox(self.frm_supp_wise_2  , state = con.DISABLED , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 30) 
-        self.combo_supp_sale.bind("<FocusOut>" , self.combo_entry_out)
-
-
-        self.rad_supp.grid(row = 0 , column = 0 , columnspan = 2 )
-        self.lbl_supp_name.grid(row = 1 , column = 0 , pady = int(self.main_hgt * 0.01))
-        self.combo_supp_name.grid(row = 1 , column = 1 , columnspan=3)
-        self.lbl_supp_from.grid(row = 2 , column = 0)
-        self.ent_supp_from.grid(row = 2 , column = 1, sticky = con.W)
-        self.lbl_supp_to.grid(row = 2 , column = 2)
-        self.ent_supp_to.grid(row = 2 , column = 3 , sticky = con.E)
-        self.lbl_supp_sale.grid(row = 3 , column = 0, pady = int(self.main_hgt * 0.01))
-        self.combo_supp_sale.grid(row = 3 , column = 1 , columnspan = 3)
-        self.frm_supp_wise_2.pack(padx = 4 , pady = 4)
-
-
-
-
-
-
-        self.btn_frame = ttk.Frame(self.main_frame , style = "root_main.TFrame")
-
-        
-        self.btn_get = ttk.Button(self.btn_frame , text = "Get Reports"  , style = "window_btn_medium.TButton" ,command = lambda : self.get(None))
-        self.btn_get.bind("<Return>" , self.get) 
-        self.btn_refresh = ttk.Button(self.btn_frame , text = "Refresh" , width = 7 , style = "window_btn_medium.TButton" ,command = lambda : self.refresh(None))
-        self.btn_refresh.bind("<Return>" , self.refresh)
-
-       
-        self.btn_get.grid(row = 0 , column = 0 , padx = int(self.main_wdt*0.01))
-        self.btn_refresh.grid(row = 0 , column = 1 , padx = int(self.main_wdt*0.01))
-
-
-        self.frm_cust_wise.grid(row = 0 , column = 0)
-        self.frm_supp_wise.grid(row = 1 , column = 0)
-        self.frm_tree.grid(row = 0 , column = 1 , rowspan= 4 , pady = int(self.main_hgt * 0.01))
-        self.btn_frame.grid(row = 5 , column = 1)
-
-    
-
-
-
-
-
-
+        self.lbl_firms.grid(row = 0 , column = 0 , pady = int(self.main_hgt * 0.03) , padx = int(self.main_wdt * 0.03))
+        self.combo_firms.grid(row = 0 , column = 1)
+        self.lbl_year.grid(row = 1 , column = 0, pady = int(self.main_hgt * 0.03), padx = int(self.main_wdt * 0.03))
+        self.combo_year.grid(row = 1 , column = 1)
+        self.lbl_quarter.grid(row = 2 , column = 0, pady = int(self.main_hgt * 0.03), padx = int(self.main_wdt * 0.03))
+        self.combo_quarter.grid(row = 2 , column = 1)
+        self.lbl_month.grid(row = 3 , column = 0, pady = int(self.main_hgt * 0.03), padx = int(self.main_wdt * 0.03))
+        self.combo_month.grid(row = 3 , column = 1)
+        self.btn_sales.grid(row = 4 , column = 1)
+        self.btn_purchase.grid(row = 5 , column = 1)
 
     def combo_entry_out(self , e):
         e.widget.select_clear()
 
-    def get(self):
-        pass
+    def filter_months(self , e):
+        quarter = self.combo_quarter.get()
 
-    def refresh(self):
-        pass
+        if quarter == '1st - APRIL-JUNE': 
+            values = ['APRIL','MAY','JUNE']
+        elif quarter == '2nd - JULY-SEPTEMBER':
+            values = ['JULY','AUGUST','SEPTEMBER']
+        elif quarter == '3rd - OCTOBER-DECEMBER':
+            values = ['OCTOBER','NOVEMBER','DECEMBER' ]
+        else:
+            values = ['JANUARY','FEBRUARY','MARCH']
 
-    def search(self):
-        pass
+        self.combo_month.config(values = values , state = con.NORMAL)
+        self.combo_month.delete(0 , con.END)
+        self.combo_month.insert(0 , values[0])
+        self.combo_month.config(state = "readonly")
+
+    def sales(self , e):
+        firm = self.combo_firms.get()
+        year = self.combo_year.get()
+        quarter = self.combo_quarter.get()
+        month = self.combo_month.get()
+
+        if firm == '':
+            msg.showinfo('Info' , 'Select Firm')
+            self.combo_firms.focus_set()
+            return
+        if year == '':
+            msg.showinfo('Info' , 'Select Financial Year')
+            self.combo_year.focus_set()
+            return
+
+        if quarter == '' and month =='':
+            msg.showinfo('Info' , 'Select Month or Quarter')
+            self.combo_quarter.focus_set()
+            return
+        if firm == 'SOMANATH STORES':
+            firm = 'SSM'
+            monthList = ['APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER' ,'JANUARY','FEBRUARY','MARCH']
+            nextMonth = monthList.index(month)+1
+            year_Date = year[2:4]
+            if nextMonth > 9:
+                year_Date = year[-2:]
+            if nextMonth == 12:
+                nextMonth = 0
+            nextMonth = monthList[nextMonth]
+            lastDay = (str(date.strptime("20"+str(year_Date)+"-"+nextMonth+"-05",'%Y-%B-%d').replace(day=1) - timedelta(days=1))).split(" ")[0]
+            firstDay = lastDay[:-2]+"01"
+            
+            req = get("http://localhost:7000/SalesReport",params= {'firm':firm,'dbYear':year[2:4],'firstDay':firstDay,'lastDay':lastDay} )
+            
+            if req.status_code== 201:
+                msg.showinfo("No Data","No sales for selected data")
+            else:
+                msg.showinfo("Sucess","Sales Excel will be ready in few minutes")
+                self.btn_sales.config(state=con.DISABLED)
+
+
+    def purchase(self , e):
+        firm = self.combo_firms.get()
+        year = self.combo_year.get()
+        quarter = self.combo_quarter.get()
+        month = self.combo_month.get()
+
+        if firm == '':
+            msg.showinfo('Info' , 'Select Firm')
+            self.combo_firms.focus_set()
+            return
+        if year == '':
+            msg.showinfo('Info' , 'Select Financial Year')
+            self.combo_year.focus_set()
+            return
+
+        if quarter == '' and month =='':
+            msg.showinfo('Info' , 'Select Month or Quarter')
+            self.combo_quarter.focus_set()
+            return
+        if firm == 'SOMANATH STORES':
+            firm = 1
+            monthList = ['APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER' ,'JANUARY','FEBRUARY','MARCH']
+            nextMonth = monthList.index(month)+1
+            if nextMonth == 12:
+                nextMonth = 0
+            nextMonth = monthList[nextMonth]
+            lastDay = (str(date.strptime("20"+str(year[2:4])+"-"+nextMonth+"-05",'%Y-%B-%d').replace(day=1) - timedelta(days=1))).split(" ")[0]
+            firstDay = lastDay[:-2]+"01"
+            req = get("http://localhost:7000/PurchaseReport" , params= {'firm':firm,'dbYear':year[2:4],'year':year,'firstDay':firstDay,'lastDay':lastDay,'month':month})
+            if req.status_code== 201:
+                msg.showinfo("No Data","No purchase for selected data")
+            else:
+                msg.showinfo("Sucess","Purchase Excel will be ready in few minutes")
+                self.btn_purchase.config(state=con.DISABLED)
+        else:
+            firm = 3
+            
+        

@@ -1,22 +1,20 @@
-
-from ast import Return
-from cgitb import text
-from sqlite3 import paramstyle
-import string
-from tkinter import Listbox , constants as con  , messagebox as msg , ttk , Listbox 
+from tkinter import Listbox , constants as con  , messagebox as msg , ttk , Listbox
 from requests import get 
 from other_classes import base_window
+from forms import prods,update_sp
 import datetime
 
 
-class purchase(base_window):
+
+class purchase(base_window): 
     
-    def __init__(self , root ,frames , dmsn , lbls ,title,validations, others , pur_form , sio):
+    def __init__(self , root ,frames , dmsn , lbls ,title,validations, others , pur_form , sio , prod_form , update_sp_form):
         base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , pur_form)
         if base == None:
             return
         base.acc_title.bind("<Button-1>" , self.pack_top)
 
+        self.args = [ root ,frames , dmsn , lbls ,title,validations, others , pur_form , sio , prod_form ,update_sp_form]
         self.main_frame.grid_propagate(False)
         self.root_frame = frames[0] 
         self.main_hgt = self.main_frame.winfo_reqheight()
@@ -43,9 +41,9 @@ class purchase(base_window):
 
         #----------------------------------------prod_name toplevel------------------------------------------------------------------------------#
         if root.winfo_screenheight()>1000:
-            self.frm_prod_name = ttk.Frame( self.root_frame , height = self.main_hgt*0.594 , width = self.main_wdt*0.232 )#to give white border
+            self.frm_prod_name = ttk.Frame( self.main_frame , height = self.main_hgt*0.594 , width = self.main_wdt*0.232 )#to give white border
         else:
-            self.frm_prod_name = ttk.Frame( self.root_frame , height = self.main_hgt*0.608 , width = self.main_wdt*0.237 )#to give white border
+            self.frm_prod_name = ttk.Frame( self.main_frame , height = self.main_hgt*0.608 , width = self.main_wdt*0.237 )#to give white border
         self.frm_prod_name.pack_propagate(False)
 
         self.frm_prod_name_2 = ttk.Frame( self.frm_prod_name , height = self.main_hgt*0.608-8 , width = self.main_wdt*0.4-8 , style = "root_menu.TFrame")
@@ -55,36 +53,41 @@ class purchase(base_window):
         self.list_prod_name.bind('<Escape>',self.forget_prod_list)
         self.list_prod_name.bind('<Shift-Tab>',self.forget_prod_list)
         self.list_prod_name.bind('<Tab>',self.get_prod_by_name)
+        self.list_prod_name.bind('<Double-Button-1>',self.get_prod_by_name)
         self.list_prod_name.bind('<Return>',self.get_prod_by_name)
-        """self.list_prod_name.bind('<Tab>',enter_to_custname)
-        self.list_prod_name.bind('<Return>',enter_to_custname)
-        
-        self.list_prod_name.bind('<Double-1>',enter_to_custname)"""
+       
 
         
         self.list_prod_name.grid(row = 1 , column = 0 , padx = 1 , pady = 1)
         self.frm_prod_name_2.pack(pady = 4 , padx = 4)
-
-
-        
-
-        
         
         #----------------------------------------prod_name toplevel ends here--------------------------------------------------------------------#
 
-        #----------------------------------------prod_stock toplevel-----------------------------------------------------------------------------#
-        self.frm_stk_sug = ttk.Frame( self.root_frame , height = self.main_hgt*0.32 , width = self.main_wdt) #to give white border
-        self.frm_stk_sug.pack_propagate(False)
 
-        self.frm_stk_sug_2 = ttk.Frame( self.frm_stk_sug , height = self.main_hgt*0.32-8 , width = self.main_wdt-8 , style = "root_menu.TFrame")
-        self.frm_stk_sug_2.grid_propagate(False)
+
+
+        #----------------------------------------prod_stock toplevel-----------------------------------------------------------------------------#
+        if self.root.winfo_screenheight() > 1000:
+            self.frm_stk_sug = ttk.Frame( self.main_frame , height = self.main_hgt*0.32 , width = self.main_wdt) #to give white border
+            self.frm_stk_sug.pack_propagate(False)
+
+            self.frm_stk_sug_2 = ttk.Frame( self.frm_stk_sug , height = self.main_hgt*0.32-8 , width = self.main_wdt-8 , style = "root_menu.TFrame")
+            self.frm_stk_sug_2.grid_propagate(False)
+        else:
+            self.frm_stk_sug = ttk.Frame( self.main_frame , height = self.main_hgt*0.4 , width = self.main_wdt) #to give white border
+            self.frm_stk_sug.pack_propagate(False)
+
+            self.frm_stk_sug_2 = ttk.Frame( self.frm_stk_sug , height = self.main_hgt*0.4-8 , width = self.main_wdt-8 , style = "root_menu.TFrame")
+            self.frm_stk_sug_2.grid_propagate(False)
 
         self.lbl_tot_stk_txt = ttk.Label(self.frm_stk_sug_2 , text = " Total stock :" , style = "window_title.TLabel")
         self.lbl_tot_stk = ttk.Label(self.frm_stk_sug_2  , width = 10 , style = "window_lbl_ent.TLabel")
 
         self.lbl_mrp = ttk.Label(self.frm_stk_sug_2 , text = "  MRP :" , style = "window_title.TLabel")
-        self.lbl_mrp_1 = ttk.Label(self.frm_stk_sug_2  , width = 10 , style = "window_lbl_ent.TLabel")
-        self.lbl_mrp_2 = ttk.Label(self.frm_stk_sug_2  , width = 10 , style = "window_lbl_ent.TLabel")
+        self.ent_mrp_1 = ttk.Entry(self.frm_stk_sug_2  , width = 10  ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
+        self.ent_mrp_2 = ttk.Entry(self.frm_stk_sug_2  , width = 10  ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
+        self.btn_upd_mrp = ttk.Button(self.frm_stk_sug_2 , text = "Update MRP"  , style = "window_btn_medium.TButton" ,command = lambda : self.upd_mrp(None))
+        self.btn_upd_mrp.bind("<Return>" , self.upd_mrp)
 
 
         self.btn_upd_prod = ttk.Button(self.frm_stk_sug_2 , text = "Update Product"  , style = "window_btn_medium.TButton" ,command = lambda : self.upd_prod(None))
@@ -96,8 +99,9 @@ class purchase(base_window):
         self.btn_sales_sum = ttk.Button(self.frm_stk_sug_2 , text = "Sales Summary" , style = "window_btn_medium.TButton" ,command = lambda : self.sales_summary(None))
         self.btn_sales_sum.bind("<Return>" , self.sales_summary)
 
-        self.frm_tree_old_stock = ttk.Frame(self.frm_stk_sug_2 , width = self.main_wdt-16 , height = int(self.main_hgt*0.214))
-        if self.root.winfo_screenheight() < 1000: self.frm_tree_old_stock.config( height = int(self.main_hgt*0.224)) 
+        if self.root.winfo_screenheight() > 1000: self.frm_tree_old_stock = ttk.Frame(self.frm_stk_sug_2 , width = self.main_wdt-16 , height = int(self.main_hgt*0.214))
+        else :self.frm_tree_old_stock = ttk.Frame(self.frm_stk_sug_2 , width = self.main_wdt-16 , height = int(self.main_hgt*0.4))
+            
         self.frm_tree_old_stock.pack_propagate(False)
     
         self.tree_old_stk = ttk.Treeview(self.frm_tree_old_stock ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 3)
@@ -168,20 +172,21 @@ class purchase(base_window):
         self.lbl_tot_stk_txt.grid(row = 0 , column = 0 , sticky = con.W)
         self.lbl_tot_stk.grid(row = 0 , column = 1, sticky = con.W)
         self.lbl_mrp.grid(row = 0 , column = 2, sticky = con.W)
-        self.lbl_mrp_1.grid(row = 0 , column = 3, sticky = con.W)
-        self.lbl_mrp_2.grid(row = 0 , column = 4, sticky = con.W)
+        self.ent_mrp_1.grid(row = 0 , column = 3, sticky = con.W)
+        self.ent_mrp_2.grid(row = 0 , column = 4, sticky = con.W)
+        self.btn_upd_mrp.grid(row = 0 , column = 5, sticky = con.W)
 
 
-        self.btn_upd_prod.grid(row = 0 , column = 5, sticky = con.E)
-        self.btn_upd_price.grid(row = 0 , column = 6, sticky = con.E)
-        self.btn_sales_sum.grid(row = 0 , column = 7, sticky = con.E)
-        self.frm_tree_old_stock.grid(row = 1 , column = 0 , columnspan = 8 , padx = 4 , pady = int(self.main_hgt*0.02))
+        self.btn_upd_prod.grid(row = 0 , column = 6, sticky = con.E)
+        self.btn_upd_price.grid(row = 0 , column = 7, sticky = con.E)
+        self.btn_sales_sum.grid(row = 0 , column = 8, sticky = con.E)
+        self.frm_tree_old_stock.grid(row = 1 , column = 0 , columnspan = 9 , padx = 4 , pady = int(self.main_hgt*0.02))
         self.frm_stk_sug_2.pack(padx = 4 , pady = 4)
         
         #----------------------------------------prod_stock toplevel ends here-------------------------------------------------------------------#
         
         #----------------------------------------purchase_detail_toplevel------------------------------------------------#
-        self.frm_pur_details = ttk.Frame( self.root_frame , height = self.main_hgt*0.5 , width = self.main_wdt*0.4) #to give white border
+        self.frm_pur_details = ttk.Frame( self.main_frame , height = self.main_hgt*0.5 , width = self.main_wdt*0.4) #to give white border
         self.frm_pur_details.pack_propagate(False)
 
         self.frm_pur_details_2 = ttk.Frame( self.frm_pur_details , height = self.main_hgt*0.5-8 , width = self.main_wdt*0.4-8 , style = "root_menu.TFrame")
@@ -750,7 +755,7 @@ class purchase(base_window):
 
         self.frm_pay_meth = ttk.Frame( self.frm_row5  , style = "root_main.TFrame") 
         self.lbl_pay_meth = ttk.Label(self.frm_pay_meth , text = "       Payment Mode :"  , style = "window_text_medium.TLabel")
-        self.combo_pay_meth = ttk.Combobox(self.frm_pay_meth  , text = 'CASH' , values = ['CASH' , 'UPI/NEFT'] , state = "readonly" ,font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 10 , style = "window_combo.TCombobox") 
+        self.combo_pay_meth = ttk.Combobox(self.frm_pay_meth  , text = 'CASH' , values = ['CASH' , 'BANK'] , state = "readonly" ,font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 10 , style = "window_combo.TCombobox") 
         self.combo_pay_meth.bind("<FocusOut>" , self.combo_entry_out)
 
         self.lbl_pay_meth.grid(row = 0 , column = 0)
@@ -823,10 +828,7 @@ class purchase(base_window):
         @self.sio.on('hello')
         def hello():
             print('I received a message!')
-
-    def combo_entry_out(self , e):
-        e.widget.select_clear()
-
+    
     """--------------------------Purchase detail functions-----------------------------------------------"""
     def enable_pur_details(self) :
         self.combo_supplier.config(state = con.NORMAL)
@@ -875,6 +877,8 @@ class purchase(base_window):
 
         if sup_gst == "" or self.selected_tax_meth == "" or date == "" or inv_no == "" :
             msg.showinfo( "Info" , "Enter all Purchase details")
+            self.ent_pur_date.focus_set()
+            self.ent_pur_date.select_range(0,con.END)
             return
 
         if sup_gst == 'CASH' and firm_gst != '':
@@ -1631,8 +1635,8 @@ class purchase(base_window):
 
 
 
-        if self.root.winfo_screenheight()>1000: self.frm_prod_name.place( x = self.main_wdt*0.113 , y = self.main_hgt*0.123)
-        else: self.frm_prod_name.place( x = self.main_wdt*0.106 , y = self.main_hgt*0.128)
+        if self.root.winfo_screenheight()>1000: self.frm_prod_name.place( x = self.main_wdt*0.113 , y = self.main_hgt*0.071)
+        else: self.frm_prod_name.place( x = self.main_wdt*0.106 , y = self.main_hgt*0.076)
 
         self.frm_prod_name.lift()
     
@@ -1789,8 +1793,12 @@ class purchase(base_window):
 
         if old_stks.status_code == 200:
             old_stks = old_stks.json()
-            self.lbl_mrp_1.config(text = "{:.2f}".format(float(old_stks['prodMrp1'])))
-            self.lbl_mrp_2.config(text = "{:.2f}".format(float(old_stks['prodMrp2'])))
+            self.ent_mrp_1.delete(0 , con.END)
+            self.ent_mrp_1.insert(0 , "{:.2f}".format(float(old_stks['prodMrp1'])))
+
+            self.ent_mrp_2.delete(0 , con.END)
+            self.ent_mrp_2.insert(0 , "{:.2f}".format(float(old_stks['prodMrp2'])))
+
             self.lbl_tot_stk.config(text = "{:.3f}".format(float(old_stks['totQty'])))
 
             i = 0
@@ -1802,7 +1810,6 @@ class purchase(base_window):
                 htl = each[5].split(":")[1:-1]
                 spl = each[6].split(":")[1:-1]
                 ang = each[7].split(":")[1:-1]
-
                 values = (each[0] , each[1] , "{:.2f}".format(float(each[2])) , "{:.3f}".format(float(each[3])) , nml[0]  , nml[1] , nml[2] , nml[3] , htl[0]  , htl[1] , htl[2] , htl[3] , spl[0]  , spl[1] , spl[2] , spl[3] , ang[0]  , ang[1] , ang[2] , ang[3]  )
 
                 if i%2 == 0:    self.tree_old_stk.insert('','end' ,tags=('a',), values = values)
@@ -1812,8 +1819,8 @@ class purchase(base_window):
 
 
 
-        if self.root.winfo_screenheight()>1000: self.frm_stk_sug.place( x = 0, y = self.main_hgt*0.22)
-        else : self.frm_stk_sug.place( x = 0, y = self.main_hgt*0.237)
+        if self.root.winfo_screenheight()>1000: self.frm_stk_sug.place( x = 0, y = self.main_hgt*0.170)
+        else : self.frm_stk_sug.place( x = 0, y = self.main_hgt*0.185)
         
         self.frm_stk_sug.lift()
 
@@ -2131,15 +2138,33 @@ class purchase(base_window):
         
         values = [self.sl_no , self.ent_name.get().upper() , self.prod_gst , "{:.3f}".format(float(self.ent_cost.get())) , "{:.3f}".format(float(qty)) , "{:.3f}".format(float(self.ent_txb_ttl.get())) , "{:.3f}".format(float(self.ent_cost_ttl.get()))]
        
-    
+        cur_stk_sp = []
         for each in nml_sp:
+            cur_stk_sp.append(float(each))
             values.append("{:.3f}".format(each))
         for each in htl_sp:
+            cur_stk_sp.append(float(each))
             values.append("{:.3f}".format(each))
         for each in spl_sp:
+            cur_stk_sp.append(float(each))
             values.append("{:.3f}".format(each))
         for each in ang_sp:
+            cur_stk_sp.append(float(each))
             values.append("{:.3f}".format(each))
+
+        prev_stk_sp = self.tree_old_stk.get_children()
+        if prev_stk_sp!= []:
+            prev_stk_sp = self.tree_old_stk.item(prev_stk_sp[0])['values'][4:20]
+            print(prev_stk_sp)
+
+        temp = prev_stk_sp
+        prev_stk_sp = []
+        for each in temp:
+            prev_stk_sp.append(float(each))
+
+       
+        if prev_stk_sp != cur_stk_sp:
+            msg.showinfo("Info" , " SET SELLING PRICE")
 
         prod_exp = self.ent_exp.get()
         if prod_exp == "":
@@ -2289,7 +2314,6 @@ class purchase(base_window):
         curIndex = self.tree_pur.index(curItemNo)
         i = 0
         for each in items:
-            
             if i > curIndex:
                 values = self.tree_pur.item(each)['values']
                 values[0] = i
@@ -2518,6 +2542,8 @@ class purchase(base_window):
         self.lbl_tot_amt.config(text = "0.00")
         self.lbl_grd_tot.config(text = "0.00")
         
+    def combo_entry_out(self , e):
+        e.widget.select_clear()
     """-------------------------------------Utilities Ends here------------------------------------------"""
 
     """-------------------------------------socket event handlers----------------------------------------"""
@@ -2528,11 +2554,41 @@ class purchase(base_window):
     """-------------------------------------socket event handlers ends here------------------------------"""
 
     def upd_price(self , e):
+        arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
+        update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
         pass
 
     def upd_prod(self , e):
-        pass
-        
+        arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Products" , [ self.args[5][0]  , self.args[5][9] , self.args[5][2] , self.args[5][3] , self.args[5][4]  , self.args[5][2] ,  self.args[5][6] ] , [  self.args[6][4] , self.args[6][0] , self.args[6][2] ] ,  self.args[9]]
+        prods(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id )
+               
+    def upd_mrp(self , e):
+        mrp1 = self.ent_mrp_1.get()
+        mrp2 = self.ent_mrp_2.get()
+
+        try:
+            mrp1 = float(mrp1)
+        except:
+            mrp1 = 0.00
+
+        try:
+            mrp2 = float(mrp2)
+        except:
+            mrp2 = 0.00
+
+        mrp1 =  "{:.2f}".format(round(mrp1 , 2)) 
+        mrp2 =  "{:.2f}".format(round(mrp2 , 2)) 
+
+
+
+        sql = "update somanath.products set prod_mrp = " + mrp1 + " , prod_mrp_old = " + mrp2 + " where prod_id = " + str(self.prod_id)
+        get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+
+        self.ent_mrp_1.delete(0 , con.END)
+        self.ent_mrp_1.insert(0 , mrp1)
+        self.ent_mrp_2.delete(0 , con.END)
+        self.ent_mrp_2.insert(0 , mrp2)
+
     def sales_summary(self , e):
         pass
 
@@ -2689,7 +2745,7 @@ class purchase(base_window):
                     if stocks['trans'][2] == 'CASH':
                         self.combo_pay_meth.insert(0 , "CASH")
                     else:
-                        self.combo_pay_meth.insert(0 , "UPI/NEFT")
+                        self.combo_pay_meth.insert(0 , "BANK")
                     self.combo_pay_meth.config(state = "readonly")
 
 
@@ -2930,11 +2986,15 @@ class purchase(base_window):
     def close(self , e):
         if self.new_state or self.edit_state:
             msg.showinfo("Info" , " ಮೊದಲು ಬಿಲ್ SAVE ಇಲ್ಲ CANCEL ಮಾಡ್ಕೊಳ್ಳಿ")
+            self.pack_top(None)
             return
-        self.forget_prod_list(None)
-        self.frm_pur_details.place_forget()
-        self.forget_stk_sug(None)
+        self.frm_prod_name.destroy()        
+        self.frm_pur_details.destroy()
+        self.frm_stk_sug.destroy()
+
         base_window.close(self,e)
+
+        
         
 
     

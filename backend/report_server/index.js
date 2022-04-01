@@ -13,17 +13,28 @@ const { Console, dir, log } = require('console')
 const { response } = require('express')
 const { execPath } = require('process')
 const homeDir = require('os').homedir()
+const { createWriteStream } = require ("fs");
+const PDFDocument = require("pdfkit"); 
+var MySql = require('sync-mysql');
+
 let photos = []
 let barcodeInUse = []
 
- 
+var connection = new MySql({
+  host: "localhost",
+  port: "3306",
+  user: "root",
+  password: "mysqlpassword5",
+  multipleStatements : true
+});
 
 
 const con = mysql.createConnection({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "mysqlpassword5"
+  password: "mysqlpassword5",
+  multipleStatements : true
 });
 
 const storage = multer.diskStorage({
@@ -57,11 +68,10 @@ app.get('/onlySql' , (req , res)=>{
       sql = req.query.sql
 
       con.query(sql , (err , result)=>{
-        console.log(err);
-        console.log(result);
         res.send(result)
       })
 })
+
 
 
 
@@ -506,13 +516,7 @@ app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
 
                                                       newImageName = ""
 
-                                                      if(sqlInputs.img_kan == "True")
-                                                      {
-                                                        newImageName = path.join(newDirectory , "kan."+photos[photoIndex].split(".")[1])
-                                                        fs.renameSync(path.join(homeDir , "angadiImages" , String(photos[photoIndex])) , newImageName , (err)=>{})          
-                                                        photoIndex += 1          
-                                                        
-                                                      }
+                                                    
 
                                                     if(sqlInputs.img_high == "True")
                                                       {
@@ -533,13 +537,10 @@ app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
                                                       photos = []
 
                                     
-                                                      sql2 = "insert into somanath.products values (" + String(ID) + ",'" + sqlInputs.prod_bar + "','"+ sqlInputs.prod_name + "','"+ sqlInputs.prod_cat + "','" + sqlInputs.prod_hsn + "','" + sqlInputs.prod_shelf + "','" +sqlInputs.prod_name_eng + "'," + sqlInputs.prod_min_qty + "," + sqlInputs.prod_expiry + "," + sqlInputs.prod_mrp + "," + sqlInputs.prod_mrp_old + ",'" + sqlInputs.prod_sup + "', (select tax_id from somanath.taxes where tax_type = 0 and tax_per = " + sqlInputs.prod_gst + ") , (select tax_id from somanath.taxes where tax_type = 1 and tax_per = " + sqlInputs.prod_cess + "),'" + sqlInputs.prod_unit_type +"','" + sqlInputs.nml_unit + "','"   + sqlInputs.htl_unit + "','"  + sqlInputs.spl_unit + "','"  + sqlInputs.ang_unit + "','False','" + sqlInputs.prod_desc + "','" + sqlInputs.img_kan + "','" + sqlInputs.img_high + "','" + sqlInputs.img_low +"','" + Time + "',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') , NULL , NULL)"
+                                                      sql2 = "insert into somanath.products values (" + String(ID) + ",'" + sqlInputs.prod_bar + "','"+ sqlInputs.prod_name + "','"+ sqlInputs.prod_cat + "','" + sqlInputs.prod_hsn + "','" + sqlInputs.prod_shelf + "','" + sqlInputs.prod_name_kan + "','" +sqlInputs.prod_name_eng + "'," + sqlInputs.prod_min_qty + "," + sqlInputs.prod_expiry + "," + sqlInputs.prod_mrp + "," + sqlInputs.prod_mrp_old + ",'" + sqlInputs.prod_sup + "', (select tax_id from somanath.taxes where tax_type = 0 and tax_per = " + sqlInputs.prod_gst + ") , (select tax_id from somanath.taxes where tax_type = 1 and tax_per = " + sqlInputs.prod_cess + "),'" + sqlInputs.prod_unit_type +"','" + sqlInputs.nml_unit + "','"   + sqlInputs.htl_unit + "','"  + sqlInputs.spl_unit + "','"  + sqlInputs.ang_unit + "','False','" + sqlInputs.prod_desc + "','" + sqlInputs.img_high + "','" + sqlInputs.img_low +"','" + Time + "',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') , NULL , NULL)"
                                                       
-                                                      con.query(sql2,  (err2 , result2)=>{
-                                                           
-                                                          con.commit()
-                                                          
-                                                          
+                                                      con.query(sql2,  (err2 , result2)=>{                                                          
+                                                          con.commit()                                                      
                                                           res.sendStatus(200)
                                                           socket.emit("refresh")
                                                        })
@@ -560,13 +561,7 @@ app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
 
                                             newImageName = ""
 
-                                            if(sqlInputs.img_kan == "True")
-                                            {
-                                              newImageName = path.join(newDirectory , "kan."+photos[photoIndex].split(".")[1])
-                                              fs.renameSync(path.join(homeDir , "angadiImages" , String(photos[photoIndex])) , newImageName , (err)=>{})          
-                                              photoIndex += 1          
-                                              
-                                            }
+                                          
 
                                           if(sqlInputs.img_high == "True")
                                             {
@@ -586,7 +581,7 @@ app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
                                   
                                             photos = []
 
-                                            sql2 = "update somanath.products set prod_bar = '" + sqlInputs.prod_bar + "', prod_name = '"+ sqlInputs.prod_name + "', prod_cat = '"+ sqlInputs.prod_cat + "', prod_hsn = '" + sqlInputs.prod_hsn + "', prod_shelf = '" + sqlInputs.prod_shelf + "',  prod_name_eng = '" +sqlInputs.prod_name_eng + "', prod_min_qty = " + sqlInputs.prod_min_qty + ", prod_expiry = " + sqlInputs.prod_expiry + ", prod_mrp = " + sqlInputs.prod_mrp + ", prod_mrp_old = " + sqlInputs.prod_mrp_old + ", prod_sup = '" + sqlInputs.prod_sup + "',  prod_gst =  (select tax_id from somanath.taxes where tax_type = 0 and tax_per = " + sqlInputs.prod_gst + ") , prod_cess = (select tax_id from somanath.taxes where tax_type = 1 and tax_per = " + sqlInputs.prod_cess + "), prod_unit_type = '" + sqlInputs.prod_unit_type +"', nml_unit = '" + sqlInputs.nml_unit + "', htl_unit = '"   + sqlInputs.htl_unit + "', spl_unit = '"  + sqlInputs.spl_unit + "',  ang_unit =  '"  + sqlInputs.ang_unit + "', prod_hide = '"+sqlInputs.prod_hide+"',prod_desc = '" + sqlInputs.prod_desc + "', kan_img = '" + sqlInputs.img_kan + "', high_img = '" + sqlInputs.img_high + "', low_img = '" + sqlInputs.img_low +"',update_time = '" + Time + "',update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')  where prod_id = "+ ID
+                                            sql2 = "update somanath.products set prod_bar = '" + sqlInputs.prod_bar + "', prod_name = '"+ sqlInputs.prod_name + "', prod_cat = '"+ sqlInputs.prod_cat + "', prod_hsn = '" + sqlInputs.prod_hsn + "', prod_shelf = '" + sqlInputs.prod_shelf +"', prod_name_kan = '" + sqlInputs.prod_name_kan + "',  prod_name_eng = '" +sqlInputs.prod_name_eng + "', prod_min_qty = " + sqlInputs.prod_min_qty + ", prod_expiry = " + sqlInputs.prod_expiry + ", prod_mrp = " + sqlInputs.prod_mrp + ", prod_mrp_old = " + sqlInputs.prod_mrp_old + ", prod_sup = '" + sqlInputs.prod_sup + "',  prod_gst =  (select tax_id from somanath.taxes where tax_type = 0 and tax_per = " + sqlInputs.prod_gst + ") , prod_cess = (select tax_id from somanath.taxes where tax_type = 1 and tax_per = " + sqlInputs.prod_cess + "), prod_unit_type = '" + sqlInputs.prod_unit_type +"', nml_unit = '" + sqlInputs.nml_unit + "', htl_unit = '"   + sqlInputs.htl_unit + "', spl_unit = '"  + sqlInputs.spl_unit + "',  ang_unit =  '"  + sqlInputs.ang_unit + "', prod_hide = '"+sqlInputs.prod_hide+"',prod_desc = '" + sqlInputs.prod_desc + "', high_img = '" + sqlInputs.img_high + "', low_img = '" + sqlInputs.img_low +"',update_time = '" + Time + "',update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')  where prod_id = "+ ID
                                             console.log(sql2);
                                             con.query(sql2 , (err2 , result2)=>{
                                                   console.log(err2);
@@ -607,8 +602,8 @@ app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
 app.get('/products/getProductList' , (req , res )=>{
   sql = req.query.sql
     con.query(sql ,(err , result)=>{
-      console.log(err)
       res.send(result)
+      console.log(err);
     })
 })
 
@@ -625,7 +620,7 @@ app.post('/barcodes' , (req,res)=>{
   type = req.query['type']
   barcode = req.query['barcode']
   barcodeInUse.sort(function(a, b){return a-b});
-  console.log(barcodeInUse);
+
   sql = "select max_prod_bar from somanath.data"
   con.query(sql , (err,result) =>{
     maxBar = result[0]['max_prod_bar']
@@ -695,20 +690,24 @@ app.post('/barcodes' , (req,res)=>{
           
             
             sql1 = "update somanath.data set max_prod_bar = " + String(barcode)
-            con.query(sql1 , (err1 , result1) => {
-              if(max)
-                {
-                  barcodeInUse.push(parseInt(barcode))
-                }
+            con.query(sql1)
+            if(max)
+                barcodeInUse.push(parseInt(barcode))
 
-              res.sendStatus(200)
-              console.log("save : " , barcodeInUse);
-            })
+            res.sendStatus(200)
+              
           
-      
+          
+            console.log("save : " , barcodeInUse);    
+        
       }
+      console.log("end : " , barcodeInUse);
     
   })
+
+
+
+  console.log(barcodeInUse);
 })
 
 //products done!!
@@ -838,22 +837,20 @@ app.get('/employs/getSelectedEmp' , (req,res) => {
 //employs Done!!
 
 
-
-
-
-
-
-
-
 //accounts
 app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
   let sqlInputs = req.query  
   ID = sqlInputs['acc_id']
   edit = false
   sql = "select acc_name from somanath.accounts where (acc_name = '"+sqlInputs.acc_name+"'"
-      if (sqlInputs.acc_gstin != "")
-        sql += " or acc_gstin = '"+sqlInputs.acc_gstin+"'"
+
+  if (sqlInputs.acc_gstin != "CASH")
+    sql += " or acc_gstin = '"+sqlInputs.acc_gstin+"'"
   sql += ")"
+
+  
+  console.log(sql);
+
   if(ID != '')
     {
       sql += " and acc_id !="+ ID
@@ -904,14 +901,16 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                                           
                                                     photos = []
 
-                                  
+                                                    //acc_id, acc_opn_bal_firm1, acc_opn_bal_firm2, acc_opn_bal_firm3, acc_cls_bal_firm1, acc_cls_bal_firm2, acc_cls_bal_firm3
                                                                                                                                                                                                       //acc_id, acc_type, acc_name, acc_email, acc_add, acc_mob1, acc_mob2, acc_gstin, acc_accno, acc_ifsc, acc_cus_type, acc_img, insert_time, insert_id, update_time, update_id
-                                                    sql2 = "insert into somanath.accounts values (" + String(ID) + ",'" + sqlInputs.acc_type + "','"+ sqlInputs.acc_name + "','"+ sqlInputs.acc_email + "','" + sqlInputs.acc_add + "','" + sqlInputs.acc_mob1+ "','" + sqlInputs.acc_mob2+ "','" + sqlInputs.acc_gstin+ "','" + sqlInputs.acc_accno+ "','" + sqlInputs.acc_ifsc+ "','" + sqlInputs.acc_cus_type + "','" +sqlInputs.acc_img+"','" + Time + "',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"'),NULL,NULL)"
+                                                    sql2 = "insert into somanath.accounts values (" + String(ID) + ",'" + sqlInputs.acc_type + "','"+ sqlInputs.acc_name + "','"+ sqlInputs.acc_email + "','" + sqlInputs.acc_add + "','" + sqlInputs.acc_mob1+ "','" + sqlInputs.acc_mob2+ "','" + sqlInputs.acc_gstin+ "','" + sqlInputs.acc_accno+ "','" + sqlInputs.acc_ifsc+ "','" + sqlInputs.acc_cus_type + "','" +sqlInputs.acc_img+"','" + Time + "',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"'),NULL,NULL);"
+                                                    sql2 += "insert into somanath20"+sqlInputs.db_year+".acc_bal values("+String(ID)+",0.00,0.00,0.00,0.00,0.00,0.00)"
                                                     console.log(sql2);
                                                     con.query(sql2 , (err2 , result2)=>{
                                                           console.log(err2);
                                                           con.commit()
                                                           res.sendStatus(200)
+                                                          socket.emit("refresh")
                                                       })
 
                                               })
@@ -945,6 +944,7 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                                                   console.log(err2);
                                                   con.commit()
                                                   res.sendStatus(200)
+                                                  socket.emit("refresh")
                                               })
 
                                           }
@@ -984,4 +984,412 @@ app.get('/accounts/getSelectedAcc' , (req,res) => {
 })
 
 
-app.listen(6000)
+
+//Reports
+app.get('/salesData' , (req,res) => {
+  dictCashSales ={'0': [0,0,0] , '5': [0,0,0] , '12': [0,0,0] , '18': [0,0,0] , '28': [0,0,0] }
+  dictGstSales = {'0': [0,0,0] , '5': [0,0,0] , '12': [0,0,0] , '18': [0,0,0] , '28': [0,0,0] }
+  //#12#0.10714285714#18#0.15254237288#5#0.04761904761#28#0.21875
+
+
+  sql = "SELECT somanath2021.sales_sp.sales_ref,sales_prod_sp,cost_price,sales_prod_qty,gst_value FROM somanath2021.sales inner join somanath2021.sales_sp on somanath2021.sales_sp.sales_ref =somanath2021.sales.sales_ref where somanath2021.sales.sale_date >=  '"+req.query.sdate+"' and sale_date <=  '"+req.query.edate+"';"
+  
+  con.query(sql , (err , result) =>{
+    result.forEach(element => {
+      sp = element.sales_prod_sp.split(':').slice(1,-1)
+      cp = element.cost_price.split(':').slice(1,-1)
+      qty = element.sales_prod_qty.split(':').slice(1,-1)
+      gst = element.gst_value.split(':').slice(1,-1)
+      
+      if(element.sales_ref.split('_').shift() === 'SCM')
+        {
+          index = 0
+          gst.forEach(gstRate =>{
+            
+            sp_l = parseFloat(sp[index])
+            cp_l = parseFloat(cp[index])
+            qty_l = parseFloat(qty[index])
+            profit = ( sp_l - cp_l ) * qty_l
+            switch(gstRate){
+              case '0':
+                dictCashSales['0'][0] +=  sp_l * qty_l
+                dictCashSales['0'][1] +=  profit
+                break
+              case '5':
+                dictCashSales['5'][0] +=  sp_l * qty_l
+                dictCashSales['5'][1] +=  profit
+                dictCashSales['5'][2] +=  profit * 0.04761904761
+                break
+              case '12':
+                dictCashSales['12'][0] +=  sp_l * qty_l
+                dictCashSales['12'][1] +=  profit
+                dictCashSales['12'][2] +=  profit * 0.10714285714
+                break
+              case '18':
+                dictCashSales['18'][0] +=  sp_l * qty_l
+                dictCashSales['18'][1] +=  profit
+                dictCashSales['18'][2] +=  profit * 0.15254237288
+                break
+              case '28':
+                dictCashSales['28'][0] +=  sp_l * qty_l
+                dictCashSales['28'][1] +=  profit
+                dictCashSales['28'][2] +=  profit * 0.21875
+                break
+            }
+            index++
+          })
+        }
+      else  
+        {
+          index = 0
+          gst.forEach(gstRate =>{
+            sp_l = parseFloat(sp[index])
+            cp_l = parseFloat(cp[index])
+            qty_l = parseFloat(qty[index])
+            profit = ( sp_l - cp_l ) * qty_l
+            switch(gstRate){
+              case '0':
+                dictGstSales['0'][0] +=  sp_l * qty_l
+                dictGstSales['0'][1] +=  profit 
+                break
+              case '5':
+                dictGstSales['5'][0] +=  sp_l * qty_l
+                dictGstSales['5'][1] +=  profit
+                dictGstSales['5'][2] +=  profit * 0.04761904761
+                break
+              case '12':
+                dictGstSales['12'][0] +=  sp_l * qty_l
+                dictGstSales['12'][1] +=  profit
+                dictGstSales['12'][2] +=  profit * 0.10714285714
+                break
+              case '18':
+                dictGstSales['18'][0] +=  sp_l * qty_l
+                dictGstSales['18'][1] +=  profit
+                dictGstSales['18'][2] +=  profit * 0.15254237288
+                break
+              case '28':
+                dictGstSales['28'][0] +=  sp_l * qty_l
+                dictGstSales['28'][1] +=  profit
+                dictGstSales['28'][2] +=  profit * 0.21875
+                break
+            }
+            index++
+          })
+        }
+    });
+    
+    totalCashSales = 0
+    totalGstSales = 0
+    totalProfit = 0
+    totalRegularProfit = 0
+    totalCompProfit = 0
+    totalSalesRegularCash = 0 //that is gstrate 5 or 0
+    totalSalesRegularGst = 0 //that is gstrate 5 or 0
+    totalSalesCompostionCash = 0 
+    totalSalesCompostionGst = 0
+    netGstPayableRegular = 0
+    netGstPayableCompo = 0
+    Object.keys(dictCashSales).forEach(element => {
+        totalCashSales += dictCashSales[element][0]
+        totalGstSales += dictGstSales[element][0]
+       
+        if (element === '5' | element === '0') 
+          {
+            totalSalesRegularCash += dictCashSales[element][0]
+            totalSalesRegularGst += dictGstSales[element][0]
+            netGstPayableRegular += dictCashSales[element][2] + dictGstSales[element][2]
+            totalRegularProfit += dictCashSales[element][1] + dictGstSales[element][1]
+          }  
+        else 
+          {
+            totalSalesCompostionCash += dictCashSales[element][0]
+            totalSalesCompostionGst += dictGstSales[element][0]
+            netGstPayableCompo += dictCashSales[element][2] + dictGstSales[element][2]
+            totalCompProfit += dictCashSales[element][1] + dictGstSales[element][1]
+
+          }
+        dictCashSales[element][0] = dictCashSales[element][0].toFixed(2)
+        dictCashSales[element][1] = dictCashSales[element][1].toFixed(2)
+        dictCashSales[element][2] = dictCashSales[element][2].toFixed(2)
+        dictGstSales[element][0] = dictGstSales[element][0].toFixed(2)
+        dictGstSales[element][1] = dictGstSales[element][1].toFixed(2)
+        dictGstSales[element][2] = dictGstSales[element][2].toFixed(2)
+        
+
+  });
+
+  //'CASH':dictCashSales,'GST':dictGstSales 
+    sales = { 'totalSales' : (totalGstSales+totalCashSales).toFixed(2) , 'totalGstSales' : totalGstSales.toFixed(2) , 'totalCashSales': totalCashSales.toFixed(2) }
+    profit = {'totalProfit' : (totalCompProfit+totalRegularProfit).toFixed(2) , 'totalCompProfit' : totalCompProfit.toFixed(2) , 'totalRegularProfit': totalRegularProfit.toFixed(2)}
+    regComp = {'regular' : (totalSalesRegularGst+totalSalesRegularCash).toFixed(2) ,'netGstPayableRegular':netGstPayableRegular , 'comp': (totalSalesCompostionGst+totalSalesCompostionCash).toFixed(2) ,'netGstPayableCompo':netGstPayableCompo }
+    allData = { 'totalSales': sales , 'totalProfit' : profit ,'regComp' : regComp  }
+    res.send(allData)
+  })    
+})//reports
+
+
+
+function getOldtrans(  dbYear , mindbYear  , bills , nBill , max ,sqlwhere, clientResponse , accId)
+{
+    
+    if( dbYear < mindbYear )
+      { 
+        
+        if( nBill == 0)
+        {
+          clientResponse.send("[]")
+          return
+        }
+        else
+        {
+
+          bills.push(accId)
+          clientResponse.send(bills)
+          return
+        }
+        
+      }
+    else if(nBill >= max)
+      {
+        bills.push(accId)
+        clientResponse.send(bills)
+        return 
+      }
+    else
+      {
+
+        sql = "SELECT date_format(trans_date,'%d-%b-%y') as transdate, trans_sales , trans_amt_firm1+trans_amt_firm2+trans_amt_firm3 as trans_amt , amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank as amt_paid,(trans_amt_firm1+trans_amt_firm2+trans_amt_firm3)-(amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank) as bal , trans_id FROM somanath20"+dbYear+".cashflow_sales where "+ sqlwhere
+        console.log(sql);
+        con.query(sql , (err , res) =>  {
+
+                res.forEach(element => {
+
+                  if(nBill < max){
+                    bills.push(element) 
+                    nBill++
+                  }
+                });
+                
+                getOldtrans( dbYear-1 , mindbYear  , bills , nBill , max , sqlwhere, clientResponse , accId )
+
+          })
+
+      }
+
+
+}
+
+
+
+app.get('/reports/getCashflow' ,  (req,res) => {
+  minYear = 21
+  accName = req.query.acc_name
+  sqlmin = "SELECT date_format(insert_time,'%y') as year,date_format(insert_time,'%m') as month , acc_id FROM somanath.accounts where acc_name = '"+accName+"'"
+  
+  con.query(sqlmin,(err,result)=>{
+    console.log(err);
+    y = parseInt(result[0].year)
+    m = parseInt(result[0].month)
+    accId = result[0].acc_id
+    console.log(accId)
+    if (y < 23 & m < 4){
+      minYear = 21
+    }
+    else if (m < 4) minYear = y-1
+    else minYear = y
+    startDate = req.query.sdate
+
+  endDate = req.query.edate
+  noBills = req.query.limit
+
+  
+  if ( startDate != '' | endDate != '') {
+    year = parseInt(startDate.slice(2,4))
+    month = parseInt(startDate.slice(3,5))
+      if (year < 23 & month < 4){
+        minYear = 21
+      }
+      else if (month < 4) minYear = year-1
+      else minYear = year
+     if ( startDate == '') sqlwhere = "trans_acc = "+accId+" and trans_date <='"+endDate+"' order by insert_time DESC"
+     else if (endDate == '') sqlwhere = "trans_acc = "+accId+" and trans_date >= '"+startDate+"' order by insert_time DESC"
+     else sqlwhere = "trans_acc = "+accId+" and trans_date >= '"+startDate+"' and trans_date <='"+endDate+"' order by insert_time DESC"
+  }
+  else { sqlwhere = 'trans_acc = '+accId+' order by insert_time DESC limit '+ noBills }
+  console.log(sqlwhere);
+    getOldtrans(  req.query.db , minYear  , [] , 0 , noBills , sqlwhere , res , accId )
+
+  })
+  
+
+
+})
+
+function filterData( sales, clientResponse){
+  let dictionary = {}
+  let temp_dict_value = []
+
+  for(var i = 0; i < sales.length; i++) {
+    let temp_prod_id  = sales[i].sales_prod_id.split(":").slice(1,-1)
+    let temp_sp       = sales[i].sales_prod_sp.split(":").slice(1,-1)
+    let temp_qty      = sales[i].sales_prod_qty.split(":").slice(1,-1)
+    let temp_date     = sales[i]["date"]
+    
+        for(var j = 0; j< temp_prod_id.length; j++){
+          try{
+            temp_dict_value = dictionary[temp_prod_id[j]]
+            dictionary[temp_prod_id[j]] = [temp_sp[j],parseFloat(temp_dict_value[1])+parseFloat(temp_qty[j]),temp_date]
+          }
+          catch(error1){
+            
+            dictionary[temp_prod_id[j]] = [temp_sp[j],temp_qty[j],temp_date]
+            
+          }
+        }
+    
+  }
+
+  const prod_id_keys = Object.keys(dictionary);
+  
+  let count = 0
+  let k = 0
+
+  for(k=0 ;k < prod_id_keys.length; k++){
+    sql_only = "SELECT prod_name,prod_cat FROM somanath.products where prod_id = "+prod_id_keys[k]
+    con.query(sql_only,(err1,result)=>{
+      dictionary[prod_id_keys[count].toString()] = [dictionary[prod_id_keys[count].toString()] ,result[0]['prod_name'],result[0]['prod_cat'].split(":")[1] ]
+      count++
+      if (count == k){clientResponse.send(dictionary);return}
+    })
+  }
+
+}
+
+function getOldBill(  dbYear , mindbYear , acc_id , bills , nBill , max ,sqlwhere, clientResponse )
+{
+    
+    if( dbYear < mindbYear )
+      { 
+        
+        if( nBill == 0 & bills.length == 0)
+        {
+          
+          clientResponse.send("[]")
+          return
+        }
+        else{
+          filterData( bills , clientResponse )
+          return
+        }
+        
+      }
+    else if(nBill >= max)
+      {
+        filterData( bills , clientResponse )
+        return
+      }
+    else
+      {
+
+        sql = "SELECT sales_id,sales_prod_id,sales_prod_qty,sales_prod_sp,date_format(sale_date,'%d-%b-%y') as date FROM somanath20"+dbYear+".sales where sales_acc ="+acc_id+ sqlwhere
+        console.log(sql);
+
+        con.query(sql , (err , res) =>  {
+          if (res.length>0)
+          {
+            saleId = res[0]['sales_id']
+          }
+                  
+                res.forEach(element => {
+                  if(saleId != element['sales_id'])
+                      {
+                        nBill++
+                        saleId = element['sales_id']
+                      }
+                  if(nBill < max){
+                    bills.push(element)
+                  }
+                });
+                getOldBill( dbYear-1 , mindbYear , acc_id , bills , nBill , max ,sqlwhere, clientResponse )
+
+          })
+
+      }
+
+}
+
+app.get('/reports/getCustomersales' ,  (req,res) => {
+  minYear = 21
+  accName = req.query.acc_name
+  dbYear = req.query.db
+  invNo = req.query.invNo
+  responseSent = false
+  if (invNo != "")
+    {
+        accName = connection.query( "select acc_name from somanath.accounts where acc_id = (select sales_acc from somanath20"+dbYear+".sales where sales_id = '"+dbYear + "_"+invNo+"' limit 1)")
+        if (accName.length == 0)
+          {
+            res.sendStatus(201)
+            responseSent = true
+          }
+        else  
+        {
+
+          accName = accName[0]['acc_name']
+          console.log(accName);
+        }
+    }
+
+  if (!responseSent)
+  {
+          
+          console.log(accName);
+          sqlmin = "SELECT date_format(insert_time,'%y') as year,date_format(insert_time,'%m') as month ,acc_id FROM somanath.accounts  where acc_name = '"+accName+"'"
+          console.log(sqlmin);
+          con.query(sqlmin,(err,result)=>{
+            y = parseInt(result[0].year)
+            m = parseInt(result[0].month)
+            accId = result[0].acc_id
+            if (y < 23 & m < 4){
+              minYear = 21
+            }
+            else if (m < 4) minYear = y-1 
+            else minYear = y
+            
+          startDate = req.query.sdate
+          endDate = req.query.edate
+          nBill = req.query.limit
+          if(nBill == '')nBill = 100
+          if (invNo.length > 0)
+          { 
+            sqlwhere = " and sales_id = '"+dbYear + "_" +invNo+"'"
+          }
+          else if ( startDate != '' | endDate != '') 
+          {
+            year = parseInt(startDate.slice(2,4))
+            month = parseInt(startDate.slice(3,5))
+            if (year < 23 & month < 4)
+              {
+                minYear = 21
+            }
+            else if (month < 4) minYear = year-1
+            else minYear = year
+
+            if ( startDate == '') sqlwhere = " and sale_date <='"+endDate+"' order by sale_date DESC"
+            else if (endDate == '') sqlwhere = " and sale_date >= '"+startDate+"' order by sale_date DESC"
+            else sqlwhere = " and sale_date >= '"+startDate+"' and sale_date <='"+endDate+"' order by sale_date DESC"
+          }
+
+          else {sqlwhere = ' order by sale_date DESC LIMIT '+ (nBill*3).toFixed(0) }
+
+          getOldBill(  req.query.db , minYear , accId , [] , 0 , nBill , sqlwhere , res)
+
+
+          })
+  }
+  
+})
+
+
+
+app.listen(6000) 

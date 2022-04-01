@@ -19,7 +19,10 @@
   "dependencies": {
     "express": "^4.17.1",
     "mysql": "^2.18.1",
-    "socket.io": "^4.4.0"
+    "nanoid": "^3.3.1",
+    "socket.io": "^4.4.0",
+    "sync-mysql": "^3.0.1",
+    "sync-sql": "^1.0.2"
   },
   "devDependencies": {
     "prettier": "2.5.1"

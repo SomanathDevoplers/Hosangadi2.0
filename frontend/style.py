@@ -150,6 +150,10 @@ def style(hgt,wdt):
                                 {
                                    "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.03) , 'bold') },
                                },
+          "window_radio_med.TRadiobutton":
+                                {
+                                   "configure" : {"background" : "#333333" , "foreground" : "#d9cc99" , "font" : ('Lucida Console',-int(hgt*0.024) , 'bold') },
+                               },
           "window_lbl_ent.TLabel":{
                                     "configure" : {"background" : "#fff" ,"relief" : "SOLID" , "borderwidth" : 1 , "border" : 1 , "font" : ('Lucida Grande' , -int(hgt*0.025)) },
                               },
