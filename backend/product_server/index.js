@@ -75,10 +75,8 @@ con.query("select  acc_name from somanath.accounts where acc_type = 'CUST' order
 app.get('/onlySql' , (req , res)=>{
 
   sql = req.query.sql
-
   con.query(sql , (err , result)=>{
     console.log(err);
-    console.log(result);
     res.send(result)
   })
 })
@@ -132,6 +130,31 @@ app.get('/getCustName' , (req , res) => {
   })
   res.send(matched_products)
 })
+
+
+
+process.on('uncaughtException', (error) => {
+  console.log("here",error.message);
+  socket.emit('sendError' ,"\n"+String(error.stack))
+  process.exit(1)
+});
+
+process.on('unhandledRejection', (error, promise)  => {
+  console.log('Alert!----------------- ERROR : ',  error);
+  socket.emit('sendError' , error)
+  process.exit(1); // Exit your app 
+})
+
+function myCustomErrorHandler(err, req, res, next) {
+  console.log(err.stack);
+  socket.emit('sendError' ,req.path+"\n"+String(err.stack))
+  process.exit(1);
+
+}
+
+app.use(myCustomErrorHandler);
+
+
 
 
 app.listen(4000)

@@ -1,16 +1,64 @@
 import os.path
 import sys
+from datetime import datetime
 from tkinter import constants as con
 from tkinter import font as font
 from tkinter import messagebox as msg
-from tkinter import ttk , Frame,  Menu , Tk
+from tkinter import ttk , Frame,  Menu , Tk , Text
 import socketio
 import forms
 import style
 import purchase
 import sales
 import reports
+import traceback
 from threading import Thread
+from playsound import playsound
+play_sound = False
+homedir = os.path.expanduser('~')
+
+
+
+
+
+class notification:
+    def __init__(self , text):
+
+        global play_sound
+        play_sound = True
+        self.new_noti_frame_2 = ttk.Frame(frm_ntfc , height = root_hgt*0.3 , width = int(0.4*root_wdt))
+        self.new_noti_frame_2.pack_propagate(False)
+        self.new_noti_frame = ttk.Frame(self.new_noti_frame_2 , height = root_hgt*0.3 - 8 , width = int(0.4*root_wdt) - 10 , style = "root_menu.TFrame")
+        self.new_noti_frame.pack_propagate(False)
+        self.new_noti_frame.pack(pady = 4)
+        self.new_noti_frame_2.pack()
+        lbl_ntfc_cnt.config(text = int(lbl_ntfc_cnt.cget("text")) + 1)
+
+        self.error_text = Text(self.new_noti_frame  , font = ('Lucida Grande' , -int(root_hgt*0.018)) , width = 70,  wrap = 'word' )
+        self.error_text.insert(0.0 , text)
+        self.error_text.bind("<Return>" , self.stop_sound)
+        self.error_text.pack()
+        view_ntfc(None)
+        self.start_sound()
+        f = open("Error.txt", "a")
+        f.write('\n'+datetime.now().strftime("%d/%m/%Y %H:%M:%S")+'\n'+str(text)+'\n')
+        f.close()
+        
+    def sound(self):
+        global play_sound
+        while(play_sound):
+            playsound("C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\frontend\\error.mp3")
+        print("stopped")
+
+    def stop_sound(self , e):
+        global play_sound
+        password = self.error_text.get(0.0 , con.END).split("\n")[-2]
+        if password == 'seen':
+            play_sound = False
+        
+    def start_sound(self):
+        Thread(target = self.sound).start()
+        
 
 sio = socketio.Client()
 theme_state = False             #False if dark
@@ -18,6 +66,20 @@ task_place = False              #taskbar placement
 noti_place = False              #notification placement
 ip = None                       #server address
 tax_check = False
+
+def show_error(*args):
+    notification(traceback.format_tb(args[3]))
+    #root.bell()
+
+Tk.report_callback_exception = show_error
+
+
+@sio.on('error')
+def hello(data):
+    notification(data)
+    
+
+
 
 
 #-------form open counts----------#
@@ -32,7 +94,8 @@ sales_form = [0 , 6 , "Already 6 Sales Form are open"]
 return_report_form = [0 , 1 , "Already GST RETURN Form is open"]
 update_sp_form = [0 , 3 , "Already 3 Update SP Forms are open"]
 order_list_form = [0 , 1 , "Already Order List Form is open"]
-
+purchase_cashflow_form = [0 , 1 , "Already Purchase Cashflow Form is open"]
+barcode_form = [0 , 1 , "Already Barcode Form is open"]
 
 #---------------------------------#
 
@@ -50,8 +113,9 @@ def view_task(e):
 def view_ntfc(e):
     global noti_place,root_hgt , root_wdt
     if not noti_place:
-        frm_ntfc.place(x = (root_wdt-0.4*root_wdt) , y = (0.034*root_hgt))
-        frm_ntfc.lift()
+        if lbl_ntfc_cnt.cget("text") != '0':
+            frm_ntfc.place(x = (root_wdt-0.4*root_wdt) , y = (0.034*root_hgt))
+            frm_ntfc.lift()
     else:
         frm_ntfc.place(x = root_wdt+10, y = (0.034*root_hgt))
     noti_place = not noti_place
@@ -169,14 +233,17 @@ def val_none(char):
 
 
 def close(): 
+    if play_sound:
+        msg.showinfo("Info" , "ಶಿವ ಇಲ್ಲ ಕೃಷ್ಣ ಕಾಲ್ ಮಾಡಿ")
+        
+        return
+
     if int(lbl_task_cnt.cget("text"))>0:
         msg.showinfo("Info" , "CLOSE ALL TABS BEFORE EXIT!")
         return
     
     root.quit()
     sio.disconnect()
-
-
 
 def firms(e = None): 
     user_type = lbl_user_type.cget("text")
@@ -186,7 +253,7 @@ def firms(e = None):
     if firm_form[0] == 'True':
         msg.showinfo('Info' , "It is already open")
         return
-    forms.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer , mobile]  , [os.path.expanduser('~') , ip , tax_check , user] , firm_form)
+    forms.firm(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Firms" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer , mobile]  , [homedir , ip , tax_check , user] , firm_form)
 
 def products(e = None): 
     user_type = lbl_user_type.cget("text")
@@ -196,7 +263,7 @@ def products(e = None):
     if prod_form[0] == 'True':
         msg.showinfo('Info' , "It is already open")
         return
-    forms.prods(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer ] , [os.path.expanduser('~') , ip , user] , prod_form)
+    forms.prods(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer ] , [homedir , ip , user] , prod_form)
   
 def taxes(e = None): 
     user_type = lbl_user_type.cget("text")
@@ -210,31 +277,31 @@ def categories(e = None):
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    forms.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [name] , [os.path.expanduser('~')  ,ip,user] ,  category_form)
+    forms.categories(root, [frm_main , frm_task_others, frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Categories" , [name] , [homedir  ,ip,user] ,  category_form)
 
 def employees(e = None): 
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    forms.emp(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Employees" , [num_alpha  , name , mobile] , [os.path.expanduser('~') , ip , user] , employ_form)
+    forms.emp(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Employees" , [num_alpha  , name , mobile] , [homedir , ip , user] , employ_form)
 
 def accounts(e = None): 
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    forms.acc(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha  , name , mobile , email , barcode] , [os.path.expanduser('~') , ip ,tax_check, user , year] , account_form )
+    forms.acc(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha  , name , mobile , email , barcode] , [homedir , ip ,tax_check, user , year] , account_form )
 
 def purch(e = None): 
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , os.path.expanduser('~')] , purchase_form , sio , prod_form , update_sp_form)
+    purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , homedir] , purchase_form , sio , prod_form , update_sp_form)
 
 def sales_bill(e = None):
-    sales.sales(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Sales Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , os.path.expanduser('~')] , sales_form , sio , account_form)
+    sales.sales(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Sales Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , homedir] , sales_form , sio , account_form)
 
 def updatesp(e = None):
     user_type = lbl_user_type.cget("text")
@@ -257,6 +324,19 @@ def return_report(e = None):
         return
     reports.return_reports(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"GST Returns" , [ name  , date, pos_decimal] , [ip ,tax_check, user , year] , return_report_form )
 
+def purchase_cashflow(e = None):
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    reports.purchase_cashflow(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Cashflow" , [ name  , date, pos_integer] , [ip ,tax_check, user , year] , purchase_cashflow_form )
+
+def print_barcode(e = None):
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    forms.barcodes(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Barcodes" , [ name , pos_decimal , pos_integer] , [ip ,tax_check, user , year] , barcode_form )
 
 #1{
 root = Tk()
@@ -312,6 +392,7 @@ menu_entry = Menu(menu_entry_head , tearoff = 0 , font = ('Lucida Console' , -in
 menu_entry.add_command(label = "SALES ENTRY" , command = sales_bill , accelerator = "Alt+S" , underline = 1)
 menu_entry.add_command(label = "PURCHASE ENTRY" , command = purch , accelerator = "Alt+P" , underline = 1)
 menu_entry.add_command(label = "UPDATE SP" , command = updatesp , accelerator = "Alt+U" , underline = 1)
+menu_entry.add_command(label = "BARCODES" , command = print_barcode )
 menu_entry_head.config(menu = menu_entry)
 
 menu_registry_head = ttk.Menubutton(frm_menubar , text = "REGISTRIES" , direction = 'below',style = "root_menu.TMenubutton" , takefocus = False)
@@ -326,7 +407,7 @@ menu_settings = Menu(menu_settings_head , tearoff = 0 , font = ('Lucida Console'
 menu_settings.add_command(label = "CATEGORIES" , command = categories)
 menu_settings.add_command(label = "TAXES" , command = taxes)
 menu_settings.add_command(label = "EMPLOYEES" , command = employees)
-menu_settings.add_command(label = "FIRMS" , command = firms)
+#menu_settings.add_command(label = "FIRMS" , command = firms)
 menu_settings_head.config(menu = menu_settings)
 
 
@@ -335,6 +416,7 @@ menu_reports = Menu(menu_reports_head , tearoff = 0 , font = ('Lucida Console' ,
 menu_reports.add_command(label = "GST REPORTS" , command = return_report)
 menu_reports.add_command(label = "STOCK REPORTS" )
 menu_reports.add_command(label = "ORDER LIST" ,  command = orderList)
+menu_reports.add_command(label = "PURCHASE CASHFLOW" ,  command = purchase_cashflow)
 menu_reports_head.config(menu = menu_reports)
 
 
@@ -359,10 +441,14 @@ lbl_ntfc_cnt.pack(side = con.RIGHT , anchor = con.CENTER)
 
 frm_task_view = ttk.Frame(root , width = int(0.01*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 frm_task_view.bind("<Enter>" , view_task)
+
+
 frm_main = ttk.Frame(root , width = int(0.98*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
 frm_main.grid_propagate(False)
+
+
 frm_ntfc_view = ttk.Frame(root , width = int(0.012*root_wdt) , height = int(0.865*root_hgt) , style = "root_main.TFrame")
-#frm_ntfc_view.bind("<Enter>" , view_ntfc)
+frm_ntfc_view.bind("<Enter>" , view_ntfc)
 
 frm_status = ttk.Frame(root , width = root_wdt , height = int(0.105*root_hgt) , style = "root_status.TFrame")
 frm_status.grid_propagate(False)
@@ -394,6 +480,8 @@ frm_task_others.pack_propagate(False)
 
 frm_ntfc = ttk.Frame(root , width = int(0.4*root_wdt) , height = int(0.865*root_hgt) , style = "root_task.TFrame" )
 frm_ntfc.bind("<Leave>" , view_ntfc)
+frm_ntfc.pack_propagate(False)
+
 
 frm_task.pack_propagate(False)
 frm_task_sales.pack(side = con.LEFT , padx = 1)
@@ -416,24 +504,38 @@ frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 try:
     lbl_user_name.config(text = sys.argv[1])    
     lbl_user_type.config(text = sys.argv[2])
     year = sys.argv[3][2:4]
+    
     if(sys.argv[2]) == "TAXI":
-        print("taxTrue")
         userType = "ADMIN"
         tax_check = True
     else:
         userType = sys.argv[2]
-
+    print(sys.argv)
+    lbl_user_type.config(text = userType)
     lbl_fin_year.config(text = sys.argv[3])
     lbl_server_name.config(text = sys.argv[4])
-    ip = sys.argv[5]
-    sio.connect("http://"+ip+":5000/" , headers = {"user_name" : sys.argv[1] , "user_type" : userType, "form_type" : "root"  , "fin_year":sys.argv[3]})
-    
-except:
+    ip = sys.argv[5]  
 
+
+    #@ remove try excpet block
+except:
     #ip = "192.168.1.33"
     ip = "127.0.0.1"
     lbl_user_name.config(text = "ADMIN")    
@@ -442,8 +544,10 @@ except:
     lbl_server_name.config(text = "server")
     sio.connect("http://"+ip+":5000/", headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN", "form_type" : "root" , "fin_year":"2021-2022"})
     year = "21"
-    
+
 user =lbl_user_name.cget("text")
-return_report()
+
 root.mainloop()
+
+
 

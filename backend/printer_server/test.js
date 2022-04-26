@@ -23,6 +23,7 @@
              .text('₹1354.2',145,5)
              .text('ದರ : ₹1300.0',175,5)
 */
+
 /*
              const { toBuffer } = require("bwip-js");
              const PDFDocument = require("pdfkit");
@@ -154,12 +155,6 @@
             doc.end();
               }
 */
-
-
-   
-
-
-
 
 
 

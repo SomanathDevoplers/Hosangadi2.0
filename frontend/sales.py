@@ -7,27 +7,29 @@ import datetime
 import time
 import json
 from  tkdocviewer import DocViewer
+import os
 
 
 
 class sales(base_window):
+
     def __init__(self , root ,frames , dmsn , lbls ,title,validations, others , sales_form , sio , accounts_form):
-        
         base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , sales_form)
         if base == None:
             return
+        
         self.args = [root ,frames , dmsn , lbls ,title,validations, others , sales_form , sio , accounts_form]
         self.main_frame.grid_propagate(False)
         self.root_frame = frames[0] 
         self.main_hgt = self.main_frame.winfo_reqheight()
         self.main_wdt = self.main_frame.winfo_reqwidth()
         self.screen_height = root.winfo_screenheight()
-
+    
         self.ip = others[0]  
         self.tax_check = others[1] 
         self.root = root
         self.user = others[2]
-        self.year = others[3]
+        self.year = others[3] 
 
 
         self.rad_cust_mob = IntVar()
@@ -44,7 +46,7 @@ class sales(base_window):
         self.after_save = False
         self.cust_id = -1
         
-
+        self.for_page_change = {}
         self.sale_id = ""
         self.added_products = {}
         self.sl_no = 0
@@ -62,11 +64,10 @@ class sales(base_window):
         self.firm_tot = []
         self.billInfo = {}
         self.voucher = {}
-        self.frieght_G = 0
         self.displayed_pdf = ""
         self.rendered_page_count = 0
         self.change_page_count = False
-
+        self.location = os.path.expanduser("~")
 
         #----------------------------------------cust_name toplevel------------------------------------------------------------------------------#
         if self.screen_height > 1000:
@@ -550,8 +551,8 @@ class sales(base_window):
 
         self.rad_odd_only = ttk.Radiobutton(self.frm_pdf , text = "Odd " ,  value = 0 , variable = self.rad_even_odd , style = "window_radio_med.TRadiobutton", state = con.DISABLED ,  command = self.show_odd_pages)
         self.rad_even_only = ttk.Radiobutton(self.frm_pdf , text = "Even ", value = 1 , variable = self.rad_even_odd , style = "window_radio_med.TRadiobutton", state = con.DISABLED ,  command = self.show_even_pages)
-        self.rad_printer_1 = ttk.Radiobutton(self.frm_pdf , text = "EPSON  ", value = 0 , variable = self.rad_printer , style = "window_radio_med.TRadiobutton", state = con.DISABLED)
-        self.rad_printer_2 = ttk.Radiobutton(self.frm_pdf , text = "SHREYANS", value = 1 , variable = self.rad_printer , style = "window_radio_med.TRadiobutton", state = con.DISABLED)
+        self.rad_printer_1 = ttk.Radiobutton(self.frm_pdf , text = "EPSON  ", value = 0 , variable = self.rad_printer , style = "window_radio_med.TRadiobutton", state = con.DISABLED, command = self.select_page)
+        self.rad_printer_2 = ttk.Radiobutton(self.frm_pdf , text = "SHREYANS", value = 1 , variable = self.rad_printer , style = "window_radio_med.TRadiobutton", state = con.DISABLED, command = self.select_page)
         
         if self.screen_height > 1000: self.frm_bill = ttk.Frame( self.frm_pdf , height = int(self.main_hgt *0.659 ) , width = int(self.main_wdt * 0.225))
         else : self.frm_bill = ttk.Frame( self.frm_pdf , height = int(self.main_hgt *0.55 ) , width = int(self.main_wdt * 0.315))
@@ -836,28 +837,21 @@ class sales(base_window):
         self.lbl_total_amt = ttk.Label(self.frm_totals  , width = 10 , style = "window_lbl_ent.TLabel")
         self.lbl_total_hsn = ttk.Label(self.frm_totals  , width = 10 , style = "window_lbl_ent.TLabel")
 
-        self.lbl_freight = ttk.Label(self.frm_totals , text = "Freight :"  , style = "window_text_medium.TLabel")
-        self.ent_freight = ttk.Entry(self.frm_totals  , width = 10 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[2], '%P'))
-        self.ent_freight.bind("<FocusOut>" , self.combo_entry_out)
-        self.ent_freight.bind("<KeyRelease>" , self.cal_frieght)
 
-        self.lbl_grd_tot_txt = ttk.Label(self.frm_totals , text = "  Total :"  , style = "window_text_medium.TLabel")
-        self.lbl_grd_tot = ttk.Label(self.frm_totals  , width = 10 , style = "window_lbl_ent.TLabel")
+        #self.lbl_grd_tot_txt = ttk.Label(self.frm_totals , text = "  Total :"  , style = "window_text_medium.TLabel")
+        #self.lbl_grd_tot = ttk.Label(self.frm_totals  , width = 10 , style = "window_lbl_ent.TLabel")
 
-        if self.screen_height<1000:
-            self.lbl_total_txt.config(text = "                Totals  : ")
-            self.ent_freight.config( width = 11)
-            self.lbl_grd_tot.config( width = 11)
+        #if self.screen_height<1000:
+            #self.lbl_total_txt.config(text = "                Totals  : ")
+            #self.lbl_grd_tot.config( width = 11)
         
         self.lbl_total_txt.grid(row = 0 , column = 0 )
         self.lbl_total_amt.grid(row = 0 , column = 1 )
         self.lbl_total_hsn.grid(row = 0 , column = 2 )
 
-        self.lbl_freight.grid(row = 1 , column = 1 , pady = self.main_hgt*0.08)
-        self.ent_freight.grid(row = 1 , column = 2 )
 
-        self.lbl_grd_tot_txt.grid(row = 2 , column = 1)
-        self.lbl_grd_tot.grid(row = 2 , column = 2)
+        #self.lbl_grd_tot_txt.grid(row = 2 , column = 1)
+        #self.lbl_grd_tot.grid(row = 2 , column = 2)
 
         
 
@@ -915,8 +909,10 @@ class sales(base_window):
         #==========temp settings====================#
         #self.btn_new.invoke()
         #self.enable_print_details()
-            
+    
     """-------------------------------------Customer Functions------------------------------------------"""
+    
+
     def get_cust_list(self , e):
         #-------backspace----------Aa----------------Zz---------------space---------------0------------------9-----------------.
         if not (e.keycode == 8  or (e.keycode>=65 and e.keycode<=97) or e.keycode == 32 or e.keysym in ['0' , '1' , '2' , '3' , '4' , '5' , '6' , '7' , '8' , '9' , '0'] or e.keycode == 190):
@@ -1047,14 +1043,14 @@ class sales(base_window):
         copy_text(self.lbl_cust_mob2.cget("text"))
 
     def upd_cust(self , e):
-        #sales.sales(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Sales Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , os.path.expanduser('~')] , sales_form , sio , account_form)
-        #forms.acc(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Accounts" , [num_alpha  , name , mobile , email , barcode] , [os.path.expanduser('~') , ip ,tax_check, user , year] , account_form , 561)
         arglist = [ self.args[0] , self.args[1] , self.args[2] , self.args[3] , "Accounts" ,  [self.args[5][0] , self.args[5][4] , self.args[5][7] , self.args[5][9] , self.args[5][3]] , [self.args[6][4] , self.args[6][0] , self.args[6][1] , self.args[6][2] , self.args[6][3]] , self.args[9] , self.cust_id ]
         acc(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , arglist[8]  )
-        pass
+        
+        
 
     def send(self , e):
         if self.rad_cust_mob.get():
+            #@mob yake
             mob = self.lbl_cust_mob2.cget("text")
         if not self.rad_cust_mob.get():
             mob = self.lbl_cust_mob1.cget("text")
@@ -1121,7 +1117,7 @@ class sales(base_window):
 
     def forget_prod_list(self,e):
         self.frm_prod_name.place_forget()
-        #when shift-tab is pressed focus set to barcode 27 is escape
+        #when shift-tab is pressed focus set to barcode | 27 is escape
         if e != None and e.keycode == 27:
             self.ent_prod.focus_set()
             return
@@ -1153,14 +1149,12 @@ class sales(base_window):
             name = self.list_prod_name.get(self.list_prod_name.curselection())
             if name == "":
                 return
-        
-
 
         prod = get("http://"+self.ip+":4000/getProdByName" , params = {'prod_name' : name}).json()
         if prod == []:
             return
         prod = prod[0]
-        
+
         if str(prod['prod_id']) in self.added_products:
             found_sl_no = ""
             for each in self.added_products[str(prod['prod_id'])][1]:
@@ -1243,10 +1237,6 @@ class sales(base_window):
             self.tree_old_stk.insert('','end' ,tags=(tag,), values = values)
             i+=1
 
-
-
-
-
         if i == 0:
             sl_no = ""
             for each in loc:
@@ -1270,21 +1260,15 @@ class sales(base_window):
             self.ent_prod.delete(0 , con.END)
             return
 
-
-
         firstItem = self.tree_old_stk.get_children()[0]
         firstItem = self.tree_old_stk.item(firstItem)['values']
-        
 
         self.prod_units = firstItem[7].split()
         self.prod_sp = firstItem[6].split()
         self.prod_cp = float(firstItem[4])
 
-
         for each in global_stocks:
             tot_stk_qty -= round(float(global_stocks[each]),3)
-
-
 
         if len(stk_id) == 0:
             self.stk_id = ""
@@ -1293,19 +1277,12 @@ class sales(base_window):
             self.stk_id = str(firstItem[8])[0:2]+"_"+str(firstItem[8])[2:]
             self.max_qty = float(firstItem[3])
 
-        
-        #print(self.prod_id , self.prod_gst , self.prod_cess ,  self.prod_units  ,self.prod_sp , self.prod_cp , self.stk_id , self.max_qty, sep = '\n')
-
-
-
         self.lbl_tot_stk.config( text = "{:.3f}".format(tot_stk_qty) + " " + stocks[0]['prod_unit_type']) 
         self.lbl_mrp_1.config(text = "{:.2f}".format(round((stocks[0]['prod_mrp']),2)))
         self.lbl_mrp_2.config(text = "{:.2f}".format(round((stocks[0]['prod_mrp_old']),2)))
         self.lbl_units.config(text = self.prod_units[0] + "  ,  " + self.prod_units[1] + "  ,  " + self.prod_units[2] + "  ,  " + self.prod_units[3] )
 
-
         self.forget_prod_list(None)
-        
 
         if self.screen_height >1000 : self.frm_stk_sug.place(x = int(self.main_wdt * 0.004) , y = self.main_hgt* 0.165)
         else : self.frm_stk_sug.place(x = int(self.main_wdt * 0.006) , y = self.main_hgt* 0.188)
@@ -1319,15 +1296,11 @@ class sales(base_window):
         self.ent_prod_total.insert(0,"{:.2f}".format(round( float(self.prod_sp[0]) * 1 , 2)))
         self.ent_prod_total.config(state = con.DISABLED)
 
-
-
         self.ent_prod_sp.insert(0 ,self.prod_sp[0])
         if self.max_qty >= 1:
             self.ent_prod_qty.insert(0 , "1.000")
         else:
             self.ent_prod_qty.insert(0 , self.max_qty)
-
-
 
         self.ent_prod_qty.select_range(0,con.END)
         self.ent_prod_qty.focus_set()
@@ -1351,6 +1324,8 @@ class sales(base_window):
         curItem = self.tree_old_stk.focus()
         curItem = self.tree_old_stk.item(curItem)
         curItem = curItem['values']
+        if len(curItem) == 0:
+            return
 
         self.prod_sp = curItem[6].split()
         self.prod_cp = round(float(curItem[4]),3)
@@ -1427,12 +1402,16 @@ class sales(base_window):
             self.ent_prod_qty.focus_set()
             return
 
+    
+        
+           
 
         
         if self.selected_sl_no != 0:
             tag = 'b'
             if self.selected_sl_no %2 == 0:
                 tag = 'a'
+
             values = (self.selected_sl_no , name , qty , sp , tot , hsn , self.prod_units , self.prod_sp , self.prod_cp , self.max_qty , self.prod_gst , self.prod_cess , self.stk_id , self.prod_id)
             self.tree_sales.insert('', self.selected_sl_no - 1 ,tags=(tag,), values = values)
 
@@ -1447,8 +1426,9 @@ class sales(base_window):
             if self.sl_no %2 == 0:
                 tag = 'b'
             self.sl_no += 1
+
             values = (self.sl_no , name , qty , sp , tot , hsn , self.prod_units , self.prod_sp , self.prod_cp , self.max_qty , self.prod_gst , self.prod_cess , self.stk_id , self.prod_id)
-            self.tree_sales.insert('','end',tags=(tag,), values = values)
+            self.tree_sales.focus(self.tree_sales.insert('','end',tags=(tag,), values = values))
 
             if str(self.prod_id) in self.added_products:
                 self.added_products[str(self.prod_id)][0].append(self.sl_no)
@@ -1460,11 +1440,6 @@ class sales(base_window):
 
         self.cal_totals(values , True)
 
-
-        
-
-
-
         self.selected_sl_no = 0
         self.prod_id = -1
         self.prod_gst = -1
@@ -1475,13 +1450,27 @@ class sales(base_window):
         self.stk_id = ""
         self.max_qty = 0
 
+        
         self.ent_prod.delete(0 , con.END)
         self.ent_prod.focus_set()
         values = list(values)
+
+        units = "\"["
+        for each in values[6]:
+             units += '"' + "{:.3f}".format(float(each)) + '",' 
+        units = units[0:-1] + "]\""
+
+        sp = "\"["
+        for each in values[7]:
+             sp += '"' + "{:.2f}".format(float(each)) + '",'
+        sp = sp[0:-1] + "]\""
+
         values[6] = str(values[6])
         values[7] = str(values[7])
         
         get("http://"+self.ip+":5000/sales/addSalesProduct" , params = {"product" : values , 'sale_id' : self.sale_id} )
+        print(values)
+
 
     def select_from_treeview(self , e):
         if self.prod_id != -1:
@@ -1491,14 +1480,14 @@ class sales(base_window):
         if self.after_save:
             return
     
+    
         curItemNo = self.tree_sales.focus()
-        values =  self.tree_sales.item(curItemNo)['values']
-        tags =  self.tree_sales.item(curItemNo)['tags'][0]
-        
-        """if tags == 'edit':
-            msg.showinfo("Info" , "ITEM SELECT ಮಾಡಲು ಅವಕಾಶವಿಲ್ಲ")
-            return"""
+        if not (curItemNo in self.tree_sales.get_children()):
+            return
 
+        values =  self.tree_sales.item(curItemNo)['values']
+
+        tags =  self.tree_sales.item(curItemNo)['tags'][0]
         #values = (self.selectd_sl_no , name , qty , sp , tot , hsn , self.prod_units , self.prod_sp , self.prod_cp , self.max_qty , self.prod_gst , self.prod_cess , self.stk_id , self.prod_id)
  
         self.selected_sl_no = int(values[0])
@@ -1543,6 +1532,8 @@ class sales(base_window):
         self.ent_prod_qty.focus_set()
 
         self.tree_sales.detach(curItemNo)
+
+
         self.cal_totals(values , False)
         values = list(values)
         values[12] = self.stk_id
@@ -1571,8 +1562,11 @@ class sales(base_window):
             return
 
         curItemNo = self.tree_sales.focus()
-        tags = self.tree_sales.item(curItemNo)['tags'][0]
         values =  self.tree_sales.item(curItemNo)['values']
+        if len(values) == 0:
+            return
+
+        tags = self.tree_sales.item(curItemNo)['tags'][0]
         delete_values = values
 
         #values = (self.sl_no , name , qty , sp , tot , hsn , self.prod_units , self.prod_sp , self.prod_cp , self.max_qty , self.prod_gst , self.prod_cess , self.stk_id , self.prod_id)
@@ -1588,8 +1582,6 @@ class sales(base_window):
 
             if len(self.added_products[str(values[13])][0]) == 0:
                 del self.added_products[str(values[13])]
-
-        
 
         self.cal_totals(values , False)
        
@@ -1612,7 +1604,7 @@ class sales(base_window):
                 self.tree_sales.detach(each)
                 self.tree_sales.insert('',i,tags=(tag,), values = values)
             i +=1
-            
+
         self.sl_no = len(items) - 1
 
         self.tree_sales.detach(curItemNo)
@@ -1624,8 +1616,6 @@ class sales(base_window):
                     self.added_products[str(each)][0][j] =  self.added_products[str(each)][0][j] - 1
                 j += 1
 
-
-       
         self.selected_sl_no = 0
         self.prod_id = -1
         self.prod_gst = -1
@@ -1641,7 +1631,6 @@ class sales(base_window):
         if stk_id == '':
             stk_id = 'stkId'
         delete_values[12] = stk_id
-        print(tags)
         if tags == 'edit':
             new = False
         else:
@@ -1651,12 +1640,7 @@ class sales(base_window):
 
         get("http://"+self.ip+":5000/sales/removeSalesProduct" , params = {"product" : delete_values , 'sale_id' : self.sale_id , 'newBill' : new , 'db_year' : self.year} )
 
-
     """-------------------------------------------------------------------------------------------------"""
-
-
-
-
 
     """-------------------------------------calculation Functions---------------------------------------"""
 
@@ -1763,28 +1747,6 @@ class sales(base_window):
             self.lbl_total_amt.config( text = "{:.2f}".format( round( float(tot) - float(values[4]) , 2) ))
             self.lbl_total_hsn.config( text = "{:.2f}".format( round( float(hsn) - float(values[5]) , 2) ))
 
-        frieght = self.ent_freight.get()
-        try:
-            frieght = float(frieght)
-        except:
-            frieght = 0
-            self.ent_freight.delete(0 , con.END)
-            self.ent_freight.insert(0 , "0.00")
-
-
-        self.lbl_grd_tot.config(text = "{:.2f}".format(round(float(self.lbl_total_amt.cget("text"))+ frieght,2)))
-        
-    def cal_frieght(self , e):
-        frieght = self.ent_freight.get()
-
-        try:
-            frieght = float(frieght)
-        except:
-            frieght= 0
-            
-
-        self.lbl_grd_tot.config(text = "{:.2f}".format(round(float(self.lbl_total_amt.cget("text"))+ frieght,2)))
-
     def cal_vch_bal(self,e):
         try:
             y = float(self.ent_bank_paid.get())
@@ -1805,9 +1767,6 @@ class sales(base_window):
 
     """-------------------------------------------------------------------------------------------------"""
 
-
-
-
     """-------------------------------------Utilities----------------------------------------------------"""
 
 
@@ -1818,22 +1777,19 @@ class sales(base_window):
         self.ent_bill_no.config(state = con.NORMAL)
         self.ent_bill_date.config(state = con.NORMAL)
         self.ent_cust_name.config(state = con.NORMAL)
-        self.ent_freight.config(state = con.NORMAL)
         
     def clear_all_details(self):
         self.ent_bill_no.delete(0 , con.END)
         self.ent_bill_date.delete(0 , con.END)
         self.ent_cust_name.delete(0 , con.END)
-        self.ent_freight.delete(0 , con.END)
         self.lbl_total_amt.config(text = "")
         self.lbl_total_hsn.config(text = "")
-        self.lbl_grd_tot.config(text = "")
+        #self.lbl_grd_tot.config(text = "")
      
     def disable_all_details(self):
         self.ent_bill_no.config(state = con.DISABLED)
         self.ent_bill_date.config(state = con.DISABLED)
         self.ent_cust_name.config(state = con.DISABLED)
-        self.ent_freight.config(state = con.DISABLED)
 
     def enable_prod(self):
         self.ent_prod.delete(0,con.END)
@@ -1900,8 +1856,6 @@ class sales(base_window):
         if len(date1[2]) == 2:
             date1[2] = '20' + date1[2]    
 
-        
-    
         if int(datetime.date.today().strftime("%m")) != int(date1[1]) or int(datetime.date.today().strftime("%Y")) != int(date1[2]) :
             ans = msg.askyesno("Info" , "Entered date does not sync with system date\nDo you want to continue?")
             if not ans:
@@ -1928,9 +1882,6 @@ class sales(base_window):
             self.tree_sales.delete(each)
 
     """--------------------------------------------------------------------------------------------------"""
-
-    
-
 
     """--------------------------------------sales form functions----------------------------------------"""
 
@@ -1989,7 +1940,6 @@ class sales(base_window):
         self.firm_tot = []
         self.billInfo = {}
         self.voucher = {}
-        self.frieght_G = 0
         self.displayed_pdf = ""
         self.rendered_page_count = 0
         self.change_page_count = False
@@ -2000,10 +1950,9 @@ class sales(base_window):
         self.disable_prod()
         self.disable_prod_details()
         self.ent_bill_date.insert(0, datetime.date.today().strftime("%d") + "-" +datetime.date.today().strftime("%m") + "-" + datetime.date.today().strftime("%Y"))
-        self.ent_freight.insert(0 , '0.00')
         self.lbl_total_amt.config(text = '0.00')
         self.lbl_total_hsn.config(text = '0.00')
-        self.lbl_grd_tot.config(text = '0.00')
+        #self.lbl_grd_tot.config(text = '0.00')
         self.ent_cust_name.focus_set()
 
     def edit(self,e):
@@ -2019,7 +1968,6 @@ class sales(base_window):
         self.ent_pdf_bill_no.config(state  = con.DISABLED)
 
     def save(self , e):
-        t1 = time.time()
 
         if self.prod_id != -1:
             msg.showwarning("Warning" , "A Product is selected")
@@ -2039,17 +1987,9 @@ class sales(base_window):
             self.ent_bill_date.focus_set()
             return
 
-        frieght = self.ent_freight.get()
-        try:
-            frieght = float(frieght)
-        except:
-            frieght = 0
-            self.ent_freight.delete(0 , con.END)
-            self.ent_freight.insert(0 , "0.00")
 
 
-        req = get("http://"+self.ip+":5000/sales/save" , params = {'sale_id' : self.sale_id , 'year' : self.year , 'cust_id': self.cust_id, 'sale_date' : bill_date ,'frieght' :frieght, 'user_name': self.user })
-        t2 = time.time()
+        req = get("http://"+self.ip+":5000/sales/save" , params = {'sale_id' : self.sale_id , 'year' : self.year , 'cust_id': self.cust_id, 'sale_date' : bill_date , 'user_name': self.user })
         if (req.status_code == 201):
             msg.showinfo('Try Again',"Some other is being saved please wait!")
             return
@@ -2090,7 +2030,6 @@ class sales(base_window):
 
 
         elif(req.status_code == 200):
-            t3 = time.time()
             for each in self.tree_sales.get_children():
                 values =  self.tree_sales.item(each)['values']
                 tags =  self.tree_sales.item(each)['tags'][0]
@@ -2105,10 +2044,8 @@ class sales(base_window):
                 else: new = True
                 get("http://"+self.ip+":5000/sales/removeSalesProduct" , params = {"product" : values , 'sale_id' : self.sale_id , 'newBill' : new , 'db_year' : self.year} )
 
-            t4 = time.time()
 
             get("http://"+self.ip+":5000/sales/cancelSales" , params = {"sale_id" : self.sale_id})
-            t5 = time.time()
             self.btn_edit.config(state = con.DISABLED)
             self.btn_new.config(state = con.DISABLED)
             self.btn_save.config(state = con.DISABLED)
@@ -2139,10 +2076,7 @@ class sales(base_window):
             total = 0
             invoiceData = {}
             self.firm_tot = []
-            #change this
 
-            t6 = time.time()
-            
             for each in saved_products:
                 if saved_products[each]['sales_prod_id'] == ":":
                     self.firm_tot.append(saved_products[each]['firm_total'])
@@ -2167,7 +2101,7 @@ class sales(base_window):
                 j = 0
                 for pid in prod_id:
                     i+=1
-                    mrp = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select prod_mrp from somanath.products where prod_id = " + pid }).json()
+                    mrp = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select prod_mrp,prod_name_kan from somanath.products where prod_id = " + pid }).json()
                     values = (i , prod_name[j] , "{:.3f}".format(round(float(prod_qty[j]) , 3))  , "{:.3f}".format(round(float(prod_sp[j]) , 3)) , "{:.3f}".format(round(float(prod_sp[j]) , 3) * round(float(prod_qty[j]) , 3)) ,  "{:.3f}".format((round(float(prod_sp[j]),3) - round(float(prod_cp[j]),3) )* round(float(prod_qty[j]) , 3)) , mrp[0]['prod_mrp'] ,prod_gst[j] , prod_cess[j] , pur_id[j], each , prod_id[j] )
                     hsn += float(values[5])
                     total += float(values[4])
@@ -2183,37 +2117,33 @@ class sales(base_window):
                         tot = float(values[4]) + x[3]
                         qty = x[2] + float(prod_qty[j])
                         sp = round(tot / qty,3)
-                        invoiceData[prod_name[j]] = [x[0],sp,qty,tot]
+                        invoiceData[prod_name[j]] = [x[0],sp,qty,tot,x[4]]
                     else:
                         MRP = float(mrp[0]['prod_mrp'])
                         if ( MRP <= float(prod_sp[j]) ):
                             MRP = 0
-                        invoiceData[prod_name[j]] = [ MRP , float(prod_sp[j]) , float(prod_qty[j]) , float(values[4]) ]
-                    
-                   
+                        invoiceData[prod_name[j]] = [ MRP , float(prod_sp[j]) , float(prod_qty[j]) , float(values[4]),mrp[0]['prod_name_kan'] ]
 
                     j +=1
                     self.tree_sales.insert('','end',tags=(tag), values = values)
-            t7 = time.time()
 
             
             self.ent_cust_name.config(state = con.NORMAL)
             self.billInfo = json.dumps(invoiceData)
             oldBal = False
             self.voucher =json.dumps({})
-            self.frieght_G = frieght
             
             self.lbl_total_amt.config( text = "{:.2f}".format( round( float(total), 2) ))
             self.lbl_total_hsn.config( text = "{:.2f}".format( round( float(hsn), 2) ))
-            grand_total =  "{:.2f}".format(round(float(self.lbl_total_amt.cget("text"))+ frieght,2))
-            self.lbl_grd_tot.config(text = grand_total )
+            grand_total =  "{:.2f}".format(float(self.lbl_total_amt.cget("text")))
+            #self.lbl_grd_tot.config(text = grand_total )
             self.ent_bill_no.config(state = con.NORMAL)
             self.ent_bill_no.delete(0 , con.END)
             self.ent_bill_no.insert(0 , saved_bill_no)
             self.ent_bill_no.config(state = con.DISABLED)
-            t8 = time.time()
-            pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : saved_bill_no, 'Date' : bill_date, 'customerName': self.ent_cust_name.get().title() ,'invoiceData':self.billInfo,'billTotal': grand_total, 'oldBal' : oldBal, 'oldBalData':self.voucher,'frieght': self.frieght_G  })
-            self.displayed_pdf = "C:/Users/vijay/Desktop/Hosangadi2.0/Invoices/invoice.pdf"
+            pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : saved_bill_no, 'Date' : bill_date, 'customerName': self.ent_cust_name.get().title() ,'invoiceData':self.billInfo,'billTotal': grand_total, 'oldBal' : oldBal, 'oldBalData':self.voucher,'page':self.rad_printer.get()})
+            self.for_page_change = {'billNo' : saved_bill_no, 'Date' : bill_date, 'customerName': self.ent_cust_name.get().title() ,'invoiceData':self.billInfo,'billTotal': grand_total, 'oldBal' : oldBal, 'oldBalData':self.voucher}
+            self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
             open(self.displayed_pdf,"wb").write(pdf.content)  
             self.pdf.display_file(self.displayed_pdf)
             self.change_page_count = True
@@ -2260,7 +2190,6 @@ class sales(base_window):
 
 
             self.new_state = False
-            self.edit_state = False
             self.after_save = True
             self.cust_id = -1
             
@@ -2278,15 +2207,6 @@ class sales(base_window):
             self.prod_cp = 0
             self.stk_id = ""
             self.max_qty = 0
-            
-
-
-
-
-
-
-            t9 = time.time()
-        #print(t9 - t1 , t9 - t8 , t8 - t7 , t7 - t6 , t6 - t5 , t5 - t4 , t4 - t3 , t3 - t2 , "main", t2 - t1  , sep = "\n" )
 
     def cancel(self , e):
         """if self.edit_state:
@@ -2350,7 +2270,6 @@ class sales(base_window):
         self.firm_tot = []
         self.billInfo = {}
         self.voucher = {}
-        self.frieght_G = 0
         self.displayed_pdf = ""
         self.rendered_page_count = 0
         self.change_page_count = False
@@ -2382,7 +2301,14 @@ class sales(base_window):
         self.ent_pdf_bill_no.config(state  = con.NORMAL)
         self.combo_cust_vch.config(state = con.NORMAL)
         self.clear_cust_details(None)
-    
+
+    def select_page(self):
+        pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' :self.for_page_change['billNo'], 'Date' : self.for_page_change['Date'],'customerName': self.for_page_change['customerName'] ,'invoiceData':self.for_page_change['invoiceData'] , 'billTotal': self.for_page_change['billTotal'] , 'oldBal' : self.for_page_change['oldBal'] , 'oldBalData':self.for_page_change['oldBalData'],'page': self.rad_printer.get()})
+        self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
+        open(self.displayed_pdf,"wb").write(pdf.content)  
+        self.pdf.display_file(self.displayed_pdf)
+        self.change_page_count = True
+
     def select_window(self , e):
         selected = self.rad_select_window.get()
 
@@ -2473,7 +2399,7 @@ class sales(base_window):
         self.rad_odd_only.config(state = con.NORMAL)
         self.rad_even_only.config(state = con.NORMAL)
         self.rad_printer_1.config(state = con.NORMAL)
-        self.rad_printer_2.config(state = con.DISABLED)
+        self.rad_printer_2.config(state = con.NORMAL)
         self.btn_print_bill.config(state = con.NORMAL)
 
     def clear_print_details(self):
@@ -2541,8 +2467,9 @@ class sales(base_window):
     def print_both(self , e):
         self.enable_print_details()
         self.clear_print_details()
-        pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : self.ent_bill_no.get(), 'Date' : self.ent_bill_date.get(), 'customerName': self.ent_cust_name.get().title() ,'invoiceData':self.billInfo , 'billTotal': self.voucher['bill_amt'] , 'oldBal' : True , 'oldBalData':json.dumps(self.voucher),"frieght":self.frieght_G })
-        self.displayed_pdf = "C:/Users/vijay/Desktop/Hosangadi2.0/Invoices/invoice.pdf"
+        pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : self.ent_bill_no.get(), 'Date' : self.ent_bill_date.get(), 'customerName': self.ent_cust_name.get().title() ,'invoiceData':self.billInfo , 'billTotal': self.voucher['bill_amt'] , 'oldBal' : True , 'oldBalData':json.dumps(self.voucher),'page':self.rad_printer.get()})
+        self.for_page_change = {'billNo' : self.ent_bill_no.get(), 'Date' : self.ent_bill_date.get(), 'customerName': self.ent_cust_name.get().title() ,'invoiceData':self.billInfo , 'billTotal': self.voucher['bill_amt'] , 'oldBal' : True , 'oldBalData':json.dumps(self.voucher)}
+        self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
         open(self.displayed_pdf,"wb").write(pdf.content)  
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = True
@@ -2551,16 +2478,14 @@ class sales(base_window):
         self.enable_print_details()
         self.clear_print_details()
         pdf = get("http://"+self.ip+":7000/sales/voucherPrint" , params = {'Date' : str(datetime.datetime.today().strftime('%d-%m-%Y')), 'customerName': self.combo_cust_vch.get().title() , 'oldBalData':json.dumps(self.voucher)} , allow_redirects = True)
-        self.displayed_pdf = "C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\Invoices\\voucher.pdf"
+        self.displayed_pdf = self.location+"\\Desktop\\Invoices\\voucher.pdf"
         open(self.displayed_pdf ,"wb").write(pdf.content)
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = False
 
     def print(self , e):
-        
         #After Print function
         #Reset sales Bill
-
         self.btn_edit.config(state = con.NORMAL)
         self.btn_new.config(state = con.NORMAL)
         self.btn_save.config(state = con.DISABLED)
@@ -2596,12 +2521,12 @@ class sales(base_window):
         self.firm_tot = []
         self.billInfo = {}
         self.voucher = {}
-        self.frieght_G = 0
+        self.for_page_change = {}
         self.displayed_pdf = ""
         self.rendered_page_count = 0
         self.change_page_count = False
 
-
+        #@  get("http://printer server")
 
         self.enable_all_details()
         self.clear_all_details()
@@ -2660,9 +2585,6 @@ class sales(base_window):
             self.ent_cash_paid.select_range(0 , con.END)
             return
 
-        
-
-
         if billNo == "":
             params = { 
                         'dbYear':self.year,
@@ -2675,7 +2597,6 @@ class sales(base_window):
                         'firm2':'',
                         'firm3':'',
                         'user_name':self.user,
-                        'frieght' : '',
                         'editState' : ''
                     } 
         else:
@@ -2690,10 +2611,8 @@ class sales(base_window):
                         'firm2':self.firm_tot[1],
                         'firm3':self.firm_tot[2],
                         'user_name':self.user,
-                        'frieght' : self.frieght_G,
                         'editState' : self.edit_state
                     }
-
 
         voucher = get("http://"+self.ip+":5000/sales/voucher" , params = params).json()
         self.voucher = voucher
@@ -2715,13 +2634,13 @@ class sales(base_window):
         self.edit_state = False
         self.new_state = False
         self.after_save = False
-             
+
     """--------------------------------------------------------------------------------------------------"""
 
     """--------------------------------------edit bill functions----------------------------------------"""
     def get_invoice_details(self,e):
         bill_no = self.ent_bill_no.get()
-        self.ent_bill_no.focus_set()
+        
         
     
 
@@ -2748,7 +2667,7 @@ class sales(base_window):
             return
         
         self.sale_id = self.year+"_"+bill_no
-
+      
         edit_data = get("http://"+self.ip+":5000/sales/edit" , params = {'billNo' : self.sale_id ,'dbYear':self.year , 'user' : self.user  , 'sale_date' : cust[0]['sale_date'] , 'cust_name' : cust[0]['acc_name']})
 
         if edit_data.status_code == 201:
@@ -2757,11 +2676,13 @@ class sales(base_window):
             self.ent_bill_no.focus_set()
             return    
 
+   
+        self.btn_edit.config(state = con.DISABLED)
         edit_data = edit_data.json()
 
         self.btn_new.config(state= con.DISABLED)
         self.enable_all_details()
-
+        self.ent_bill_no.config(state = con.DISABLED)
         self.ent_cust_name.delete(0,con.END)
         self.ent_cust_name.insert(0,cust[0]['acc_name'])
         self.ent_bill_date.delete(0,con.END)
@@ -2769,11 +2690,9 @@ class sales(base_window):
 
 
     
-        self.ent_freight.delete(0,con.END)
-        self.ent_freight.insert(0,edit_data['freight'])
         self.lbl_total_amt.config( text = edit_data['total'])
         self.lbl_total_hsn.config( text = edit_data['total_hsn'])
-        self.lbl_grd_tot.config( text = "{:.2f}".format(float(edit_data['freight'])+float(edit_data['total'])) )
+        #self.lbl_grd_tot.config( text = "{:.2f}".format(float(edit_data['total'])) )
         child = self.tree_sales.get_children()
         for each in child:
             self.tree_sales.delete(each)
@@ -2810,7 +2729,6 @@ class sales(base_window):
         self.firm_tot = []
         self.billInfo = {}
         self.voucher = {}
-        self.frieght_G = 0
         self.displayed_pdf = ""
         self.rendered_page_count = 0
         self.change_page_count = False
@@ -2825,11 +2743,9 @@ class sales(base_window):
 
         
         sql = "SELECT (amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash) as amt_paid_cash , (amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank) as amt_paid_bank,(trans_amt_firm1+trans_amt_firm2+trans_amt_firm3) - (amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank) as tot_bal, trans_amt_firm1 - (amt_paid_firm1_cash+amt_paid_firm1_bank) as tot_bal_firm1, trans_amt_firm2 - (amt_paid_firm2_cash+amt_paid_firm2_bank) as tot_bal_firm2, trans_amt_firm3 - (amt_paid_firm3_cash+amt_paid_firm3_bank) as tot_bal_firm3 FROM somanath20"+self.year+".cashflow_sales where trans_sales = '"+self.year+"_"+bill_no+"';"
-        
         bal_diff = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql }).json()
         
         sql = "UPDATE somanath20"+self.year+".acc_bal SET acc_cls_bal_firm1 ="+"{:.2f}".format(round(float( cust[0]['acc_cls_bal_firm1']) - float(bal_diff[0]['tot_bal_firm1']),2 )) +", acc_cls_bal_firm2 ="+"{:.2f}".format(round(float( cust[0]['acc_cls_bal_firm2']) - float(bal_diff[0]['tot_bal_firm2']),2 )) +", acc_cls_bal_firm3 ="+"{:.2f}".format(round(float( cust[0]['acc_cls_bal_firm3']) - float(bal_diff[0]['tot_bal_firm3']),2 )) +" where acc_id ="+ str(cust[0]['acc_id'])+";"
-        
         get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql })
         
         self.ent_prod.config(state = con.NORMAL)
@@ -2852,8 +2768,8 @@ class sales(base_window):
         self.ent_cash_paid.insert(0 , bal_diff[0]['amt_paid_cash'])
         self.lbl_tot_paid.config(text = "{:.2f}".format( float( bal_diff[0]['amt_paid_cash']) + float(bal_diff[0]['amt_paid_bank']) ) )
         self.lbl_old_bal.config(text = "{:.2f}".format(float(cust[0]['cust_bal']) - float(bal_diff[0]['tot_bal'])) )
-        self.lbl_bill_amt.config(text = "{:.2f}".format(float(edit_data['freight'])+float(edit_data['total'])) )
-        self.lbl_fin_bal.config(text = "{:.2f}".format(float(cust[0]['cust_bal']) - float(bal_diff[0]['tot_bal']) + float(edit_data['freight'])+float(edit_data['total']) - float(bal_diff[0]['amt_paid_bank']) - float(bal_diff[0]['amt_paid_cash'])) )
+        self.lbl_bill_amt.config(text = "{:.2f}".format(float(edit_data['total'])) )
+        self.lbl_fin_bal.config(text = "{:.2f}".format(float(cust[0]['cust_bal']) - float(bal_diff[0]['tot_bal']) + float(edit_data['total']) - float(bal_diff[0]['amt_paid_bank']) - float(bal_diff[0]['amt_paid_cash'])) )
         self.combo_cust_vch.delete(0,con.END)
         self.combo_cust_vch.insert(0,cust[0]['acc_name'])
         self.combo_cust_vch.config(state= con.DISABLED)
@@ -2863,10 +2779,16 @@ class sales(base_window):
         self.btn_save.config( state = con.NORMAL)
     """----------------------------------------print bill functions-------------------------------------------"""
     def bill_pdf_only(self,e):
+        x = self.ent_pdf_bill_no.get().split(' ')
         bill_number = self.year+"_"+ self.ent_pdf_bill_no.get()
-        sql = "SELECT  acc_name , sales_prod_id , sales_prod_qty , sales_prod_sp , date_format(sale_date,'%d-%m-%Y') as Date , freight , discount, acc_cls_bal_firm1 + acc_cls_bal_firm2 + acc_cls_bal_firm3 as remaining_bal,trans_amt_firm1+trans_amt_firm2+trans_amt_firm2 as bill_amt,amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank as amountPaid"
-        sql += " FROM somanath20"+self.year+".sales, somanath.accounts, somanath20"+self.year+".acc_bal, somanath20"+self.year+".cashflow_sales where somanath20"+self.year+".sales.sales_id = '"+str(bill_number)+"'" 
-        sql += " and somanath20"+self.year+".sales.sales_acc = somanath.accounts.acc_id  and somanath20"+self.year+".acc_bal.acc_id = somanath20"+self.year+".sales.sales_acc and somanath20"+self.year+".cashflow_sales.trans_sales = somanath20"+self.year+".sales.sales_id;"
+        db_year = self.year
+        if len(x)>1:
+            bill_number = x[0]+'_'+x[1]
+            db_year = x[0]
+        
+        sql = "SELECT  acc_name , sales_prod_id , sales_prod_qty , sales_prod_sp , date_format(sale_date,'%d-%m-%Y') as Date  , discount, acc_cls_bal_firm1 + acc_cls_bal_firm2 + acc_cls_bal_firm3 as remaining_bal,trans_amt_firm1+trans_amt_firm2+trans_amt_firm3 as bill_amt,amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank as amountPaid"
+        sql += " FROM somanath20"+db_year+".sales, somanath.accounts, somanath20"+db_year+".acc_bal, somanath20"+db_year+".cashflow_sales where somanath20"+db_year+".sales.sales_id = '"+str(bill_number)+"'" 
+        sql += " and somanath20"+db_year+".sales.sales_acc = somanath.accounts.acc_id  and somanath20"+db_year+".acc_bal.acc_id = somanath20"+db_year+".sales.sales_acc and somanath20"+db_year+".cashflow_sales.trans_sales = somanath20"+db_year+".sales.sales_id;"
 
         bill_data = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql }).json()
 
@@ -2887,10 +2809,10 @@ class sales(base_window):
         
         
 
-        prod_id = "("
         prod_qty = []
         prod_sp = []
-
+        name_mrp = {}
+        j = 0
         for each in bill_data:
             prodQty = each['sales_prod_qty'].split(':')[1:-1]
             prodSp = each['sales_prod_sp'].split(':')[1:-1]
@@ -2898,35 +2820,30 @@ class sales(base_window):
             for prodId in each['sales_prod_id'].split(':')[1:-1]:
                 prod_qty.append(prodQty[i])
                 prod_sp.append(prodSp[i])
-                prod_id += prodId +','
+                name_mrp[j] = get("http://"+self.ip+":7000/onlySql" , params = {'sql' : "SELECT prod_name,prod_mrp,prod_name_kan FROM somanath.products where prod_id = "+ prodId }).json()
                 i+=1
-        
-        prod_id = prod_id[:-1]+');'
-        
-        sql = "SELECT prod_name,prod_mrp FROM somanath.products where prod_id in "+ prod_id
+                j+=1
 
-        name_mrp = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql }).json()
         invoiceData = {}
         i = 0
         grandTotal = 0
         for each in name_mrp:
-            if each['prod_name'] in invoiceData:
-                x = invoiceData[each['prod_name']]
+            if name_mrp[each][0]['prod_name'] in invoiceData:
+                x = invoiceData[name_mrp[each][0]['prod_name']]
                 tot = float(prod_qty[i])*float(prod_sp[i]) + x[3]
                 qty = x[2] + float(prod_qty[i])
-                sp = round(tot / qty,3)
+                sp = round(tot / qty,2)
                 grandTotal += tot
-                invoiceData[each['prod_name']] = [x[0],sp,qty,tot]
+                invoiceData[name_mrp[each][0]['prod_name']] = [x[0],sp,qty,tot,x[4]]
             else:
-                MRP = float(each['prod_mrp'])
+                MRP = float(name_mrp[each][0]['prod_mrp'])
                 if ( MRP <= float(prod_sp[i]) ):
                     MRP = 0
                 tot = float(prod_qty[i])*float(prod_sp[i])
                 grandTotal += tot
-                invoiceData[each['prod_name']] = [ MRP , float(prod_sp[i]) , float(prod_qty[i]) , tot  ]
+                invoiceData[name_mrp[each][0]['prod_name']] = [ MRP , float(prod_sp[i]) , float(prod_qty[i]) , tot, name_mrp[each][0]['prod_name_kan']  ]
             i += 1
 
-        grandTotal += float(bill_data[0]['freight'])
             
             
         voucher = {
@@ -2935,10 +2852,9 @@ class sales(base_window):
             'remaining_bal': bill_data[0]['remaining_bal']
         } 
 
-
-        pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] ,'invoiceData':json.dumps(invoiceData) , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher),"frieght":float(bill_data[0]['freight']) })
-
-        self.displayed_pdf = "C:/Users/vijay/Desktop/Hosangadi2.0/Invoices/invoice.pdf"
+        pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] ,'invoiceData':json.dumps(invoiceData) , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher),'page': self.rad_printer.get()})
+        self.for_page_change = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] ,'invoiceData':json.dumps(invoiceData) , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher)}
+        self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
         open(self.displayed_pdf,"wb").write(pdf.content)  
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = True
@@ -3096,20 +3012,16 @@ class sales(base_window):
             to_date = ''        
         else:
             limit = 10000000
-
-      
-
-
-
-        req = get("http://"+self.ip+":6000/reports/getCashflow" , params = { "acc_name" : cust_name , "limit" : limit ,'sdate' : from_date ,'edate' :to_date,'db' : self.year  }) 
+        req = get("http://"+self.ip+":6000/reports/getCashflowSales" , params = { "acc_name" : cust_name , "limit" : limit ,'sdate' : from_date ,'edate' :to_date,'db' : self.year  }) 
 
 
         data = req.json()
         if len(data) > 0:
+            dByear = str(data.pop())
             acc_id = data.pop()
             data.reverse()
             max_date = data[0]['transdate']
-            sql = "SELECT sum((trans_amt_firm1+trans_amt_firm2+trans_amt_firm3)-(amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank)) as diff FROM somanath2021.cashflow_sales where trans_acc = "+ str(acc_id) +" and trans_date < '"+str(datetime.datetime.strptime(data[0]['transdate'], '%d-%b-%y')).split()[0]+"'"
+            sql = "SELECT sum((trans_amt_firm1+trans_amt_firm2+trans_amt_firm3)-(amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank)) as diff FROM somanath20"+dByear+".cashflow_sales where trans_acc = "+ str(acc_id) +" and trans_date < '"+str(datetime.datetime.strptime(data[0]['transdate'], '%d-%b-%y')).split()[0]+"'"
             
 
             for each in data:
@@ -3118,9 +3030,16 @@ class sales(base_window):
                 else:
                     break
             
-            opn_bal = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql }).json()[0]['diff']
-            if opn_bal == "" or opn_bal == None:
-                opn_bal = 0
+            bal_diff = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql }).json()[0]['diff']
+            if bal_diff == "" or bal_diff == None:
+                bal_diff = 0
+            
+            sql = "SELECT acc_opn_bal_firm1+acc_opn_bal_firm2+acc_opn_bal_firm3 as open_bal FROM somanath20"+dByear+".acc_bal where acc_id ="+ str(acc_id)
+
+            opn_bal1 = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql }).json()[0]['open_bal']
+            if opn_bal1 == "" or opn_bal1 == None:
+                opn_bal = 0 + bal_diff
+            opn_bal = round(opn_bal1 + bal_diff,2)
             self.tree_cashflow.insert('','end',tags=('a'), values = ['-' , '-' , '-' , '-' , "{:.2f}".format(round(opn_bal,2))])
             
 
@@ -3151,7 +3070,13 @@ class sales(base_window):
             self.ent_limit_sales_rep.delete(0 , con.END)
             self.ent_from_sales_rep.delete(0 , con.END)
             self.ent_to_sales_rep.delete(0 , con.END)
-            req = get("http://localhost:6000/reports/getCustomersales" , params = { "acc_name" : '' , "limit" : '' ,'sdate' :'','edate' :'','invNo' : inv_no ,'db' : self.year })
+            try:
+                inv = inv_no.split("-")[1]
+                dbYear = inv_no.split("-")[0]
+            except IndexError:
+                dbYear= self.year
+                inv = inv_no
+            req = get("http://"+self.ip+":6000/reports/getCustomersales" , params = { "acc_name" : '' , "limit" : '' ,'sdate' :'','edate' :'','invNo' : inv ,'db' : dbYear })
 
 
         else:
@@ -3254,7 +3179,7 @@ class sales(base_window):
 
                 to_date = date1[2] + "-" + date1[1] + "-" + date1[0]
 
-            req = get("http://localhost:6000/reports/getCustomersales" , params = { "acc_name" : cust_name , "limit" : limit ,'sdate' :from_date,'edate' :to_date,'invNo' : '' ,'db' : self.year })
+            req = get("http://"+self.ip+":6000/reports/getCustomersales" , params = { "acc_name" : cust_name , "limit" : limit ,'sdate' :from_date,'edate' :to_date,'invNo' : '' ,'db' : self.year })
 
 
             

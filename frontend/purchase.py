@@ -652,10 +652,6 @@ class purchase(base_window):
         self.scroll_y_gst.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
         self.tree_gst.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
 
-
-
-
-
         self.tree_frame_cess = ttk.Frame(self.frm_row4 , height = int(self.main_hgt * 0.3) , width = int(self.main_wdt * 0.165) , style = "root_menu.TFrame")
         self.tree_frame_cess.pack_propagate(False)
         self.tree_cess = ttk.Treeview(self.tree_frame_cess ,selectmode = "none", takefocus = True , show = "headings" , style = "window.Treeview")
@@ -667,17 +663,13 @@ class purchase(base_window):
         self.tree_cess['columns'] = ('cessPer','amt')
         self.tree_cess.heading('cessPer' , text = 'CESS %')
         self.tree_cess.heading('amt' , text = 'AMT')
-        
+
         self.tree_cess_wdt = self.tree_frame_cess.winfo_reqwidth()-self.scroll_y_cess.winfo_reqwidth()
         self.tree_cess.column('cessPer' , width = int(self.tree_cess_wdt*0.5) ,minwidth = int(self.tree_cess_wdt*0.5) , anchor = "w")
         self.tree_cess.column('amt' , width = int(self.tree_cess_wdt*0.5) ,minwidth = int(self.tree_cess_wdt*0.5) , anchor = "e")
-        
+
         self.scroll_y_cess.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
         self.tree_cess.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
-
-
-
-
 
         self.frm_totals = ttk.Frame( self.frm_row4  , style = "root_main.TFrame")
         self.frm_totals.grid_propagate(True)
@@ -715,7 +707,7 @@ class purchase(base_window):
         self.ent_tot_exp.grid(row = 1 , column = 4)
         self.lbl_grd_tot_txt.grid(row = 2 , column = 3)
         self.lbl_grd_tot.grid(row = 2 , column = 4)
-        
+
         self.frm_totals.pack(side = con.RIGHT)
 
         #----------------------------------------ROW 4 items ends here-----------------------------------------------------------------------#
@@ -770,14 +762,8 @@ class purchase(base_window):
         self.frm_pay_meth.pack(side = con.LEFT)
         self.frm_amt_paid.pack(side = con.LEFT)
         if self.root.winfo_screenheight()>1000:self.frm_amt_paid.pack(side = con.LEFT , padx = int(self.main_wdt*0.005))
-        
-        
-        
-
 
         #----------------------------------------ROW 4 items ends here-----------------------------------------------------------------------#
-
-
 
         self.btn_frame = ttk.Frame(self.main_frame , style = "root_main.TFrame")
 
@@ -822,7 +808,7 @@ class purchase(base_window):
         #self.destroy_pur_details(None)
         #self.ent_bar.focus_set()
         #-temporary settings ends here--#
-
+#@
         self.i = 0
 
         @self.sio.on('hello')
@@ -863,7 +849,6 @@ class purchase(base_window):
         self.disable_all()
 
     def destroy_pur_details(self , e):
-        
 
         sup_name = self.combo_supplier.get().upper()
         sup_gst = self.lbl_sup_gst.cget("text")
@@ -872,8 +857,6 @@ class purchase(base_window):
         firm_gst = self.lbl_firm_gst.cget("text")
         date = self.ent_pur_date.get().upper()
         inv_no = self.ent_inv_no.get().upper()
-
-        
 
         if sup_gst == "" or self.selected_tax_meth == "" or date == "" or inv_no == "" :
             msg.showinfo( "Info" , "Enter all Purchase details")
@@ -943,19 +926,14 @@ class purchase(base_window):
                     "year"  : self.year, 
                     "productsAdded" : False,
                     "editState"  :   False
-
         }
-       
-        
+
         if len(self.added_products) > 0:
             params['productsAdded'] = True 
 
         if self.edit_state:
             params['editState'] = True            
 
-
-        
-        
         res = get("http://"+self.ip+":5000/purchases/addEditPurDetails"  , params = params)
         
         #treomove if 
@@ -969,10 +947,6 @@ class purchase(base_window):
             self.ent_inv_no.select_range(0,con.END)
             self.ent_inv_no.focus_set()
             return
-
-       
-
-
         self.frm_pur_details.place_forget()
         self.enable_all()
         self.ent_bar.focus_set()
@@ -1835,8 +1809,9 @@ class purchase(base_window):
 
     def select_rates(self , e):
         curItem = self.tree_old_stk.focus()
-        curItem = self.tree_old_stk.item(curItem)
-        curItem = curItem['values']
+        curItem = self.tree_old_stk.item(curItem)['values']
+        if len(curItem) == 0:
+            return
 
         self.ent_nml1.delete(0,con.END)
         self.ent_nml2.delete(0,con.END)
@@ -2155,7 +2130,7 @@ class purchase(base_window):
         prev_stk_sp = self.tree_old_stk.get_children()
         if prev_stk_sp!= []:
             prev_stk_sp = self.tree_old_stk.item(prev_stk_sp[0])['values'][4:20]
-            print(prev_stk_sp)
+            
 
         temp = prev_stk_sp
         prev_stk_sp = []
@@ -2165,6 +2140,9 @@ class purchase(base_window):
        
         if prev_stk_sp != cur_stk_sp:
             msg.showinfo("Info" , " SET SELLING PRICE")
+            arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
+            update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
+
 
         prod_exp = self.ent_exp.get()
         if prod_exp == "":
@@ -2221,6 +2199,9 @@ class purchase(base_window):
         
         curItemNo = self.tree_pur.focus()
         values =  self.tree_pur.item(curItemNo)['values']
+
+        if not (curItemNo in self.tree_pur.get_children()):
+            return
         #print(values)
         self.added_products.remove(values[24])
         self.selected_sl_no = values[0]
@@ -2266,6 +2247,8 @@ class purchase(base_window):
     def delete_from_treeview(self,e):
         curItemNo = self.tree_pur.focus()
         values =  self.tree_pur.item(curItemNo)['values']
+        if len(values) == 0:
+            return
 
         if self.edit_state:
             if float(values[26]) > 0 :
@@ -2556,7 +2539,7 @@ class purchase(base_window):
     def upd_price(self , e):
         arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
         update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
-        pass
+        
 
     def upd_prod(self , e):
         arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Products" , [ self.args[5][0]  , self.args[5][9] , self.args[5][2] , self.args[5][3] , self.args[5][4]  , self.args[5][2] ,  self.args[5][6] ] , [  self.args[6][4] , self.args[6][0] , self.args[6][2] ] ,  self.args[9]]

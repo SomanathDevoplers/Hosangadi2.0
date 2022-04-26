@@ -1,11 +1,17 @@
 import io
-from tkinter import Text , constants as con , filedialog , ttk , messagebox as msg , StringVar , IntVar
+import json
+from tkinter import Text , constants as con , filedialog , ttk , messagebox as msg , StringVar , IntVar , simpledialog
 from requests import get , post
 from PIL import Image,ImageTk
 import os
 from other_classes import base_window , image_viewer
-
-
+import os
+from reportlab.graphics.barcode import code128
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm,mm
+from reportlab.pdfgen import canvas
+from math import floor
+from webbrowser import open as edge
 
 class firm(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , firm_form):
@@ -137,14 +143,6 @@ class firm(base_window):
 
         self.tree.bind('<Double-Button-1>',self.select_tree)
         self.tree.bind('<Return>',self.select_tree)
-        #self.tree['show'] = 'headings'
-
-
-        """for i in range(100):
-            if i%2 == 0:
-                self.tree.insert('','end' ,tags=('a',), values = ("SMS"+str(i) , "Vijay" , "Somanath Stores" ))
-            else:
-                self.tree.insert('','end' ,tags=('b',), values = ("SMS"+str(i) , "Vijay", "Somanath Stores" ))"""
 
         self.btn_frame = ttk.Frame(self.main_frame , style = "root_main.TFrame")
         self.btn_new = ttk.Button(self.btn_frame , text = "New" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.new(None))
@@ -477,7 +475,7 @@ class firm(base_window):
                                                                                                    
                                                       
         if req.status_code == 201:
-            msg.showerror("Error" , "One of these columns is not unique : \n\t1.Firm Name \n\t2.Firm Suffix \n\t3.Firm GSTIN \n\t4.Firm PAN")
+            msg.showerror("Info" , "One of these columns is not unique : \n\t1.Firm Name \n\t2.Firm Suffix \n\t3.Firm GSTIN \n\t4.Firm PAN")
             return
 
         
@@ -576,8 +574,7 @@ class firm(base_window):
         self.image_photo_loc = ""
 
     def firm_list(self):
-        req = get("http://"+self.ip+":5000/firms/getFirmList" , params = {"tax_check" : self.tax_check})
-        
+        req = get("http://"+self.ip+":6000/firms/getFirmList" , params = {"tax_check" : self.tax_check})
         for each in self.tree.get_children():
             self.tree.delete(each)
 
@@ -603,6 +600,7 @@ class firm(base_window):
             cur_item = self.tree.focus()
             cur_item = self.tree.item(cur_item)
             cur_item = cur_item['values']
+         
 
             req = get("http://"+self.ip+":6000/firms/getSelectedFirm" , params = {"firm_id" : cur_item[0]})
             
@@ -683,7 +681,7 @@ class firm(base_window):
         req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
         if req.status_code == 200:
             if len(req.json())>0:
-                msg.showinfo("Error" , "This firm name exists")
+                msg.showinfo("Info" , "This firm name exists")
                 self.ent_firm_name.select_range(0 , con.END)
                 self.ent_firm_name.focus_set()
                 self.btn_refresh.invoke()
@@ -709,11 +707,6 @@ class firm(base_window):
         self.ent_firm_pan.insert(0,gstin[2:12])
         self.ent_firm_gstin.delete(0,con.END)
         self.ent_firm_gstin.insert(0,gstin)
-
-
-
-
-
 
 
 
@@ -769,11 +762,7 @@ class taxes(base_window):
         self.tree.bind('<Double-Button-1>',self.select_tree)
         self.tree.bind('<Return>',self.select_tree)
 
-        """for i in range(100):
-            if i%2 == 0:
-                self.tree.insert('','end' ,tags=('a',), values = ("SMS"+str(i) , "Vijay" , "Somanath Stores" ))
-            else:
-                self.tree.insert('','end' ,tags=('b',), values = ("SMS"+str(i) , "Vijay", "Somanath Stores" ))"""
+
 
         self.btn_frame = ttk.Frame(self.main_frame , style = "root_main.TFrame")
         self.btn_new = ttk.Button(self.btn_frame , text = "New" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.new(None))
@@ -931,11 +920,6 @@ class taxes(base_window):
         except IndexError:
             self.btn_new["state"]='enable'
             self.btn_edit["state"]='disabled'
-
-
-
-
-
 
 
 
@@ -1142,7 +1126,7 @@ class categories(base_window):
 
         req = post("http://"+self.ip+":6000/cat/save" , params = parameters , files = files)
         if req.status_code == 201:
-            msg.showerror("Error" , "This Category has been added")
+            msg.showerror("Info" , "This Category has been added")
             return
 
         self.clear_all()
@@ -1245,7 +1229,7 @@ class categories(base_window):
         req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
         if req.status_code == 200:
             if len(req.json())>0:
-                msg.showinfo("Error" , "This category name exists")
+                msg.showinfo("Info" , "This category name exists")
                 self.ent_cat_name.select_range(0 , con.END)
                 self.ent_cat_name.focus_set()
                 return
@@ -1271,9 +1255,6 @@ class categories(base_window):
         self.ent_cat_name.config(state = con.DISABLED)
         self.btn_cat_img_brw.config(state = con.DISABLED)
         self.btn_cat_img_view.config(state = con.DISABLED)
-
-      
-
 
 
 
@@ -1476,7 +1457,6 @@ class emp(base_window):
         self.btn_new.config(state = con.DISABLED)
         self.btn_edit.config(state = con.DISABLED)
         self.btn_save.config(state = con.NORMAL)
-        #self.btn_cancel.config(state = con.NORMAL)
 
         self.new_state = False
         self.edit_state = True
@@ -1546,7 +1526,7 @@ class emp(base_window):
         req = post("http://"+self.ip+":6000/employs/save" , params = parameters , files = files)
 
         if req.status_code == 201:
-            msg.showerror("Error" , "This employee has been added")
+            msg.showerror("Info" , "This employee has been added")
             return
 
         self.clear_all()
@@ -1599,7 +1579,7 @@ class emp(base_window):
         req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
         if req.status_code == 200:
             if len(req.json())>0:
-                msg.showinfo("Error" , "This Employee name exists")
+                msg.showinfo("Info" , "This Employee name exists")
                 self.ent_emp_name.select_range(0 , con.END)
                 self.ent_emp_name.focus_set()
                 return
@@ -1659,10 +1639,6 @@ class emp(base_window):
 
 
 
-
-
-   
-        
 
 class acc(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , acc_form , search_acc_id = -1):
@@ -2112,7 +2088,7 @@ class acc(base_window):
         req = post("http://"+self.ip+":6000/accounts/save" , params = parameters , files = files)
         
         if req.status_code == 201:
-            msg.showerror("Error" , "Account with same Name / GSTIN exists")
+            msg.showerror("Info" , "Account with same Name / GSTIN exists")
             return
         
         self.clear_all()
@@ -2249,7 +2225,7 @@ class acc(base_window):
         req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
         if req.status_code == 200:
             if len(req.json())>0:
-                msg.showinfo("Error" , "This account name exists")
+                msg.showinfo("Info" , "This account name exists")
                 self.ent_acc_name.select_range(0 , con.END)
                 self.ent_acc_name.focus_set()
                 return
@@ -2260,10 +2236,6 @@ class acc(base_window):
 
     def refresh(self , e):
         self.acc_list(None)
-
-
-
-
 
 
 
@@ -2945,7 +2917,7 @@ class prods(base_window):
                     int(bar1[1:])
                     barGenerated = True
                 except ValueError:
-                    msg.showerror("Error","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
                     self.ent_bar1.select_range(0,con.END)
                     self.ent_bar1.focus_set()
                     return
@@ -2955,7 +2927,7 @@ class prods(base_window):
                 try:
                     int(bar2[1:])
                 except ValueError:
-                    msg.showerror("Error","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
                     self.ent_bar2.select_range(0,con.END)
                     self.ent_bar2.focus_set()
                     return
@@ -2965,7 +2937,7 @@ class prods(base_window):
                 try:
                     int(bar3[1:])
                 except ValueError:
-                    msg.showerror("Error","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
                     self.ent_bar3.select_range(0,con.END)
                     self.ent_bar3.focus_set()
                     return
@@ -2975,7 +2947,7 @@ class prods(base_window):
                 try:
                     int(bar4[1:])
                 except ValueError:
-                    msg.showerror("Error","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
                     self.ent_bar4.select_range(0,con.END)
                     self.ent_bar4.focus_set()
                     return
@@ -3051,7 +3023,6 @@ class prods(base_window):
         self.btn_add_cat.focus_set()
 
     def generate(self,e):
-        
         req = post("http://"+self.ip+":6000/barcodes" , params = {'type' : 'get'})
         max_bar = req.json()
         self.generated_bar = int(max_bar)
@@ -3061,7 +3032,7 @@ class prods(base_window):
         if self.ent_bar1.get() == "":
             self.ent_bar1.insert(0 , barcode)
         else:
-            msg.showinfo("Error" , "Clear Barcode 1 to generate")
+            msg.showinfo("Info" , "Clear Barcode 1 to generate")
             self.ent_bar1.select_range(0,con.END)
             self.ent_bar1.focus_set()
             return
@@ -3121,7 +3092,7 @@ class prods(base_window):
         elif cat3 == "":
             self.ent_cat3.insert(0,category)
         else:
-            msg.showinfo("Error" , "Empty any of the categories")
+            msg.showinfo("Info" , "Empty any of the categories")
             return
     """category entry functions ends here"""
 
@@ -3180,7 +3151,7 @@ class prods(base_window):
         elif sup3 == "":
             self.ent_sup3.insert(0,supplier)
         else:
-            msg.showinfo("Error" , "Empty any of the suppliers")
+            msg.showinfo("Info" , "Empty any of the suppliers")
             return
     """supplier entry functions ends here"""
     
@@ -3241,7 +3212,7 @@ class prods(base_window):
         if kan_name != "":
             req = get("http://"+self.ip+":7000/sales/checkKannada" , params = {'kannada' : kan_name })
             if req.status_code == 201:
-                msg.showerror( "Error" , "ಕನ್ನಡ ಹೆಸರನ್ನು ಬದಲಿಸಿ")
+                msg.showerror( "Info" , "ಕನ್ನಡ ಹೆಸರನ್ನು ಬದಲಿಸಿ")
                 self.ent_kan.select_range(0 , con.END)
                 self.ent_kan.focus_set()
 
@@ -3267,7 +3238,7 @@ class prods(base_window):
         req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
         if req.status_code == 200:
             if len(req.json())>0:
-                msg.showinfo("Error" , "This product name exists")
+                msg.showinfo("Info" , "This product name exists")
                 self.ent_name.select_range(0 , con.END)
                 self.ent_name.focus_set()
                 return
@@ -3609,24 +3580,24 @@ class prods(base_window):
         desc = self.ent_desc.get(0.0 , con.END)
     
         if bar1 == "" and bar2 == "" and bar3 =="" and bar4 == "":
-            msg.showerror("Error" , "Enter barcode")
+            msg.showerror("Info" , "Enter barcode")
             self.show_top_bar(None)
             return
 
         if cat1 == "" and cat2 == "" and cat3 =="":
-            msg.showerror("Error" , "Enter category")
+            msg.showerror("Info" , "Enter category")
             self.show_top_cat(None)
             return
 
         if prod_name == "":
-            msg.showinfo("Error" , "Add Name")
+            msg.showinfo("Info" , "Add Name")
             self.ent_name.select_range(0,con.END)
             self.ent_name.focus_set()
             return
 
 
         if sup1 == "" and sup2 == "" and sup3 =="":
-            msg.showerror("Error" , "Enter supplier")
+            msg.showerror("Info" , "Enter supplier")
             self.show_top_sup(None)
             return
         
@@ -3634,7 +3605,7 @@ class prods(base_window):
             unit = 'N'
 
         if unit not in self.combo_unit['values']:
-            msg.showinfo("Error" , "select unit from drop down")
+            msg.showinfo("Info" , "select unit from drop down")
             self.combo_unit.select_range(0,con.END)
             self.combo_unit.focus_set()
             return
@@ -3644,7 +3615,7 @@ class prods(base_window):
             gst = 0
     
         if int(gst) not in self.gst_values:
-            msg.showinfo("Error" , "select GST from drop down")
+            msg.showinfo("Info" , "select GST from drop down")
             self.combo_tax1.select_range(0,con.END)
             self.combo_tax1.focus_set()
             return
@@ -3655,7 +3626,7 @@ class prods(base_window):
             cess = 0
         
         if int(cess) not in self.cess_values:
-            msg.showinfo("Error" , "select CESS from drop down")
+            msg.showinfo("Info" , "select CESS from drop down")
             self.combo_tax2.select_range(0,con.END)
             self.combo_tax2.focus_set()
             return
@@ -3665,7 +3636,7 @@ class prods(base_window):
 
         # arranging units
         if nrm1 == "":
-            msg.showinfo("Error" , "Enter NRM unit value")
+            msg.showinfo("Info" , "Enter NRM unit value")
             self.ent_nrm1.focus_set()
             return        
 
@@ -3678,8 +3649,9 @@ class prods(base_window):
         if nrm4 == "":
             nrm4 = nrm3
 
-        units_nrm = ["{:.3f}".format(round(float(nrm1) , 3)) , "{:.3f}".format(round(float(nrm2) , 3)) , "{:.3f}".format(round(float(nrm3) , 3)) , "{:.3f}".format(round(float(nrm4) , 3))]
-        if not units_nrm == sorted(units_nrm , key = str):
+        units_nrm = [round(float(nrm1) , 3) , round(float(nrm2) , 3) , round(float(nrm3) , 3) , round(float(nrm4) , 3)]
+        
+        if not units_nrm == sorted(units_nrm ):
             msg.showerror("error" , "Enter NRM units in increasing order")
             return
 
@@ -3690,7 +3662,7 @@ class prods(base_window):
             htl4 = self.ent_htl4.get()
 
             if htl1 == "":
-                msg.showinfo("Error" , "Enter HTL unit value")
+                msg.showinfo("Info" , "Enter HTL unit value")
                 self.ent_htl1.focus_set()
                 return 
             if htl2 == "":
@@ -3702,8 +3674,8 @@ class prods(base_window):
             if htl4 == "":
                 htl4 = htl3
 
-            units_htl = ["{:.3f}".format(round(float(htl1) , 3)) , "{:.3f}".format(round(float(htl2) , 3)) , "{:.3f}".format(round(float(htl3) , 3)) , "{:.3f}".format(round(float(htl4) , 3))]
-            if not units_htl == sorted(units_htl , key = str):
+            units_htl = [round(float(htl1) , 3) , round(float(htl2) , 3) , round(float(htl3) , 3) , round(float(htl4) , 3)]
+            if not units_htl == sorted(units_htl ):
                 msg.showerror("error" , "Enter HTL units in increasing order")
                 return            
         else:
@@ -3711,7 +3683,7 @@ class prods(base_window):
             htl2 = nrm2
             htl3 = nrm3
             htl4 = nrm4
-            units_htl = ["{:.3f}".format(round(float(htl1) , 3)) , "{:.3f}".format(round(float(htl2) , 3)) , "{:.3f}".format(round(float(htl3) , 3)) , "{:.3f}".format(round(float(htl4) , 3))]
+            units_htl = [round(float(htl1) , 3) , round(float(htl2) , 3) , round(float(htl3) , 3) , round(float(htl4) , 3)]
 
         
         if self.chk_spl.instate(['selected']) == False:
@@ -3721,7 +3693,7 @@ class prods(base_window):
             spl4 = self.ent_spl4.get() 
 
             if spl1 == "":
-                msg.showinfo("Error" , "Enter SPL unit value")
+                msg.showinfo("Info" , "Enter SPL unit value")
                 self.ent_spl1.focus_set()
                 return 
             if spl2 == "":
@@ -3732,8 +3704,8 @@ class prods(base_window):
         
             if spl4 == "":
                 spl4 = spl3
-            units_spl = ["{:.3f}".format(round(float(spl1) , 3)) , "{:.3f}".format(round(float(spl2) , 3)) , "{:.3f}".format(round(float(spl3) , 3)) , "{:.3f}".format(round(float(spl4) , 3))]
-            if not units_spl == sorted(units_spl , key = str):
+            units_spl = [round(float(spl1) , 3) , round(float(spl2) , 3) , round(float(spl3) , 3) , round(float(spl4) , 3)]
+            if not units_spl == sorted(units_spl ):
                 msg.showerror("error" , "Enter SPL units in increasing order")
                 return
         else:
@@ -3741,7 +3713,7 @@ class prods(base_window):
             spl2 = htl2
             spl3 = htl3
             spl4 = htl4
-            units_spl = ["{:.3f}".format(round(float(spl1) , 3)) , "{:.3f}".format(round(float(spl2) , 3)) , "{:.3f}".format(round(float(spl3) , 3)) , "{:.3f}".format(round(float(spl4) , 3))]
+            units_spl = [round(float(spl1) , 3) , round(float(spl2) , 3) , round(float(spl3) , 3) , round(float(spl4) , 3)]
 
 
         if self.chk_ang.instate(['selected']) == False:
@@ -3751,7 +3723,7 @@ class prods(base_window):
             ang4 = self.ent_ang4.get() 
 
             if ang1 == "":
-                msg.showinfo("Error" , "Enter ANG unit value")
+                msg.showinfo("Info" , "Enter ANG unit value")
                 self.ent_ang1.focus_set()
                 return 
             if ang2 == "":
@@ -3763,8 +3735,8 @@ class prods(base_window):
             if ang4 == "":
                 ang4 = ang3
 
-            units_ang = ["{:.3f}".format(round(float(ang1) , 3)) , "{:.3f}".format(round(float(ang2) , 3)) , "{:.3f}".format(round(float(ang3) , 3)) , "{:.3f}".format(round(float(ang4) , 3))]
-            if not units_ang == sorted(units_ang , key = str):
+            units_ang = [round(float(ang1) , 3) , round(float(ang2) , 3) , round(float(ang3) , 3) , round(float(ang4) , 3)]
+            if not units_ang == sorted(units_ang ):
                 msg.showerror("error" , "Enter ANG units in increasing order")
                 return       
         else:
@@ -3772,7 +3744,7 @@ class prods(base_window):
             ang2 = spl2
             ang3 = spl3
             ang4 = spl4
-            units_ang = ["{:.3f}".format(round(float(ang1) , 3)) , "{:.3f}".format(round(float(ang2) , 3)) , "{:.3f}".format(round(float(ang3) , 3)) , "{:.3f}".format(round(float(ang4) , 3))]
+            units_ang = [round(float(ang1) , 3) , round(float(ang2) , 3) , round(float(ang3) , 3) , round(float(ang4) , 3)]
 
         #arramging units ends here
         
@@ -3814,22 +3786,22 @@ class prods(base_window):
         temp = units_nrm
         units_nrm = ":"
         for each in temp:
-            units_nrm += str(each) + ":"
+            units_nrm += "{:.3f}".format(each) + ":"
 
         temp = units_htl
         units_htl = ":"
         for each in temp:
-            units_htl += str(each) + ":"
+            units_htl += "{:.3f}".format(each) + ":"
 
         temp = units_spl
         units_spl = ":"
         for each in temp:
-            units_spl += str(each) + ":"
+            units_spl += "{:.3f}".format(each) + ":"
 
         temp = units_ang
         units_ang = ":"
         for each in temp:
-            units_ang += str(each) + ":"
+            units_ang += "{:.3f}".format(each) + ":"
 
 
 
@@ -4240,11 +4212,6 @@ class prods(base_window):
 
 
 
-
-
-
-
-
 class users(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,others):
         base_window.__init__(self , root ,frames , dmsn , lbls ,title)
@@ -4382,11 +4349,6 @@ class users(base_window):
     
     def combo_entry_out(self , e):
         e.widget.select_clear()
-
-    
-
-
-
 
 
 
@@ -4978,11 +4940,14 @@ class update_sp(base_window):
     def get_stocks(self , e ):
         self.enable_sp()
         self.clear_sp()
+        self.disable_sp()
         self.ent_mrp_1.delete(0,con.END)
         self.ent_mrp_2.delete(0,con.END)
         
         curItemNo = self.tree.focus()
         values =  self.tree.item(curItemNo)['values']
+        if len(values) == 0:
+            return
 
         self.prod_id = values[1]
         self.pur_id = ''
@@ -5024,9 +4989,14 @@ class update_sp(base_window):
                 i+=1
 
     def selling_price_filler(self, e):
+        self.enable_sp()
         nrm1 = self.ent_nml1.get()
+        
         curItemNo = self.tree_old_stk.focus()
-        cp =  float(self.tree_old_stk.item(curItemNo)['values'][2])
+        try :
+            cp =  float(self.tree_old_stk.item(curItemNo)['values'][2])
+        except IndexError:
+            return
         
         if nrm1 == "":
             msg.showinfo("Info" , "Enter Selling Price ")
@@ -5314,10 +5284,9 @@ class update_sp(base_window):
                 self.ent_ang4.delete(0,con.END)
                 return False
         
-        
         self.ent_ang4.focus_set()
         return True
-    
+
     def upd_mrp(self , e):
         
         mrp1 = self.ent_mrp_1.get()
@@ -5345,7 +5314,7 @@ class update_sp(base_window):
         self.ent_mrp_1.insert(0 , mrp1)
         self.ent_mrp_2.delete(0 , con.END)
         self.ent_mrp_2.insert(0 , mrp2)
-    
+
     def enable_sp(self):
         self.ent_nml1.config(state = con.NORMAL)
         self.ent_nml2.config(state = con.NORMAL)
@@ -5434,7 +5403,7 @@ class update_sp(base_window):
 
         self.ent_mrp_1.config(state = con.DISABLED)
         self.ent_mrp_2.config(state = con.DISABLED)
-   
+
     def clear_sp_only(self,e):
         self.ent_nml1.delete(0,con.END)
         self.ent_nml2.delete(0,con.END)
@@ -5460,6 +5429,9 @@ class update_sp(base_window):
 
         curItemNo = self.tree_old_stk.focus()
         values =  self.tree_old_stk.item(curItemNo)['values']
+        if len(values) == 0:
+            return
+
         self.pur_id = str(values[20])[:2]+'_'+str(values[20])[2:]
         self.enable_sp()
         self.clear_sp()
@@ -5560,36 +5532,95 @@ class update_sp(base_window):
 
         if(not sp):
             return
+        
+        nml1 = self.ent_nml1.get()
+        nml2 = self.ent_nml2.get()
+        nml3 = self.ent_nml3.get()
+        nml4 = self.ent_nml4.get()
 
-        nml =  ":"+"{:.2f}".format(round(float(self.ent_nml1.get()),2))
-        nml += ":"+"{:.2f}".format(round(float(self.ent_nml2.get()),2))
-        nml += ":"+"{:.2f}".format(round(float(self.ent_nml3.get()),2))
-        nml += ":"+"{:.2f}".format(round(float(self.ent_nml4.get()),2))+":"
+        if nml1 == "" or nml1 == "." or nml2 == "" or nml2 == "." or nml3 == "" or nml3 == "." or nml4 == "" or nml4 == ".":
+            return
+        nml_sp = [float(nml1) , float(nml2) , float(nml3) ,float(nml4)]
 
-        htl = ":"+"{:.2f}".format(round(float(self.ent_htl1.get()),2))
-        htl += ":"+"{:.2f}".format(round(float(self.ent_htl2.get()),2))
-        htl += ":"+"{:.2f}".format(round(float(self.ent_htl3.get()),2))
-        htl += ":"+"{:.2f}".format(round(float(self.ent_htl4.get()),2))+":"
+        if nml_sp != sorted(nml_sp , reverse = True):
+            msg.showerror("Info" , "Enter NML rates in correct order")
+            self.ent_nml2.focus_set()
+            return
+            
 
-        spl = ":"+"{:.2f}".format(round(float(self.ent_spl1.get()),2))
-        spl += ":"+"{:.2f}".format(round(float(self.ent_spl2.get()),2))
-        spl += ":"+"{:.2f}".format(round(float(self.ent_spl3.get()),2))
-        spl += ":"+"{:.2f}".format(round(float(self.ent_spl4.get()),2))+":"
 
-        ang = ":"+"{:.2f}".format(round(float(self.ent_ang1.get()),2))
-        ang += ":"+"{:.2f}".format(round(float(self.ent_ang2.get()),2))
-        ang += ":"+"{:.2f}".format(round(float(self.ent_ang3.get()),2))
-        ang += ":"+"{:.2f}".format(round(float(self.ent_ang4.get()),2))+":"
+        htl1 = self.ent_htl1.get()
+        htl2 = self.ent_htl2.get()
+        htl3 = self.ent_htl3.get()
+        htl4 = self.ent_htl4.get()
+
+        if htl1 == "" or htl1 == "." or htl2 == "" or htl2 == "." or htl3 == "" or htl3 == "." or htl4 == "" or htl4 == ".":
+            return
+        htl_sp = [float(htl1) , float(htl2) , float(htl3) ,float(htl4)]
+
+        
+        if htl_sp != sorted(htl_sp, reverse = True):
+            msg.showerror("Info" , "Enter HTL rates in correct order")
+            self.ent_htl2.focus_set()
+            return
+
+        spl1 = self.ent_spl1.get()
+        spl2 = self.ent_spl2.get()
+        spl3 = self.ent_spl3.get()
+        spl4 = self.ent_spl4.get()
+
+        if spl1 == "" or spl1 == "." or spl2 == "" or spl2 == "." or spl3 == "" or spl3 == "." or spl4 == "" or spl4 == ".":
+            return
+        spl_sp = [float(spl1) , float(spl2) , float(spl3) ,float(spl4)]
+        
+        if spl_sp != sorted(spl_sp, reverse = True):
+            msg.showerror("Info" , "Enter SPL rates in correct order")
+            self.ent_spl2.focus_set()
+            return
+
+                    
+
+            
+        ang1 = self.ent_ang1.get()
+        ang2 = self.ent_ang2.get()
+        ang3 = self.ent_ang3.get()
+        ang4 = self.ent_ang4.get()
+
+        if ang1 == "" or ang1 == "." or ang2 == "" or ang2 == "." or ang3 == "" or ang3 == "." or ang4 == "" or ang4 == ".":
+            return
+        ang_sp = [float(ang1) , float(ang2) , float(ang3) ,float(ang4)]
+        
+        if ang_sp != sorted(ang_sp, reverse = True):
+            msg.showerror("Info" , "Enter ANG rates in correct order")
+            self.ent_ang2.focus_set()
+            return
+        
+
+        nml =  ":"+"{:.2f}".format(round(float(nml1),2))
+        nml += ":"+"{:.2f}".format(round(float(nml2),2))
+        nml += ":"+"{:.2f}".format(round(float(nml3),2))
+        nml += ":"+"{:.2f}".format(round(float(nml4),2))+":"
+
+        htl = ":"+"{:.2f}".format(round(float(htl1),2))
+        htl += ":"+"{:.2f}".format(round(float(htl2),2))
+        htl += ":"+"{:.2f}".format(round(float(htl3),2))
+        htl += ":"+"{:.2f}".format(round(float(htl4),2))+":"
+
+        spl = ":"+"{:.2f}".format(round(float(spl1),2))
+        spl += ":"+"{:.2f}".format(round(float(spl2),2))
+        spl += ":"+"{:.2f}".format(round(float(spl3),2))
+        spl += ":"+"{:.2f}".format(round(float(spl4),2))+":"
+
+        ang = ":"+"{:.2f}".format(round(float(ang1),2))
+        ang += ":"+"{:.2f}".format(round(float(ang2),2))
+        ang += ":"+"{:.2f}".format(round(float(ang3),2))
+        ang += ":"+"{:.2f}".format(round(float(ang4),2))+":"
 
         sql = "update somanath2021.stocks set stk_sp_nml = '"+nml+"',stk_sp_htl = '"+ htl+"' , stk_sp_spl = '"+spl +"',stk_sp_ang = '"+ang +"' where stk_pur_id = '"+self.pur_id+"' and stk_prod_id = "+str(self.prod_id)
         get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
         self.clear_sp()
         self.disable_sp()
         self.get_stocks(None)
-
-
-
-
 
 
 
@@ -5612,7 +5643,7 @@ class order_list(base_window):
         self.ip = others[0]
         self.user = others[3] 
         self.year = others[3]
-
+        self.rad_even_odd = IntVar()
 
         self.selected_item = None
 
@@ -5725,8 +5756,15 @@ class order_list(base_window):
             self.tree_order.column('tot_qty' , width = int(self.main_wdt * 0.1)   , anchor = "e")
             self.tree_order.column('remarks' , width = int(self.main_wdt * 0.1)   , anchor = "w")
 
-        self.btn_print = ttk.Button(self.main_frame , text = "PRINT" , width = 8 , style = "window_btn_medium.TButton" ,command = lambda : self.update(None))
+        self.frm_page_setup = ttk.Frame(self.main_frame , style = "root_main.TFrame")
+        self.rad_odd_only = ttk.Radiobutton(self.frm_page_setup , text = "Odd " ,  value = 0 , variable = self.rad_even_odd , style = "window_radio_med.TRadiobutton" )
+        self.rad_even_only = ttk.Radiobutton(self.frm_page_setup , text = "Even ", value = 1 , variable = self.rad_even_odd , style = "window_radio_med.TRadiobutton" )
+        self.btn_print = ttk.Button(self.frm_page_setup , text = "PRINT" , width = 8 , style = "window_btn_medium.TButton" ,command = lambda : self.print(None))
         self.btn_print.bind("<Return>" , self.print)
+        self.rad_odd_only.grid(row = 0 , column = 0)
+        self.rad_even_only.grid(row = 0 , column = 1)
+        self.btn_print.grid(row = 0 , column = 2)
+       
 
         self.frm_chk_cat.pack()
         self.chk_cat.grid(row = 0, column = 0 , sticky = con.W)
@@ -5756,7 +5794,7 @@ class order_list(base_window):
         self.scroll_x_order.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
         self.tree_order.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
         self.tree_order_frame.grid(row = 1 , column = 1  , padx = int(self.main_wdt*0.01) , pady = int(self.main_hgt*0.01)  , sticky = con.NE)
-        self.btn_print.grid(row = 2 , column = 1  , padx = int(self.main_wdt*0.01) , pady = int(self.main_hgt*0.01) , sticky = con.W)
+        self.frm_page_setup.grid(row = 2 , column = 1  , padx = int(self.main_wdt*0.01) , pady = int(self.main_hgt*0.01) , sticky = con.E)
         self.product_list(None)
 
     def combo_entry_out(self , e):
@@ -5883,7 +5921,7 @@ class order_list(base_window):
                     tag = 'b'
                 tag_index += 1
                 self.tree.insert('','end' ,tags=(tag,), values = ( each['prod_name'] , "{:.3f}".format(round(float(each['tot_qty']),3)) , each['tax_per'], each['prod_id']))
-                
+
     def select_prod(self , e):
         cur_item = self.tree.focus()
         cur_item = self.tree.item(cur_item)
@@ -5900,6 +5938,7 @@ class order_list(base_window):
 
     def enter_to_treeview(self,e):
         qty = self.ent_qty.get()
+        
         remarks = self.ent_remarks.get()
         tax_per = self.selected_item[2]
 
@@ -5912,8 +5951,10 @@ class order_list(base_window):
             float(qty)
         except:
             qty = 0
+        if float(qty) <= 0 :
+            return
 
-        values = [self.selected_item[0] , "{:.3f}".format(round(float(qty),3)) , remarks]
+        values = [self.selected_item[0] , "{:.3f}".format(round(float(qty),3)) , remarks,tax_per]
 
         self.tree_order.insert('','end' ,tags=(tag,), values = values)
 
@@ -5924,9 +5965,669 @@ class order_list(base_window):
         self.ent_remarks.config(state = con.DISABLED)
 
     def print(self , e):
-        pass
+        values = []
+        for each in self.tree_order.get_children():
+            values.append(  self.tree_order.item(each)['values'] )
+        if values == []:
+            return
+        values.sort(key=lambda x: x[3])
+        pdf = get("http://"+self.ip+":7000/orderList" , params = {'values' : json.dumps( values)})
+        open(os.path.expanduser("~")+"\\Desktop\\Invoices\\orderList.pdf","wb").write(pdf.content)
+
+        even_odd = self.rad_even_odd.get()
+
+        #@  get("http://printer server")
 
     def delete_order(self , e):
         curItemNo = self.tree_order.focus()
         self.tree_order.detach(curItemNo)
 
+
+
+class barcodes(base_window):
+    def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , update_sp_form , search_prod_id = -1 , prod_name = ""):
+        base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , update_sp_form)
+        if base == None:
+            return
+        self.main_frame.grid_propagate(False)
+        self.root_frame = frames[0] 
+        self.main_hgt = self.main_frame.winfo_reqheight()
+        self.main_wdt = self.main_frame.winfo_reqwidth()
+        self.root = root
+
+        self.cat_state = StringVar()
+        self.sup_state = StringVar()
+
+
+        self.ip = others[0]
+        self.user = others[3] 
+        self.year = others[3]
+    
+        self.cp = 0
+        self.selected_product = ''
+        
+
+
+        if root.winfo_screenheight()>1000:
+            self.tree_frame = ttk.Frame(self.main_frame , height = int(self.main_hgt*0.945) , width = int(self.main_wdt*0.354) , style = "root_main.TFrame")
+        else:
+            self.tree_frame = ttk.Frame(self.main_frame , height = int(self.main_hgt*0.863) , width = int(self.main_wdt*0.364) , style = "root_main.TFrame")
+        
+        self.tree_frame.pack_propagate(False)
+        self.tree_frame.grid_propagate(False)
+
+        self.frm_chk_cat = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
+        self.chk_cat = ttk.Checkbutton(self.frm_chk_cat , text = "Category :" , style = "window_check.TCheckbutton" , variable = self.cat_state , onvalue = 'True' , offvalue = 'False')
+        self.combo_cat1 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , style = "window_combo.TCombobox") 
+        self.combo_cat1.bind("<FocusOut>" , self.combo_entry_out)
+        self.combo_cat1.bind('<Down>', self.add_search_cats)
+        self.combo_cat1.bind('<Button-1>', self.add_search_cats)
+        self.combo_cat1.bind('<<ComboboxSelected>>', self.product_list)
+        self.combo_cat1.bind("<KeyRelease>" , self.restrict_entry)
+
+        self.combo_cat2 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_cat2.bind("<FocusOut>" , self.combo_entry_out)
+        self.combo_cat2.bind('<Down>', self.add_search_cats)
+        self.combo_cat2.bind('<Button-1>', self.add_search_cats)
+        self.combo_cat2.bind('<<ComboboxSelected>>', self.product_list)
+
+        self.frm_chk_sup = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
+        self.chk_sup = ttk.Checkbutton(self.frm_chk_sup , text = "Supplier :" , style = "window_check.TCheckbutton", variable = self.sup_state , onvalue = 'True' , offvalue = 'False')
+        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup1.bind("<FocusOut>" , self.combo_entry_out)
+        self.combo_sup1.bind('<Down>', self.add_search_sup)
+        self.combo_sup1.bind('<Button-1>', self.add_search_sup)
+        self.combo_sup1.bind('<<ComboboxSelected>>', self.product_list)
+
+        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup2.bind("<FocusOut>" , self.combo_entry_out)
+        self.combo_sup2.bind('<Down>', self.add_search_sup)
+        self.combo_sup2.bind('<Button-1>', self.add_search_sup)
+        self.combo_sup2.bind('<<ComboboxSelected>>', self.product_list)
+        
+
+        self.frm_prod_search = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
+        self.ent_prod_search = ttk.Entry(self.frm_prod_search  , width = 47 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_prod_search.bind('<FocusOut>', self.combo_entry_out)
+        self.ent_prod_search.bind('<Return>', self.product_list)
+       
+
+
+        self.tree = ttk.Treeview(self.tree_frame ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview")
+        self.tree.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
+        self.tree.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
+        self.scroll_y = ttk.Scrollbar(self.tree_frame , orient = con.VERTICAL , command = self.tree.yview)
+        self.scroll_x = ttk.Scrollbar(self.tree_frame , orient = con.HORIZONTAL , command = self.tree.xview)
+        self.tree.config(yscrollcommand = self.scroll_y.set , xscrollcommand = self.scroll_x.set)
+
+        
+
+        self.tree['columns'] = ('name')
+        self.tree.heading('name' , text = 'PRODUCT NAME')
+        if root.winfo_screenheight()>1000:
+            self.tree.column('name' , width = int(self.main_wdt * 0.344)   , anchor = "w")
+        else:
+            self.tree.column('name' , width = int(self.main_wdt * 0.35)   , anchor = "w")
+
+        
+        self.tree.bind('<Double-Button-1>',self.get_stocks)
+        self.tree.bind('<Return>',self.get_stocks)
+
+
+
+
+
+        if self.root.winfo_screenheight() > 1000: self.frm_tree_old_stock = ttk.Frame(self.main_frame , width = self.main_wdt*0.45 , height = int(self.main_hgt*0.35))
+        else :self.frm_tree_old_stock = ttk.Frame(self.main_frame , width = self.main_wdt*0.6 , height = int(self.main_hgt*0.30))
+            
+        self.frm_tree_old_stock.pack_propagate(False)
+    
+        self.tree_old_stk = ttk.Treeview(self.frm_tree_old_stock ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 3)
+        self.tree_old_stk.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
+        self.tree_old_stk.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
+        self.scroll_y_old_stk = ttk.Scrollbar(self.frm_tree_old_stock , orient = con.VERTICAL , command = self.tree_old_stk.yview)
+        self.scroll_x_old_stk = ttk.Scrollbar(self.frm_tree_old_stock , orient = con.HORIZONTAL , command = self.tree_old_stk.xview)
+        self.tree_old_stk.config(yscrollcommand = self.scroll_y_old_stk.set , xscrollcommand = self.scroll_x_old_stk.set)
+
+        self.tree_old_stk.bind('<Return>' , self.select_rates)
+        self.tree_old_stk.bind('<Double-1>' , self.select_rates)
+
+
+        self.tree_old_stk['columns'] = ( 'date','sup','cp','qty','nml1','nml2','nml3','nml4','htl1','htl2','htl3','htl4','spl1','spl2','spl3','spl4','ang1','ang2','ang3','ang4')
+
+        self.tree_old_stk.heading('date' , text = 'DATE')
+        self.tree_old_stk.heading('sup' , text = 'SUPPLIER')
+        self.tree_old_stk.heading('cp' , text = 'COST')
+        self.tree_old_stk.heading('qty' , text = 'QTY')
+        self.tree_old_stk.heading('nml1' , text = 'NRM 1')
+        self.tree_old_stk.heading('nml2' , text = 'NRM 2')
+        self.tree_old_stk.heading('nml3' , text = 'NRM 3')
+        self.tree_old_stk.heading('nml4' , text = 'NRM 4')
+        self.tree_old_stk.heading('htl1' , text = 'HTL 1')
+        self.tree_old_stk.heading('htl2' , text = 'HTL 2')
+        self.tree_old_stk.heading('htl3' , text = 'HTL 3')
+        self.tree_old_stk.heading('htl4' , text = 'HTL 4')
+        self.tree_old_stk.heading('spl1' , text = 'SPL 1')
+        self.tree_old_stk.heading('spl2' , text = 'SPL 2')
+        self.tree_old_stk.heading('spl3' , text = 'SPL 3')
+        self.tree_old_stk.heading('spl4' , text = 'SPL 4')
+        self.tree_old_stk.heading('ang1' , text = 'ANG 1')
+        self.tree_old_stk.heading('ang2' , text = 'ANG 2')
+        self.tree_old_stk.heading('ang3' , text = 'ANG 3')
+        self.tree_old_stk.heading('ang4' , text = 'ANG 4')
+
+
+        self.tree_old_stk_wdt = self.frm_tree_old_stock.winfo_reqwidth()-self.scroll_y_old_stk.winfo_reqwidth()
+        
+        self.tree_old_stk.column('date' , width = int(self.tree_old_stk_wdt*0.15)  , anchor = "center")
+        self.tree_old_stk.column('sup' , width = int(self.tree_old_stk_wdt*0.45)  , anchor = "w")
+        self.tree_old_stk.column('cp' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20)  , anchor = "e")
+        self.tree_old_stk.column('qty' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20), anchor = "e")
+        self.tree_old_stk.column('nml1' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('nml2' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20), anchor = "e")
+        self.tree_old_stk.column('nml3' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('nml4' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('htl1' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('htl2' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20), anchor = "e")
+        self.tree_old_stk.column('htl3' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('htl4' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('ang1' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('ang2' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('ang3' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('ang4' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('spl1' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('spl2' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('spl3' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+        self.tree_old_stk.column('spl4' , width = int(self.tree_old_stk_wdt*0.20) , minwidth = int(self.tree_old_stk_wdt*0.20) , anchor = "e")
+
+
+        self.scroll_y_old_stk.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
+        self.scroll_x_old_stk.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
+        self.tree_old_stk.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
+
+
+
+        self.frm_barcode = ttk.Frame(self.main_frame , style = "root_main.TFrame")
+        self.lbl_name = ttk.Label(self.frm_barcode , text = "NAME  :" , style = "window_text_medium.TLabel")
+        self.ent_name = ttk.Entry(self.frm_barcode  , state = con.DISABLED, width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)), validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_name.bind('<Return>' , self.enter_barcode)
+
+        self.lbl_sp = ttk.Label(self.frm_barcode , text = "SP    :" , style = "window_text_medium.TLabel")
+        self.ent_sp = ttk.Entry(self.frm_barcode  , state = con.DISABLED, width = 8 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)), validate="key", validatecommand=(validations[1], '%P'))
+        self.ent_sp.bind('<Return>' , self.enter_barcode)
+
+        self.lbl_mrp = ttk.Label(self.frm_barcode , text = "MRP   :" , style = "window_text_medium.TLabel")
+        self.ent_mrp = ttk.Entry(self.frm_barcode  , state = con.DISABLED, width = 8 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)), validate="key", validatecommand=(validations[1], '%P'))
+        self.ent_mrp.bind('<Return>' , self.enter_barcode)
+
+        self.lbl_qty = ttk.Label(self.frm_barcode , text = "QTY   :" , style = "window_text_medium.TLabel")
+        self.ent_qty = ttk.Entry(self.frm_barcode  , state = con.DISABLED, width = 8 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)), validate="key", validatecommand=(validations[1], '%P'))
+        self.ent_qty.bind('<Return>' , self.enter_barcode)
+
+        self.lbl_name.grid(row = 0, column = 0)
+        self.ent_name.grid(row = 0, column = 1)
+        self.lbl_sp.grid(row = 1, column = 0)
+        self.ent_sp.grid(row = 1, column = 1 , sticky = con.W)
+        self.lbl_mrp.grid(row = 2, column = 0)
+        self.ent_mrp.grid(row = 2, column = 1, sticky = con.W)
+        self.lbl_qty.grid(row = 3, column = 0)
+        self.ent_qty.grid(row = 3, column = 1, sticky = con.W)
+
+
+
+        if self.root.winfo_screenheight() > 1000: self.frm_tree_barcode = ttk.Frame(self.main_frame , width = self.main_wdt*0.45 , height = int(self.main_hgt*0.35))
+        else :self.frm_tree_barcode = ttk.Frame(self.main_frame , width = self.main_wdt*0.6 , height = int(self.main_hgt*0.30))
+            
+        self.frm_tree_barcode.pack_propagate(False)
+    
+        self.tree_barcodes = ttk.Treeview(self.frm_tree_barcode ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 3)
+        self.tree_barcodes.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
+        self.tree_barcodes.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
+        self.scroll_y_barcodes = ttk.Scrollbar(self.frm_tree_barcode , orient = con.VERTICAL , command = self.tree_barcodes.yview)
+        self.scroll_x_barcodes = ttk.Scrollbar(self.frm_tree_barcode , orient = con.HORIZONTAL , command = self.tree_barcodes.xview)
+        self.tree_barcodes.config(yscrollcommand = self.scroll_y_barcodes.set , xscrollcommand = self.scroll_x_barcodes.set)
+
+        self.tree_barcodes.bind('<Delete>' , self.delete_barcode)
+        
+
+
+        self.tree_barcodes['columns'] = (  'name', 'qty' ,'cp' ,'mrp' , 'sp'   ,'bar' )
+
+        self.tree_barcodes.heading('bar' , text = 'BARCODE')
+        self.tree_barcodes.heading('name' , text = 'NAME')
+        self.tree_barcodes.heading('cp' , text = 'COST')
+        self.tree_barcodes.heading('sp' , text = 'SP')
+        self.tree_barcodes.heading('mrp' , text = 'MRP')
+        self.tree_barcodes.heading('qty' , text = 'QTY')
+        
+
+
+        self.tree_barcodes_wdt = self.frm_tree_barcode.winfo_reqwidth()-self.scroll_y_barcodes.winfo_reqwidth()
+        
+        self.tree_barcodes.column('bar' , width = int(self.tree_barcodes_wdt*0.15)  , anchor = "center")
+        self.tree_barcodes.column('name' , width = int(self.tree_barcodes_wdt*0.45)  , anchor = "w")
+        self.tree_barcodes.column('cp' , width = int(self.tree_barcodes_wdt*0.20) , minwidth = int(self.tree_barcodes_wdt*0.20)  , anchor = "e")
+        self.tree_barcodes.column('sp' , width = int(self.tree_barcodes_wdt*0.20) , minwidth = int(self.tree_barcodes_wdt*0.20), anchor = "e")
+        self.tree_barcodes.column('mrp' , width = int(self.tree_barcodes_wdt*0.20) , minwidth = int(self.tree_barcodes_wdt*0.20) , anchor = "e")
+        self.tree_barcodes.column('qty' , width = int(self.tree_barcodes_wdt*0.20) , minwidth = int(self.tree_barcodes_wdt*0.20), anchor = "e")
+  
+
+
+        self.scroll_y_barcodes.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
+        self.scroll_x_barcodes.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
+        self.tree_barcodes.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
+
+        self.frm_print = ttk.Frame(self.main_frame , style = "root_main.TFrame")
+        self.btn_epson = ttk.Button(self.frm_print , text = "EPSON" , width = 8 , style = "window_btn_medium.TButton" ,command = lambda : self.print_epson(None))
+        self.btn_epson.bind("<Return>" , self.print_epson)
+        self.btn_hoin = ttk.Button(self.frm_print , text = "HOIN" , width = 8 , style = "window_btn_medium.TButton" ,command = lambda : self.print_hoin(None))
+        self.btn_hoin.bind("<Return>" , self.print_hoin)
+        self.btn_hoin.pack()
+        self.btn_epson.pack()
+
+
+
+        self.frm_chk_cat.pack()
+        self.chk_cat.grid(row = 0, column = 0 , sticky = con.W)
+        self.combo_cat1.grid(row = 1, column = 0, padx = int(self.main_wdt*0.002))
+        self.combo_cat2.grid(row = 1, column = 1)
+        self.frm_chk_sup.pack()
+        self.chk_sup.grid(row = 0, column = 0 , sticky = con.W)
+        self.combo_sup1.grid(row = 1, column = 0, padx = int(self.main_wdt*0.002) , pady = int(self.main_hgt*0.005))
+        self.combo_sup2.grid(row = 1, column = 1)
+        self.frm_prod_search.pack()
+        self.ent_prod_search.grid(row = 0 , column = 1)
+
+        self.scroll_y.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
+        self.scroll_x.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
+        self.tree.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
+
+        self.tree_frame.grid(row = 0 , column = 0 , rowspan = 3 , padx = int(self.main_wdt*0.01) , pady = int(self.main_hgt*0.01))
+        self.frm_tree_old_stock.grid(row = 0 , column = 1 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.N)
+        self.frm_barcode.grid(row = 1 , column = 1 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.N)
+        self.frm_tree_barcode.grid(row = 2 , column = 1 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.N)
+        self.frm_print.grid(row = 2 , column = 2 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.S)
+
+        self.product_list(None)
+
+    def combo_entry_out(self , e):
+        e.widget.select_clear()
+
+    def restrict_entry(self , e):
+        e.widget.delete(0,con.END)
+
+    def add_search_cats(self , e):
+        cat = e.widget.get()
+        if cat != "":
+            sql = "select cat_name from somanath.categories where cat_name regexp '"+ cat +"' order by cat_name"
+        else:
+            sql = "select cat_name from somanath.categories order by cat_name"
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        if req.status_code == 200:
+            resp = req.json()
+            values = []
+            for each in resp:
+                values.append(each['cat_name'])
+
+            e.widget['values'] = values
+
+    def add_search_sup(self , e):
+        sup = e.widget.get()
+        if sup != "":
+            sql = "select acc_name from somanath.accounts where acc_name regexp '"+ sup +"' and acc_type = 'SUPP' order by acc_name"
+        else:
+            sql = "select acc_name from somanath.accounts where acc_type = 'SUPP' order by acc_name"
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        if req.status_code == 200:
+            resp = req.json()
+            values = []
+            for each in resp:
+                values.append(each['acc_name'])
+
+            e.widget['values'] = values
+
+    def product_list(self , e): 
+        cat1 = self.combo_cat1.get()
+        cat2 = self.combo_cat2.get()
+        sup1 = self.combo_sup1.get()
+        sup2 = self.combo_sup2.get()
+        prod = self.ent_prod_search.get().upper()
+        
+
+        firstSql = True
+        sql = "select prod_name , prod_bar ,prod_id from somanath.products"
+
+        if self.cat_state.get() == 'True':
+            if cat1 != "":
+                req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select cat_id from somanath.categories where cat_name = '" + cat1 + "'"})
+                resp = req.json()
+                if resp == "":
+                    self.combo_cat1.delete(0,con.END)
+                else:
+                    sql += " where prod_cat regexp ':"+str(resp[0]['cat_id'])+":'"
+                    firstSql = False
+            
+            if cat2 != "":
+                req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select cat_id from somanath.categories where cat_name = '" + cat2 + "'"})
+                resp = req.json()
+                if resp == "":
+                    self.combo_cat2.delete(0,con.END)
+                else:
+                    if firstSql:
+                        sql += " where prod_cat regexp ':"+str(resp[0]['cat_id'])+":'"
+                        firstSql = False
+                    else:
+                        sql += " and prod_cat regexp ':"+str(resp[0]['cat_id'])+":'"
+
+
+        if self.sup_state.get() == 'True':
+            if sup1 != "":
+                req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select acc_id from somanath.accounts where acc_name = '" + sup1 + "' and acc_type = 'SUPP'"})
+                resp = req.json()
+                if resp == "":
+                    self.combo_sup1.delete(0,con.END)
+                else:
+                    if firstSql:
+                        sql += " where prod_sup regexp ':"+str(resp[0]['acc_id'])+":'"
+                        firstSql = False
+                    else:
+                        sql += " and prod_sup regexp ':"+str(resp[0]['acc_id'])+":'"
+
+            if sup2 != "":
+                req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select acc_id from somanath.accounts where acc_name = '" + sup2 + "' and acc_type = 'SUPP'"})
+                resp = req.json()
+                if resp == "":
+                    self.combo_sup2.delete(0,con.END)
+                else:
+                    if firstSql:
+                        sql += " where prod_sup regexp ':"+str(resp[0]['acc_id'])+":'"
+                    else:
+                        sql += " and prod_sup regexp ':"+str(resp[0]['acc_id'])+":'"
+
+        if prod != "":
+            if firstSql:
+                sql += " where prod_name regexp '"+prod+"'"
+            else:
+                sql += " and prod_name regexp '"+prod+"'"
+
+        sql += ' order by prod_name'
+
+
+        req = get("http://"+self.ip+":6000/Products/getProductList" , params = {'sql' : sql})
+        
+        for each in self.tree.get_children():
+            self.tree.delete(each)
+
+        if req.status_code == 200:
+            resp = req.json()
+            tag_index = 0
+            for each in resp:
+                if tag_index%2:
+                    tag = 'a'
+                else:
+                    tag = 'b'
+                tag_index += 1
+                self.tree.insert('','end' ,tags=(tag,), values = ( each['prod_name'] , each['prod_bar'][1:-1] ,  each['prod_id']))
+
+    def get_stocks(self , e ):
+    
+        curItemNo = self.tree.focus()
+        values =  self.tree.item(curItemNo)['values']
+        if len(values) == 0:
+            return
+
+        self.selected_product = values
+        sp = 0
+        old_stks = get("http://"+self.ip+":5000/getOldStocks" , params = {'prod_id' : values[2], 'year' : self.year , 'max' : 3})
+
+        if old_stks.status_code == 200:
+            old_stks = old_stks.json()
+            
+            i = 0
+            for each in self.tree_old_stk.get_children():
+                self.tree_old_stk.delete(each)
+            
+            old_stks['stocks'].reverse()
+            for each in old_stks['stocks']:
+                nml = each[4].split(":")[1:-1]
+                htl = each[5].split(":")[1:-1]
+                spl = each[6].split(":")[1:-1]
+                ang = each[7].split(":")[1:-1]
+                pur_id = each[8]
+                sp = nml[0]
+                self.cp = "{:.2f}".format(float(each[2]))
+                values = (each[0] , each[1] , self.cp , "{:.3f}".format(float(each[3])) , nml[0]  , nml[1] , nml[2] , nml[3] , htl[0]  , htl[1] , htl[2] , htl[3] , spl[0]  , spl[1] , spl[2] , spl[3] , ang[0]  , ang[1] , ang[2] , ang[3], pur_id)
+
+                if i%2 == 0:    self.tree_old_stk.insert('','end' ,tags=('a',), values = values)
+                else       :    self.tree_old_stk.insert('','end' ,tags=('b',), values = values)
+                i+=1
+        
+        self.enable_bar(None)
+        self.clear_bar(None)
+        self.ent_name.insert(0,self.selected_product[0])
+        self.ent_sp.insert(0,sp)
+        self.ent_mrp.insert(0,"{:.2f}".format(float(old_stks['prodMrp1'])))
+        self.ent_qty.insert(0 , '1.00')
+        self.ent_qty.focus_set()
+        self.ent_qty.select_range(0,con.END)
+
+    def enable_bar(self , e):
+        self.ent_name.config(state = con.NORMAL)
+        self.ent_sp.config(state = con.NORMAL)
+        self.ent_qty.config(state = con.NORMAL)
+        self.ent_mrp.config(state = con.NORMAL)
+
+    def clear_bar(self , e):
+        self.ent_name.delete(0 , con.END)
+        self.ent_sp.delete(0 , con.END)
+        self.ent_qty.delete(0 , con.END)
+        self.ent_mrp.delete(0 , con.END)
+
+    def disable_bar(self , e):
+        self.ent_name.config(state = con.DISABLED)
+        self.ent_sp.config(state = con.DISABLED)
+        self.ent_qty.config(state = con.DISABLED)
+        self.ent_mrp.config(state = con.DISABLED)
+
+    def select_rates(self , e):
+        curItemNo = self.tree_old_stk.focus()
+        values = self.tree_old_stk.item(curItemNo)['values']
+        
+        if len(values) == 0:
+            return
+        self.cp = values[2]
+        
+        self.ent_sp.delete(0,con.END)
+        self.ent_sp.insert(0,values[4])
+        self.ent_qty.select_range(0,con.END)
+        self.ent_qty.focus_set()
+
+    def enter_barcode(self , e):
+        name = self.ent_name.get()
+        sp = self.ent_sp.get()
+        mrp = self.ent_mrp.get()
+        qty = self.ent_qty.get()
+
+        i = len(self.tree_barcodes.get_children())
+
+        if i %2 == 0:
+            tag = 'a'
+        else:
+            tag = 'b'
+
+        
+
+        self.tree_barcodes.insert( '', 'end', tags = tag , values = [  name , qty , "{:.2f}".format(round(float(self.cp),2)) , mrp , sp , self.selected_product[1]])
+
+
+        self.clear_bar(None)
+        self.disable_bar(None)
+
+    def delete_barcode(self , e):
+        curItemNo = self.tree_barcodes.focus()
+        self.tree_barcodes.detach(curItemNo)
+
+    def print_epson(self , e):
+        popup = simpledialog.askstring(title = "" , prompt = "Starting Point : " )
+
+        if popup == '':
+            msg.showerror("Info" , "Enter a Stating point")
+            return
+
+        try:
+            popup = int(popup)
+            if popup>83:
+                msg.showerror("Info" , "Enter correct Starting point")
+                return
+        except:
+            msg.showerror("Info" , "Enter a Stating point")
+            return
+
+        values = self.tree_barcodes.get_children()
+
+        if len(values) == 0:
+            return
+        all_rows = []
+        for each in values:
+            values = self.tree_barcodes.item(each)['values']
+            cp = str(values[2])
+            cp_text = ''
+
+            for each in cp:
+                if each == '0':
+                    cp_text += 'O'
+                elif each == '1':
+                    cp_text += 'A'
+                elif each == '2':
+                    cp_text += 'B'
+                elif each == '3':
+                    cp_text += 'C'
+                elif each == '4':
+                    cp_text += 'D'
+                elif each == '5':
+                    cp_text += 'E'
+                elif each == '6':
+                    cp_text += 'F'
+                elif each == '7':
+                    cp_text += 'G'
+                elif each == '8':
+                    cp_text += 'H'
+                elif each == '9':
+                    cp_text += 'I'
+                else:
+                    pass
+            all_rows.append([values[0],values[5],cp,cp_text,values[4],int('{:0.0f}'.format(float(values[1]))),cp_text])
+        self.createBarCodes(all_rows,popup)
+
+    def print_hoin(self , e):
+        values = self.tree_barcodes.get_children()
+        if len(values) == 0:
+            return
+        
+        for each in values:
+            values = self.tree_barcodes.item(each)['values']
+
+            cp = str(values[2])
+            cp_text = ''
+            for each in cp:
+                if each == '0':
+                    cp_text += 'O'
+                elif each == '1':
+                    cp_text += 'A'
+                elif each == '2':
+                    cp_text += 'B'
+                elif each == '3':
+                    cp_text += 'C'
+                elif each == '4':
+                    cp_text += 'D'
+                elif each == '5':
+                    cp_text += 'E'
+                elif each == '6':
+                    cp_text += 'F'
+                elif each == '7':
+                    cp_text += 'G'
+                elif each == '8':
+                    cp_text += 'H'
+                elif each == '9':
+                    cp_text += 'I'
+                else:
+                    pass
+            
+            req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "SELECT prod_bar from somanath.products where prod_name='"+values[0]+"'"}).json()
+            print(req[0]['prod_bar'])
+            get("http://"+self.ip+":7000/Barcode" , params = {'name' : values[0],"barcode":req[0]['prod_bar'], 'mrp' : values[3], 'cp' : cp_text , 'sp' : values[4] , 'count' : values[1]})
+
+    def createBarCodes(self,all_rows,start_N):
+        dict_x = {3:0.48,2:5.7,1:10.9,0:16.15}
+        dict_y = {0:1.6,1:2.9,2:4.3,3:5.6,4:6.85,5:8.15,6:9.4,7:10.65,8:11.95,9:13.3,10:14.6,11:15.9,12:17.2,13:18.45,14:19.7,15:21.05,16:22.35,17:23.6,18:24.95,19:26.15,20:27.50,21:1.6}
+        start_N_G = start_N
+        homedir = os.path.expanduser("~").split('\\')[-1]
+        c=canvas.Canvas("C:\\Users\\"+homedir+"\\Desktop\\Invoices\\print_BAR.pdf",pagesize=A4)
+        c.translate(0*cm,-0.18*cm)
+        X = dict_x[start_N%4]
+        Y = dict_y[int(floor((start_N/4)))]
+        y = Y*cm
+        count = 0
+        for each in all_rows:
+            barcode_value = each[1]
+            if len(each[2]) > 6:
+                barcode128 = code128.Code128(barcode_value,barHeight=8*mm,barWidth = 0.32*mm)
+            else:
+                barcode128 = code128.Code128(barcode_value,barHeight=8*mm,barWidth = 0.35*mm)
+            MRP = float(each[4])
+            if floor(MRP) != MRP and MRP < 100 :
+                MRP = '{:.1f}'.format(MRP)
+            else:
+                MRP = '{:.0f}'.format(MRP)
+                
+            CP = each[3]
+            for i in range(0,each[5]):
+                if i == 0:
+                    count = count + each[5]
+                X_l = X
+                if len(each[2]) > 6:  
+                    c.setFont('Times-Bold',6,leading=None)
+                    c.drawString(X_l*cm,y,"Rs.")
+                    X_l += 0.3
+                    c.setFont('Times-Bold',14,leading=None)
+                    c.drawString(X_l*cm,y,MRP)
+                    c.setFont('Helvetica',8,leading=None)
+                    Y_l = y + 0.5*cm
+                    c.drawString(X_l*cm,Y_l,CP)
+                    X_l += 0.35
+                else:
+                    X_l = X_l - 0.35
+                barcode128.drawOn(c, X_l*cm, y)
+                
+                if self.get_key(X,dict_x) == 3:
+                    X = dict_x[0]
+                else:
+                    X = dict_x[self.get_key(X,dict_x)+1]
+                start_N += 1
+                Y = dict_y[int(floor((start_N/4)))]
+                y = Y*cm
+                if start_N == 84:
+                    c.showPage()
+                    X = dict_x[start_N%4]
+                    start_N = 0
+                    Y = dict_y[int(floor((start_N/4)))]                
+                    y = Y *cm
+        num = 84 - start_N_G - count
+        if num > 0:
+            num = 84 - num
+        else:
+            num = num * (-1)
+            if num > 84:
+                num = num % 84
+            else:
+                num = num
+        c.setFont('Helvetica',8,leading=None)
+        c.drawString(-0.1*mm,y,str('{:.0f}'.format(num)))
+        c.save()
+        
+        edge(r"C:\\Users\\"+homedir+"\\Desktop\\Invoices\\print_BAR.pdf")
+
+    def get_key(self,val,dict_x):
+        for key,value in dict_x.items():
+            if val == value:
+                return key

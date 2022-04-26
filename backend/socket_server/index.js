@@ -3,13 +3,17 @@ const express = require('express');
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server)
+
+const clientIo = require('socket.io-client')
+
+
 const mysql = require('mysql'); 
 const { time } = require('console');
 const { exit } = require('process');
 const { nanoid } = require('nanoid');
 const { connect } = require('http2');
 var MySql = require('sync-mysql');
- 
+const fs = require('fs');
 var connection = new MySql({
   host: "localhost",
   port: "3306",
@@ -46,6 +50,15 @@ let purchaseSaving = false
 let salesSaving = false
 
 
+let backedUpdata = fs.readFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',{encoding:'utf8', flag:'r'});
+
+if (backedUpdata != "{}"){
+        backedUpdata = JSON.parse(backedUpdata)
+}
+console.log(backedUpdata)
+fs.writeFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',"{}");
+
+
 let getTime = () => {
     today = new Date()
     h = today.getHours()
@@ -79,9 +92,8 @@ function getOldStocks(prodId , dbYear , minYear , stocks , nStocks , max , clien
     else
       {
 
-        sql1 = "SELECT stk_pur_id , stk_prod_qty , stk_cost, stk_sp_nml, stk_sp_htl, stk_sp_spl, stk_sp_ang , acc_name , date_format(pur_date , '%d-%m-%Y') as pur_date   FROM somanath20"+dbYear+".stocks , somanath.accounts , somanath20"+dbYear+".purchases  where stk_prod_id = "+prodId+" and somanath20"+dbYear+".purchases.pur_acc = somanath.accounts.acc_id and somanath20"+dbYear+".stocks.stk_pur_id = somanath20"+dbYear+".purchases.pur_id order by  somanath20"+dbYear+".stocks.insert_time DESC, stk_prod_qty"
+        sql1 = "SELECT stk_pur_id , stk_prod_qty , stk_cost, stk_sp_nml, stk_sp_htl, stk_sp_spl, stk_sp_ang , acc_name , date_format(pur_date , '%d-%b-%Y') as pur_date   FROM somanath20"+dbYear+".stocks , somanath.accounts , somanath20"+dbYear+".purchases  where stk_prod_id = "+prodId+" and somanath20"+dbYear+".purchases.pur_acc = somanath.accounts.acc_id and somanath20"+dbYear+".stocks.stk_pur_id = somanath20"+dbYear+".purchases.pur_id order by  somanath20"+dbYear+".stocks.insert_time DESC, stk_prod_qty"
         con.query(sql1 , (err1 , res1) =>  {
-                
                 for( i = 0 ; i<res1.length  && nStocks < max; i++)
                   {
                       
@@ -142,7 +154,7 @@ function insertToStocks( stkId ,purId , accId , firmId , dbYear , Time , userNam
                       n+=1
                       if (n<=max)
                         insertToStocks( stkId ,purId , accId , firmId , dbYear , Time , userName , products , prodId , n , max , clientResponse , sqlStock , editState , insertTime , insertId)
-
+ 
                            
                       
                 })
@@ -268,12 +280,15 @@ function getSalesStocks(stocks , n , max , clientResponse)
                               stocks[n]['acc_name'] = result2[0]['acc_name']
 
                               sql3 = "select date_format(pur_date , '%d-%m-%Y') as pur_date from somanath20"+dbYear+".purchases where pur_id = '" + stocks[n]['stk_pur_id'] +"'"
-                              //@console.log(sql3);
+                              console.log(sql3);
                               con.query(sql3 , (err3 , result3) =>{
-
-                                              stocks[n]['pur_date'] = result3[0]['pur_date']
+                                              if(result3.length>0){
+                                                stocks[n]['pur_date'] = result3[0]['pur_date']
+                                                
+                                              }
                                               n+=1
-                                              getSalesStocks(stocks , n , max , clientResponse)
+                                                getSalesStocks(stocks , n , max , clientResponse)
+                                              
                                                                                                   
                                     })
 
@@ -388,14 +403,29 @@ io.on('connection', function (socket) {
     
     //all the params passed pushed to usersLogged
     socketData = socket.handshake.headers
-    
-    
-    
+
 
     if ( socketData['user-agent'] ==  "node-XMLHttpRequest" )
         servers.push({"id" : socket.id })
     else
-        usersLogged.push({"id" : socket.id , "ip" : clientIp , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime() , "purchases" : {} , "sales" : {}})
+      {
+        
+        newUser = {"id" : socket.id , "ip" : clientIp , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime() , "purchases" : {} , "sales" : {}}
+        if (backedUpdata != "{}")
+        {
+          backedupuser = backedUpdata[clientIp]
+          console.log(backedupuser  , 'here');
+          newUser.sales = backedupuser.sales
+          newUser.purchases = backedupuser.purchases
+          delete backedUpdata[clientIp]
+          if (backedUpdata.length == 0)
+              backedUpdata = "{}"
+        }
+
+        usersLogged.push(newUser)
+        console.log("data : " , backedUpdata);
+        
+      }
     
     
     console.log("connection event starts ",usersLogged);
@@ -412,12 +442,13 @@ io.on('connection', function (socket) {
                       }
                     
           });   
-    //root window disconnect event ends 
+  
+
     //server refreshes
           socket.on('refresh' , ()=> {
                 socket.broadcast.emit("refreshProductServer")
           })
-    //server refresh ends 
+
 
 
     //
@@ -426,11 +457,21 @@ io.on('connection', function (socket) {
             console.log("purchaseError");
           }) 
 
+          socket.on('sendError' , (data) =>{
+              socket.broadcast.emit('error' , data)
+              console.log("Hi123" , data);
+          })
 
-    //      
+
+
 
 
 })
+
+
+
+
+
 
 app.get('/login' , (req,res) => {                                                                                                          //for user login authentication
   sql = "select user_type from somanath.users where user_name = '"+ req.query.user_name + "' and user_pass = '"+req.query.user_pass+"'"
@@ -455,6 +496,8 @@ app.get('/login' , (req,res) => {                                               
         con.query(sql, (err , userType)=>{
           res.send(userType)
         });  
+
+    
                                                                                                                                        //returns null when not found else returns {""}
 });
 
@@ -561,11 +604,12 @@ app.get('/getOldStocks' ,  (req , res )=>{
     stocks['totQty'] = 0
     stocks['stocks'] = []
     minYear = result[0]['minDate']
+
     sql2 = "SELECT count(stk_prod_id) as max FROM somanath20"+dbYear+".stocks where stk_prod_qty >0 and stk_prod_id = " + prodId
     con.query(sql2 , (err2 , result2) =>{
 
             newMax = result2[0].max
-            console.log(newMax);
+         
 
             if(newMax > max)
                 max = newMax
@@ -832,10 +876,9 @@ app.get('/purchases/edit' , (req , res) =>{
 //sales enrty route
 
 app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
-
+ 
   ip = req.socket.remoteAddress
   salesDetails = req.query
-
   usersLogged.forEach(element => {
                     
     if(element.ip == ip)
@@ -856,11 +899,14 @@ app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
           //console.log("addEditNewSalesDetails :\n",element.sales);
         }
         
+
 });
 
 res.send({'saleId' : saleId})
 
-  
+
+
+
 })
 
 app.get('/sales/getSalesStocks' , (req , res) =>{
@@ -873,7 +919,7 @@ app.get('/sales/getSalesStocks' , (req , res) =>{
 
   sql = "SELECT stk_id,stk_prod_qty,stk_tot_qty,stk_cost,stk_pur_id , stk_firm_id , stk_sup_id, stk_sp_"+spType+",prod_name , prod_mrp , prod_mrp_old  , prod_unit_type , "+spType+"_unit , prod_gst , prod_cess FROM somanath20"+dbYear+".stocks , somanath.products where stk_prod_id = "+prodId+"  and stk_prod_qty > 0 and somanath.products.prod_id = somanath20"+dbYear+".stocks.stk_prod_id  order  by somanath20"+dbYear+".stocks.insert_time ;"
 
-  //console.log(sql);
+  console.log(sql,'----------------------------------------------');
   con.query(sql , (err , result) => {
       getSalesStocks(result , 0 , result.length , res)
   })
@@ -948,10 +994,11 @@ app.get('/sales/addSalesProduct' , (req , res) =>{
         }
   });
   res.sendStatus(200)
-
+  
 })
 
 app.get('/sales/removeSalesProduct' , (req , res) =>{
+  
           ip = req.socket.remoteAddress
           saleId = req.query.sale_id
           dbYear = req.query.db_year
@@ -1007,7 +1054,6 @@ app.get('/sales/removeSalesProduct' , (req , res) =>{
           })
 
           res.sendStatus(200)
-
 })
 
 app.get('/getGlobalStocks' , (req , res) =>{
@@ -1051,7 +1097,6 @@ app.get('/sales/save' , (req , res) =>{
             saleId = req.query.sale_id
             dbYear = req.query.year
             accId = req.query.cust_id
-            frieght = req.query.frieght
             userName = req.query.user_name
             saleDate1 = req.query.sale_date
 
@@ -1114,7 +1159,7 @@ app.get('/sales/save' , (req , res) =>{
 
           salesSaveData = {
                            '1' : {'sales_prod_id' : ':', 'sales_pur_id' : ':', 'sales_prod_qty' : ':', 'sales_prod_sp' : ':', 'cost_price' : ':', 'units' : '::', 'sp_list' : '::', 'gst_value' : ':', 'cess_value' : ':', 'sales_profit' : 0, 'prod_name' : ':','firm_total' : 0},
-                           '2' : {'sales_prod_id' : ':', 'sales_pur_id' : ':', 'sales_prod_qty' : ':', 'sales_prod_sp' : ':', 'cost_price' : ':', 'units' : '::', 'sp_list' : '::', 'gst_value' : ':', 'cess_value' : ':', 'sales_profit' : 0, 'prod_name' : ':','firm_total' : 0,'frieght':frieght},
+                           '2' : {'sales_prod_id' : ':', 'sales_pur_id' : ':', 'sales_prod_qty' : ':', 'sales_prod_sp' : ':', 'cost_price' : ':', 'units' : '::', 'sp_list' : '::', 'gst_value' : ':', 'cess_value' : ':', 'sales_profit' : 0, 'prod_name' : ':','firm_total' : 0},
                            '3' : {'sales_prod_id' : ':', 'sales_pur_id' : ':', 'sales_prod_qty' : ':', 'sales_prod_sp' : ':', 'cost_price' : ':', 'units' : '::', 'sp_list' : '::', 'gst_value' : ':', 'cess_value' : ':', 'sales_profit' : 0, 'prod_name' : ':','firm_total' : 0}
                           }
 
@@ -1293,7 +1338,7 @@ app.get('/sales/save' , (req , res) =>{
                   {
                     
                     temp = salesSaveData['1']
-                    sql3 += "('"+  salesIds[0] + "' , '" + salesIds[1] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "', " + frieght + " ,0,'" + insertTime + "',"+insertId +",'"+ Time + "',(select user_id from somanath.users where user_name = '" + userName +"')),"
+                    sql3 += "('"+  salesIds[0] + "' , '" + salesIds[1] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "',0,'" + insertTime + "',"+insertId +",'"+ Time + "',(select user_id from somanath.users where user_name = '" + userName +"')),"
                     sql4 += "('"+  salesIds[0] + "' , '" + salesIds[1] +"' , '" + temp.sales_prod_id +"','"  + temp.cost_price +"','" + temp.units +"','" + temp.sp_list +"','" + temp.gst_value +"','" + temp.cess_value +"'," + temp.sales_profit +"),"
                   }
 
@@ -1301,7 +1346,7 @@ app.get('/sales/save' , (req , res) =>{
                   {
                     
                     temp = salesSaveData['2']
-                    sql3 += "('"+  salesIds[0] + "' , '" + salesIds[2] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "', " + frieght + " ,0,'" + insertTime + "',"+insertId +",'"+ Time + "',(select user_id from somanath.users where user_name = '" + userName +"')),"
+                    sql3 += "('"+  salesIds[0] + "' , '" + salesIds[2] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "',0,'" + insertTime + "',"+insertId +",'"+ Time + "',(select user_id from somanath.users where user_name = '" + userName +"')),"
                     sql4 += "('"+  salesIds[0] + "' , '" + salesIds[2] +"' , '" + temp.sales_prod_id +"','"  + temp.cost_price +"','" + temp.units +"','" + temp.sp_list +"','" + temp.gst_value +"','" + temp.cess_value +"'," + temp.sales_profit +"),"
                   }
 
@@ -1309,8 +1354,8 @@ app.get('/sales/save' , (req , res) =>{
                   {
                     
                     temp = salesSaveData['3']
-                    sql3 += "('"+  salesIds[0] + "' , '" + salesIds[3] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "', " + frieght + " ,0,'" + insertTime + "',"+insertId +",'"+ Time + "',(select user_id from somanath.users where user_name = '" + userName +"'));"
-                    sql4 += "('"+  salesIds[0] + "' , '" + salesIds[3] +"' , '" + temp.sales_prod_id +"','"  + temp.cost_price +"','" + temp.units +"','" + temp.sp_list +"','" + temp.gst_value +"','" + temp.cess_value +"'," + temp.sales_profit +"); "
+                    sql3 += "('"+  salesIds[0] + "' , '" + salesIds[3] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "',0,'" + insertTime + "',"+insertId +",'"+ Time + "',(select user_id from somanath.users where user_name = '" + userName +"')),"
+                    sql4 += "('"+  salesIds[0] + "' , '" + salesIds[3] +"' , '" + temp.sales_prod_id +"','"  + temp.cost_price +"','" + temp.units +"','" + temp.sp_list +"','" + temp.gst_value +"','" + temp.cess_value +"'," + temp.sales_profit +"),"
                   }
                   BillNumber = salesIds[0].slice(3,)
                   toSendfirmIds =[]
@@ -1343,22 +1388,22 @@ app.get('/sales/save' , (req , res) =>{
                   {
                     maxIdUpdate.push(1)
                     temp = salesSaveData['1']
-                    sql3 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SSM_" + maxIds[0]['firm1'] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "', " + frieght + " ,0,'" + Time + "',(select user_id from somanath.users where user_name = '" + userName +"') , NULL , NULL),"
+                    sql3 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SSM_" + maxIds[0]['firm1'] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "',0,'" + Time + "',(select user_id from somanath.users where user_name = '" + userName +"') , NULL , NULL),"
                     sql4 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SSM_" + maxIds[0]['firm1'] +"','" + temp.sales_prod_id +"','"  + temp.cost_price +"','" + temp.units +"','" + temp.sp_list +"','" + temp.gst_value +"','" + temp.cess_value +"'," + temp.sales_profit +"),"
                   }
                 if (salesSaveData['2'].sales_prod_id != ":")
                   {
                     maxIdUpdate.push(2)
                     temp = salesSaveData['2']
-                    sql3 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SCM_" + maxIds[0]['firm2'] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "', " + frieght + " ,0,'" + Time + "',(select user_id from somanath.users where user_name = '" + userName +"') , NULL , NULL),"
+                    sql3 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SCM_" + maxIds[0]['firm2'] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "',0,'" + Time + "',(select user_id from somanath.users where user_name = '" + userName +"') , NULL , NULL),"
                     sql4 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SCM_" + maxIds[0]['firm2'] +"','" + temp.sales_prod_id +"','"  + temp.cost_price +"','" + temp.units +"','" + temp.sp_list +"','" + temp.gst_value +"','" + temp.cess_value +"'," + temp.sales_profit +"),"
                   }
                 if (salesSaveData['3'].sales_prod_id != ":")
                   {
                     maxIdUpdate.push(3)
                     temp = salesSaveData['3']
-                    sql3 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SEM_" + maxIds[0]['firm3'] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "', " + frieght + " ,0,'" + Time + "',(select user_id from somanath.users where user_name = '" + userName +"') , NULL , NULL); "
-                    sql4 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SEM_" + maxIds[0]['firm3'] +"','" + temp.sales_prod_id +"','"  + temp.cost_price +"','" + temp.units +"','" + temp.sp_list +"','" + temp.gst_value +"','" + temp.cess_value +"'," + temp.sales_profit +"); "
+                    sql3 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SEM_" + maxIds[0]['firm3'] +"' , " + accId + ",'" + temp.sales_prod_id +"','"  + temp.sales_pur_id +"','" + temp.sales_prod_qty +"','" + temp.sales_prod_sp +"','" + saleDate + "',0,'" + Time + "',(select user_id from somanath.users where user_name = '" + userName +"') , NULL , NULL),"
+                    sql4 += "('" + dbYear + "_" + maxIds[0]['sales'] + "' , 'SEM_" + maxIds[0]['firm3'] +"','" + temp.sales_prod_id +"','"  + temp.cost_price +"','" + temp.units +"','" + temp.sp_list +"','" + temp.gst_value +"','" + temp.cess_value +"'," + temp.sales_profit +"),"
                   }
 
                 //firm1 = , firm2 = , firm3 = 
@@ -1412,9 +1457,8 @@ app.get('/sales/edit',(req,res)=>{
                 dbYear = req.query.dbYear
                 saleDate = req.query.sale_date
                 custName = req.query.cust_name
-                sql = "SELECT sales_ref,sales_prod_id, sales_pur_id, sales_prod_qty, sales_prod_sp, freight, discount, date_format(insert_time,'%Y-%m-%d %H:%i:%S') as insert_time , insert_id FROM somanath20"+dbYear+".sales where sales_id='"+BillNumber+"'"
+                sql = "SELECT sales_ref,sales_prod_id, sales_pur_id, sales_prod_qty, sales_prod_sp,  discount, date_format(insert_time,'%Y-%m-%d %H:%i:%S') as insert_time , insert_id FROM somanath20"+dbYear+".sales where sales_id='"+BillNumber+"'"
                 con.query(sql,(err,result)=>{
-                  
                   sql1 = "SELECT sales_ref, cost_price, units, sp_list, gst_value, cess_value FROM somanath20"+dbYear+".sales_sp where sales_id='"+BillNumber+"'"
                   userIndex = 0
                   index = 0
@@ -1445,7 +1489,6 @@ app.get('/sales/edit',(req,res)=>{
                               }
                               index++
                     })
-
                   console.log( "edit :-------------------- ", usersLogged[0]['sales']);
                   let values = []
                   //let products = {}
@@ -1468,6 +1511,7 @@ app.get('/sales/edit',(req,res)=>{
                     result[k]["sales_pur_id"].split(':').slice(1,-1).forEach(purchaseId=>{
                       sql2 = "SELECT stk_id,prod_name  FROM somanath20"+dbYear+".stocks,somanath.products where stk_pur_id = '"+purchaseId+"' and stk_prod_id ="+prodId[i]+" and stk_prod_id = prod_id;"
                       result3 = connection.query(sql2)
+                      console.log(result3,"SELECT stk_id,prod_name  FROM somanath20"+dbYear+".stocks,somanath.products where stk_pur_id = '"+purchaseId+"' and stk_prod_id ="+prodId[i]+" and stk_prod_id = prod_id;");
                       prodTotal = parseFloat(qty[i])*parseFloat(sp[i])
                       Total += prodTotal
                       prodTotalHsn = ( parseFloat(sp[i])-parseFloat(prodCp[i]) ) * parseFloat(qty[i])
@@ -1507,7 +1551,7 @@ app.get('/sales/edit',(req,res)=>{
 
                     
 
-                    data = {'values':values,'slNO':slNO,'freight':result[0]['freight'],'total':Total.toFixed(2),'total_hsn':TotalHsn.toFixed(2),'insert_time':result[0]['insert_time'],'insert_id':result[0]['insert_id']}
+                    data = {'values':values,'slNO':slNO,'total':Total.toFixed(2),'total_hsn':TotalHsn.toFixed(2),'insert_time':result[0]['insert_time'],'insert_id':result[0]['insert_id']}
                     res.send(data)
 
 
@@ -1522,20 +1566,18 @@ app.get('/sales/voucher',(req,res)=>{
     editState = req.query.editState
     dbYear = req.query.dbYear
     //'dbYear','bank','cash','name','billDate','user_name'
-    ////'billNo':'','firm1':'','firm2':'','firm3':'','frieght' : '','editState' : ''
+    ////'billNo':'','firm1':'','firm2':'','firm3':'', : '','editState' : ''
     
     billNo = dbYear+"_"+req.query.billNo
     firm1_frontend = req.query.firm1
     firm2_frontend = req.query.firm2
     firm3_frontend = req.query.firm3
-    freight_frontend = req.query.frieght
     if(req.query.billNo === '')
     { 
       billNo = 'NULL'
       firm1_frontend = 0
       firm2_frontend = 0
       firm3_frontend = 0
-      freight_frontend = 0
     }
   if(editState === 'True')
   {
@@ -1552,11 +1594,11 @@ app.get('/sales/voucher',(req,res)=>{
     sql1 = "SELECT acc_cls_bal_firm1,acc_cls_bal_firm2,acc_cls_bal_firm3 FROM somanath20"+dbYear+".acc_bal where acc_id ="+result[0]['acc_id']
     con.query(sql1,(err1,result1)=>{
       firm1_bal = parseFloat((parseFloat(result1[0]['acc_cls_bal_firm1']) + parseFloat(firm1_frontend)).toFixed(2))
-      firm2_bal = parseFloat((parseFloat(result1[0]['acc_cls_bal_firm2']) + parseFloat(firm2_frontend) + parseFloat(freight_frontend)).toFixed(2))
+      firm2_bal = parseFloat((parseFloat(result1[0]['acc_cls_bal_firm2']) + parseFloat(firm2_frontend)).toFixed(2))
       firm3_bal = parseFloat((parseFloat(result1[0]['acc_cls_bal_firm3']) + parseFloat(firm3_frontend)).toFixed(2))
       
       old_bal = parseFloat(result1[0]['acc_cls_bal_firm1']) + parseFloat(result1[0]['acc_cls_bal_firm2']) + parseFloat(result1[0]['acc_cls_bal_firm3'])
-      bill_amt = parseFloat(firm1_frontend)+parseFloat(firm2_frontend)+parseFloat(firm3_frontend) + parseFloat(freight_frontend)
+      bill_amt = parseFloat(firm1_frontend)+parseFloat(firm2_frontend)+parseFloat(firm3_frontend) 
       
       bank = parseFloat(req.query.bank)
       cash = parseFloat(req.query.cash)
@@ -1586,113 +1628,224 @@ app.get('/sales/voucher',(req,res)=>{
       
       
       
-      if(amountPaid>=firm3_bal){
-        if(bank<=firm3_bal){
-            firm3_bank = bank
-            bank = 0 
-        }
-        else
-        {   
-            bank -= firm3_bal
-            firm3_bank = firm3_bal
-        }
-        amountPaid -= firm3_bal
-        firm3_bal = 0
-      }
-      else{
+      if(amountPaid>0)
+      {
+        if(amountPaid>=firm3_bal){
           if(bank<=firm3_bal)
           {
               firm3_bank = bank
               bank = 0
+              
           }
-          else if (bank>0)
+          else if(bank>0)
           {
               bank -= firm3_bal
               firm3_bank = firm3_bal
           }
-          firm3_bal -= amountPaid
-          amountPaid = 0
-      }
-      if(amountPaid >0){
-          
-          if(amountPaid>=firm1_bal){
-              if(bank<=firm1_bal)
-              {
-                  firm1_bank = bank
-                  bank = 0
-                  
-              }
-              else if(bank>0)
-              {
-                  bank -= firm1_bal
-                  firm1_bank = firm1_bal
-              }
-              amountPaid -= firm1_bal
-              firm1_bal = 0
-          }
-          else{
-              if(bank<=firm1_bal)
-              {
-              firm1_bank = bank
-              bank = 0 
-              }
-              else  if (bank>0)
-              {
-                  bank -= firm1_bal
-                  firm1_bank = firm1_bal
-              }
-              firm1_bal -= amountPaid
-              amountPaid = 0
-          }
-          if(amountPaid>0){
-              if(bank<=firm2_bal)
-              {
+          amountPaid -= firm3_bal
+          firm3_bal -= firm3_bank
+        }
+        else{
+            if(bank<=firm3_bal)
+            {
+            firm3_bank = bank
+            bank = 0 
+            }
+            else  if (bank>0)
+            {
+                bank -= firm3_bal
+                firm3_bank = firm3_bal
+            }
+            firm3_bal -= firm3_bank
+            amountPaid = 0
+        }
+  
+        if(amountPaid>=firm2_bal){
+          if(bank<=firm2_bal)
+          {
               firm2_bank = bank
               bank = 0
-              }
-              else  if (bank>0)
-              {
-                  bank -= firm2_bal
-                  firm2_bank = firm2_bal
-              }
-              firm2_bal -= amountPaid
+              
           }
+          else if(bank>0)
+          {
+              bank -= firm2_bal
+              firm2_bank = firm2_bal
+          }
+          amountPaid -= firm2_bal
+          firm2_bal -= firm2_bank
+        }
+        else{
+            if(bank<=firm2_bal)
+            {
+            firm2_bank = bank
+            bank = 0 
+            }
+            else  if (bank>0)
+            {
+                bank -= firm2_bal
+                firm2_bank = firm2_bal
+            }
+            firm2_bal -= firm2_bank
+            amountPaid = 0
+        }
+        if(amountPaid>=firm1_bal){
+          if(bank<=firm1_bal)
+          {
+              firm1_bank = bank
+              bank = 0
+              
+          }
+          else if(bank>0)
+          {
+              bank -= firm1_bal
+              firm1_bank = firm1_bal
+          }
+          amountPaid -= firm1_bal
+          firm1_bal -= firm1_bank
+        }
+        else{
+            if(bank<=firm1_bal)
+            {
+            firm1_bank = bank
+            bank = 0 
+            }
+            else  if (bank>0)
+            {
+                bank -= firm1_bal
+                firm1_bank = firm1_bal
+            }
+            firm1_bal -= firm1_bank
+            amountPaid = 0
+        }
+        if(amountPaid>=firm3_bal){
+        if(cash<=firm3_bal)
+        {
+        firm3_cash = cash
+        cash = 0
+  
+        }
+        else if(cash>0)
+        {
+        cash -= firm3_bal
+        firm3_cash = firm3_bal
+        }
+        amountPaid -= firm3_bal
+        firm3_bal -= firm3_cash
+        }
+        else{
+        if(cash<=firm3_bal)
+        {
+        firm3_cash = cash
+        cash = 0 
+        }
+        else  if (cash>0)
+        {
+          cash -= firm3_bal
+          firm3_cash = firm3_bal
+        }
+        firm3_bal -= firm3_cash
+        amountPaid = 0
+        }
+        if(amountPaid>=firm2_bal){
+          if(cash<=firm2_bal)
+          {
+              firm2_cash = cash
+              cash = 0
+              
+          }
+          else if(cash>0)
+          {
+              cash -= firm2_bal
+              firm2_cash = firm2_bal
+          }
+          amountPaid -= firm2_bal
+          firm2_bal -= firm2_cash
+        }
+        else{
+            if(cash<=firm2_bal)
+            {
+            firm2_cash = cash
+            cash = 0 
+            }
+            else  if (cash>0)
+            {
+                cash -= firm2_bal
+                firm2_cash = firm2_bal
+            }
+            firm2_bal -= firm2_cash
+            amountPaid = 0
+        }
+        if(amountPaid>=firm1_bal){
+          if(cash<=firm1_bal)
+          {
+              firm1_cash = cash
+              cash = 0
+              
+          }
+          else if(cash>0)
+          {
+              cash -= firm1_bal
+              firm1_cash = firm1_bal
+          }
+          amountPaid -= firm1_bal
+          firm1_bal -= firm1_cash
+        }
+        else{
+            if(cash<=firm1_bal)
+            {
+            firm1_cash = cash
+            cash = 0 
+            }
+            else  if (cash>0)
+            {
+                cash -= firm1_bal
+                firm1_cash = firm1_bal
+            }
+            firm1_bal -= firm1_cash
+            amountPaid = 0
+        }
+        if(cash>0 )
+        {
+          firm1_bal -= cash
+          firm1_cash += cash
+          cash = 0
+        }
+        if(bank>0 )
+        {
+          firm1_bal -= bank
+          firm1_bank += bank
+          bank = 0
+        }
       }
-      
-      if(cash>0){
-          firm3_cash = firm3 - firm3_bal - firm3_bank
-          cash -= firm3_cash
-      }
-      if(cash>0){
-          firm1_cash = firm1 - firm1_bal - firm1_bank
-          cash -= firm1_cash
-      }
-      if(cash>0){
-          firm2_cash = firm2 - firm2_bal - firm2_bank
-          cash -= firm2_cash
+      else
+      {
+        firm1_bal -= cash
+        firm1_cash = cash
       }
 
       //trans_id, trans_acc, trans_sales, trans_amt_firm1, amt_paid_firm1_cash, amt_paid_firm1_bank, trans_amt_firm2, amt_paid_firm2_cash, amt_paid_firm2_bank, trans_amt_firm3, amt_paid_firm3_cash, amt_paid_firm3_bank, trans_date, insert_time, insert_id, update_time, update_id
       
 
-      sql2 = "SELECT cashflow_sales+1 as trans_id FROM somanath20"+dbYear+".max_id;"
+      sql2 = `SELECT cashflow_sales+1 as trans_id FROM somanath20${dbYear}.max_id;`
       con.query(sql2,(err2,result2)=>{
         date = req.query.billDate.split("-") 
-        date = ""+date[2]+"-"+date[1]+"-"+date[0]
+        date = `${date[2]}-${date[1]}-${date[0]}`
+        bankName = 1
         if(editState === 'True')
         {
-          sql3 = "UPDATE somanath20"+dbYear+".cashflow_sales SET  trans_acc ="+result[0]['acc_id']+"  , trans_amt_firm1 = "+firm1_frontend+", amt_paid_firm1_cash ="+firm1_cash+" , amt_paid_firm1_bank ="+firm1_bank+" , trans_amt_firm2 ="+firm2_frontend+" , amt_paid_firm2_cash ="+firm2_cash+" , amt_paid_firm2_bank ="+firm2_bank+" , trans_amt_firm3="+firm3_frontend+" , amt_paid_firm3_cash="+firm3_cash+" , amt_paid_firm3_bank="+firm3_bank+" , trans_date = '"+date+"', insert_time ='"+insertTime+"' , insert_id ="+insertId+" , update_time = '"+Time+"', update_id =(select user_id from somanath.users where user_name = '"+req.query.user_name+"') where trans_sales='"+billNo+"';"
+          sql3 = `UPDATE somanath20${dbYear}.cashflow_sales SET  trans_acc =${result[0]['acc_id']}  , trans_amt_firm1 = ${firm1_frontend}, amt_paid_firm1_cash =${firm1_cash} , amt_paid_firm1_bank =${firm1_bank} , trans_amt_firm2 =${firm2_frontend} , amt_paid_firm2_cash =${firm2_cash} , amt_paid_firm2_bank =${firm2_bank} , trans_amt_firm3=${firm3_frontend} , amt_paid_firm3_cash=${firm3_cash} , amt_paid_firm3_bank=${firm3_bank}, bank_firm = ${bankName} , trans_date = '${date}', insert_time ='${insertTime}' , insert_id =${insertId} , update_time = '${Time}', update_id =(select user_id from somanath.users where user_name = '${req.query.user_name}') where trans_sales='${billNo}';`
         }
         else
         {
-          sql3 = "insert into somanath20"+dbYear+".cashflow_sales values ('"+dbYear+"_"+result2[0]['trans_id']+"',"+result[0]['acc_id']+",'"+billNo+"',"+firm1_frontend+","+firm1_cash+","+firm1_bank+","+firm2_frontend+","+firm2_cash+","+firm2_bank+","+firm3_frontend+","+firm3_cash+","+firm3_bank+",'"+date+"','"+Time+"',(select user_id from somanath.users where user_name = '"+req.query.user_name+"'),NULL,NULL);"
-          sql5 = "UPDATE somanath20"+dbYear+".max_id set cashflow_sales ="+result2[0]['trans_id']
+          sql3 = `insert into somanath20${dbYear}.cashflow_sales values ('${dbYear}_${result2[0]['trans_id']}',${result[0]['acc_id']},'${billNo}',${firm1_frontend},${firm1_cash},${firm1_bank},${firm2_frontend},${firm2_cash},${firm2_bank},${firm3_frontend},${firm3_cash},${firm3_bank},${bankName},'${date}','${Time}',(select user_id from somanath.users where user_name = '${req.query.user_name}'),NULL,NULL);`
+          sql5 = `UPDATE somanath20${dbYear}.max_id set cashflow_sales =${result2[0]['trans_id']}`
           con.query(sql5)
         }
         con.query(sql3)
-        sql4 = "UPDATE somanath20"+dbYear+".acc_bal set acc_cls_bal_firm1 ="+firm1_bal.toFixed(2)+" ,acc_cls_bal_firm2="+firm2_bal.toFixed(2)+",acc_cls_bal_firm3="+firm3_bal.toFixed(2)+" where acc_id = "+result[0]['acc_id']
+        sql4 = `UPDATE somanath20${dbYear}.acc_bal set acc_cls_bal_firm1 =${firm1_bal.toFixed(2)} ,acc_cls_bal_firm2=${firm2_bal.toFixed(2)},acc_cls_bal_firm3=${firm3_bal.toFixed(2)} where acc_id = ${result[0]['acc_id']}`
         con.query(sql4)
-        
+        console.log(sql3);
         res.send(oldBal)
       })
       
@@ -1702,5 +1855,52 @@ app.get('/sales/voucher',(req,res)=>{
 })
 
 //sales entry routes done
+
+
+
+process.on('uncaughtException', (error) => {
+  console.log("here123",error.message , error.stack);
+
+  backupData = {}
+  usersLogged.forEach(element =>{
+      backupData[element.ip] = element
+  })
+  fs.writeFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',JSON.stringify(backupData));
+  //connection.query("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
+
+  io.sockets.emit('sendError' ,"\n"+String(error.stack))
+  process.exit(1)  
+});
+
+process.on('unhandledRejection', (error, promise)  => {
+  console.log('Alert!----------------- ERROR : ',  error);
+  backupData = {}
+  usersLogged.forEach(element =>{
+      backupData[element.ip] = element
+  })
+  fs.writeFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',JSON.stringify(backupData));
+  //connection.query("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
+  io.sockets.emit('sendError' , error)
+  process.exit(1); // Exit your app 
+})
+
+
+function myCustomErrorHandler(err, req, res, next) {
+  //console.log(err.stack);
+  backupData = {}
+  usersLogged.forEach(element =>{
+      backupData[element.ip] = element
+  })
+  fs.writeFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',JSON.stringify(backupData));
+  //console.log("HEREKKONJ");
+  //console.log(JSON.stringify(backupData));
+  //console.log("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
+  //connection.query("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
+  io.sockets.emit('sendError' ,req.path+"\n"+String(err.stack))
+  process.exit(1);
+}
+app.use(myCustomErrorHandler);
+
+
 
 server.listen(5000);                                                                                                                           

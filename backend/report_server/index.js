@@ -66,7 +66,6 @@ app.use( '/images' , express.static(serveDirectory))
 app.get('/onlySql' , (req , res)=>{
 
       sql = req.query.sql
-
       con.query(sql , (err , result)=>{
         res.send(result)
       })
@@ -218,6 +217,7 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
 })
 
 app.get('/firms/getFirmList' , (req , res )=>{
+  console.log("----------");
   sql = "select firm_id , firm_suffix , firm_name from somanath.firms"
   if(req.query.tax_check == "True")
     sql += " where firm_tax != 'CASH'"
@@ -225,6 +225,7 @@ app.get('/firms/getFirmList' , (req , res )=>{
 
   con.query(sql , (err , result)=>{
     res.send(result)
+    console.log(result);
   })
 })
 
@@ -316,6 +317,7 @@ app.get('/taxes/getSelectedTax' , (req,res) => {
 
 //taxes get all for treeview
 app.get('/taxes/getTaxList' , (req , res )=>{
+
   sql = "SELECT tax_id,tax_type,tax_per FROM somanath.taxes order by tax_id"
   con.query(sql , (err , result)=>{
     res.send(result)
@@ -912,32 +914,18 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                                                           res.sendStatus(200)
                                                           socket.emit("refresh")
                                                       })
-
                                               })
-
-
                                           }
                                   else        
                                           {
-
-                                                    
                                                     newDirectory =  path.join(homeDir , "angadiImages" , "accounts" , String(ID))
-
-                                                  
                                                     newImageName = ""
-
-                                                    
-
-
                                                   if(sqlInputs.acc_img == "True")
                                                     {
                                                       newImageName = path.join(newDirectory , "photo."+photos[0].split(".")[1])
                                                       fs.renameSync(path.join(homeDir , "angadiImages" , String(photos[0])) , newImageName , (err)=>{})
-                                                      
                                                     }
-                                          
                                                     photos = []
-
                                                 sql2 = "update somanath.accounts set acc_type = '"+sqlInputs.acc_type+"', acc_name = '"+sqlInputs.acc_name+"', acc_email = '"+sqlInputs.acc_email+"', acc_add = '"+sqlInputs.acc_add+"', acc_mob1 = '"+sqlInputs.acc_mob1+"', acc_mob2 = '"+sqlInputs.acc_mob2+"',acc_gstin = '"+sqlInputs.acc_gstin+"', acc_accno = '"+sqlInputs.acc_accno+"', acc_ifsc = '"+sqlInputs.acc_ifsc+"', acc_cus_type = '"+sqlInputs.acc_cus_type+"', acc_img = '"+sqlInputs.acc_img+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where acc_id = "+String(ID) 
                                                 console.log(sql2);
                                                 con.query(sql2 , (err2 , result2)=>{
@@ -1144,6 +1132,7 @@ function getOldtrans(  dbYear , mindbYear  , bills , nBill , max ,sqlwhere, clie
         {
 
           bills.push(accId)
+          bills.push(dbYear+1)
           clientResponse.send(bills)
           return
         }
@@ -1152,6 +1141,7 @@ function getOldtrans(  dbYear , mindbYear  , bills , nBill , max ,sqlwhere, clie
     else if(nBill >= max)
       {
         bills.push(accId)
+        bills.push(dbYear)
         clientResponse.send(bills)
         return 
       }
@@ -1179,9 +1169,7 @@ function getOldtrans(  dbYear , mindbYear  , bills , nBill , max ,sqlwhere, clie
 
 }
 
-
-
-app.get('/reports/getCashflow' ,  (req,res) => {
+app.get('/reports/getCashflowSales' ,  (req,res) => {
   minYear = 21
   accName = req.query.acc_name
   sqlmin = "SELECT date_format(insert_time,'%y') as year,date_format(insert_time,'%m') as month , acc_id FROM somanath.accounts where acc_name = '"+accName+"'"
@@ -1191,7 +1179,6 @@ app.get('/reports/getCashflow' ,  (req,res) => {
     y = parseInt(result[0].year)
     m = parseInt(result[0].month)
     accId = result[0].acc_id
-    console.log(accId)
     if (y < 23 & m < 4){
       minYear = 21
     }
@@ -1216,7 +1203,6 @@ app.get('/reports/getCashflow' ,  (req,res) => {
      else sqlwhere = "trans_acc = "+accId+" and trans_date >= '"+startDate+"' and trans_date <='"+endDate+"' order by insert_time DESC"
   }
   else { sqlwhere = 'trans_acc = '+accId+' order by insert_time DESC limit '+ noBills }
-  console.log(sqlwhere);
     getOldtrans(  req.query.db , minYear  , [] , 0 , noBills , sqlwhere , res , accId )
 
   })
@@ -1381,7 +1367,6 @@ app.get('/reports/getCustomersales' ,  (req,res) => {
           }
 
           else {sqlwhere = ' order by sale_date DESC LIMIT '+ (nBill*3).toFixed(0) }
-
           getOldBill(  req.query.db , minYear , accId , [] , 0 , nBill , sqlwhere , res)
 
 
@@ -1390,6 +1375,230 @@ app.get('/reports/getCustomersales' ,  (req,res) => {
   
 })
 
+function filterDataMontlhyReport( sales, clientResponse){
+  let dictionary = {}
+  let temp_dict_value = []
 
+  for(var i = 0; i < sales.length; i++) {
+    let temp_prod_id  = sales[i].sales_prod_id.split(":").slice(1,-1)
+    let temp_sp       = sales[i].sales_prod_sp.split(":").slice(1,-1)
+    let temp_qty      = sales[i].sales_prod_qty.split(":").slice(1,-1)
+    
+        for(var j = 0; j < temp_prod_id.length ; j++ ) {
+          total_l = parseFloat(temp_sp[j])*parseFloat(temp_qty[j])
+          try{
+            temp_dict_value = dictionary[temp_prod_id[j]]
+            qty_l = parseFloat(temp_dict_value[1]) + parseFloat(temp_qty[j])
+            final_total = parseFloat(temp_dict_value[2]) + total_l
+            dictionary[temp_prod_id[j]] = [(final_total/qty_l).toFixed(2),qty_l.toFixed(3),final_total.toFixed(2)]
+          }
+          catch(error1){
+            dictionary[temp_prod_id[j]] = [parseFloat(temp_sp[j]).toFixed(2), parseFloat(temp_qty[j]).toFixed(3), total_l.toFixed(2)]
+          }
+        }
+    
+  }
+
+  const prod_id_keys = Object.keys(dictionary);
+  
+  let count = 0 
+  let k = 0
+  for(k=0 ;k < prod_id_keys.length; k++){
+    sql_only = "SELECT prod_name FROM somanath.products where prod_id = "+prod_id_keys[k]
+    con.query(sql_only,(err1,result)=>{
+      dictionary[prod_id_keys[count].toString()] = [dictionary[prod_id_keys[count].toString()] ,result[0]['prod_name']]
+      count++
+      if (count == k){clientResponse.send(dictionary);return}
+    })
+  }
+
+}
+
+function getoneMonthBills(  dbYear , mindbYear , acc_id , bills , nBill , max ,sqlwhere, clientResponse )
+{
+    
+    if( dbYear < mindbYear )
+      { 
+        
+        if( nBill == 0)
+        {
+          clientResponse.send("[]")
+          return
+        } 
+        else{
+          filterDataMontlhyReport( bills , clientResponse )
+          return
+        }
+        
+      }
+    else if(nBill >= max)
+     {
+      filterDataMontlhyReport( bills , clientResponse )
+      return
+      }
+    else
+      {
+        
+        sql = "SELECT sales_prod_id,sales_prod_qty,sales_prod_sp,date_format(sale_date,'%d-%b-%y') as date  FROM somanath20"+dbYear+".sales where sales_acc ="+(parseInt(acc_id))+ sqlwhere
+        console.log(sql);
+        con.query(sql , (err , res) =>  {
+          console.log(max);
+                res.forEach(element => {
+                  
+                  if(nBill < max){
+                    bills.push(element)
+                    nBill++
+                  }
+                });
+                getoneMonthBills( dbYear-1 , mindbYear , acc_id , bills , nBill , max ,sqlwhere, clientResponse )
+
+          })
+
+      }
+
+
+} 
+
+app.get('/reports/getMontlyReport' ,  (req,res) => {
+  accId = req.query.acc_id
+  sqlmin = "SELECT date_format(insert_time,'%y') as year,date_format(insert_time,'%m') as month FROM somanath.accounts  where acc_id ="+accId
+  con.query(sqlmin,(err,result)=>{
+    y = parseInt(result[0].year)
+    m = parseInt(result[0].month)
+    if (y < 23 & m < 4){
+      minYear = 21
+    }
+    else if (m < 4) minYear = y-1
+    else minYear = y
+    
+    startDate = req.query.sdate
+    endDate = req.query.edate
+    noBills = req.query.limit 
+    
+    year = parseInt(startDate.slice(2,4))
+    month = parseInt(startDate.slice(3,5))
+
+    if (year < 23 & month < 4)minYear = 21
+    else if (month < 4) minYear = year-1
+    else minYear = year
+
+    sqlwhere = " and sale_date >= '"+startDate+"' and sale_date <='"+endDate+"'"
+
+    getoneMonthBills(  req.query.db , minYear , accId , [] , 0 , noBills , sqlwhere , res)
+
+
+  })
+
+})
+
+function getOldtransPur(  dbYear , mindbYear  , bills , nBill , max ,sqlwhere, clientResponse )
+{
+    
+    if( dbYear < mindbYear )
+      { 
+        
+        if( nBill == 0)
+        {
+          clientResponse.send("[]")
+          return
+        }
+        else{
+          clientResponse.send(bills)
+          return
+        }
+        
+      }
+    else if(nBill >= max)
+      {
+        clientResponse.send(bills)
+        return 
+      }
+    else
+      {
+
+        sql = "SELECT trans_pur,trans_amt,amt_paid,trans_mode,date_format(trans_date,'%d-%b-%y') as transdate FROM somanath20"+dbYear+".cashflow_purchase where "+ sqlwhere
+        console.log(sql);
+        con.query(sql , (err , res) =>  {
+               
+                res.forEach(element => {
+
+                  if(nBill < max){
+                    bills.push(element) 
+                    nBill++
+                  }
+                });
+                
+                getOldtransPur( dbYear-1 , mindbYear  , bills , nBill , max ,sqlwhere, clientResponse )
+
+          })
+
+      }
+
+
+}
+
+
+
+app.get('/reports/getCashflowPurchase' ,  (req,res) => {
+  minYear = 21
+  accId = req.query.acc_id
+  sqlmin = "SELECT date_format(insert_time,'%y') as year,date_format(insert_time,'%m') as month FROM somanath.accounts  where acc_id ="+accId
+  
+  con.query(sqlmin,(err,result)=>{
+    y = parseInt(result[0].year)
+    m = parseInt(result[0].month)
+    
+    if (y < 23 & m < 4){
+      minYear = 21
+    }
+    else if (m < 4) minYear = y-1
+    else minYear = y
+    startDate = req.query.sdate
+
+  endDate = req.query.edate
+  noBills = req.query.limit
+  invNo   = req.query.invNo
+
+  if (invNo.length > 0){ 
+    sqlwhere = salePur+" = '"+invNo+"'"
+    noBills = 1
+    }
+  else if ( startDate != '' | endDate != '') {
+    year = parseInt(startDate.slice(2,4))
+    month = parseInt(startDate.slice(3,5))
+      if (year < 23 & month < 4){
+        minYear = 21
+      }
+      else if (month < 4) minYear = year-1
+      else minYear = year
+     if ( startDate == '') sqlwhere = "trans_acc = "+accId+" and trans_date <='"+endDate+"' order by trans_date DESC"
+     else if (endDate == '') sqlwhere = "trans_acc = "+accId+" and trans_date >= '"+startDate+"' order by trans_date DESC"
+     else sqlwhere = "trans_acc = "+accId+" and trans_date >= '"+startDate+"' and trans_date <='"+endDate+"' order by trans_date DESC"
+  }
+  else { sqlwhere = 'trans_acc = '+accId+' order by trans_date DESC limit '+ noBills }
+  getOldtransPur(  req.query.db , minYear  , [] , 0 , noBills , sqlwhere , res)
+
+  })
+  
+})
+
+process.on('uncaughtException', (error) => {
+  console.log("here",error.message);
+  socket.emit('sendError' ,"\n"+String(error.stack))
+  process.exit(1)
+});
+
+process.on('unhandledRejection', (error, promise)  => {
+  console.log('Alert!----------------- ERROR : ',  error);
+  socket.emit('sendError' , error)
+  process.exit(1); // Exit your app 
+})
+
+function myCustomErrorHandler(err, req, res, next) {
+  console.log(err.stack);
+  socket.emit('sendError' ,req.path+"\n"+String(err.stack))
+  process.exit(1);
+}
+app.use(myCustomErrorHandler);
 
 app.listen(6000) 

@@ -6,7 +6,7 @@ from tkinter import Tk
 from tkinter import constants as con
 from tkinter import messagebox as msg
 from tkinter import ttk
-
+from subprocess import check_output
 ip = "192.168.0.100"
 
 
@@ -80,11 +80,15 @@ def submit(e):
         msg.showerror("ERROR" , "This User has logged in already!")
         return
 
-    print(year)
+    #@ set exe file location
 
-    root = os.path.expanduser('~')+"\\desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
+    root = os.path.expanduser('~')+"\\Desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
+    #root = "C:\\Program Files\\Hosangadi\\root\\root.exe "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
+    
+
     login.destroy()
     os.system(root)
+    
 
 
 login = Tk()
@@ -116,7 +120,7 @@ fin_years = []                                     #all financial year record av
 for i in range(start_year , end_year):
     fin_years.append(str(i)+"-"+str(i+1))
 
-
+fin_years.reverse()
 
 main_frame = ttk.Frame(login , height = str(int(login_hgt*0.3)) , width =int(login_wdt*0.3) ,  style = "root_main.TFrame")
 main_frame.grid_propagate(False)
@@ -138,7 +142,7 @@ combo_year = ttk.Combobox(main_frame , width = 12  ,values =fin_years , font = (
 combo_year.bind("<FocusOut>" , combo_entry_out)
 #combo_year.bind("<KeyPress>" , dropdown)
 combo_year.bind("<Return>" , submit)
-combo_year.insert(con.END , fin_years[-1])
+combo_year.insert(con.END , fin_years[0])
 combo_year.config(state = 'readonly')
 
 rad_server = ttk.Radiobutton(main_frame , variable = rad_server_name ,value = 0 ,  style = "window_radio.TRadiobutton" , text = "SERVER")
@@ -161,12 +165,8 @@ rad_server.grid(row = 3 , column = 2 , padx = int(login_wdt*0.01))
 btn_submit.grid(row = 4 , column = 0 )
 
 rad_server.invoke()
-#rad_system.invoke()
+
 ent_user_name.focus_set()
 
-#ent_user_name.insert(0 , "VIJAY")
-#ent_user_pass.insert(0,"9902")
-
-#btn_submit.invoke()
 
 login.mainloop()

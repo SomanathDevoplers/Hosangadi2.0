@@ -1,13 +1,24 @@
 //const io = require('socket.io-client')
 //const socket = io.connect('http://'+ip+':5000')
+const print = require("pdf-to-printer");
 const express = require('express')
 const app = express()
 const homeDir = require('os').homedir()
-const { createWriteStream } = require ("fs");
+const { createWriteStream ,writeFileSync} = require ("fs");
 const PDFDocument = require("pdfkit"); 
 XLSX = require('xlsx')
 var MySql = require('sync-mysql');
-const mysql = require('mysql'); 
+const mysql = require('mysql');
+const { toBuffer } = require("bwip-js");
+const { Socket } = require("dgram");
+const io = require('socket.io-client')
+const socket = io.connect('http://localhost:5000' )
+const process = require('process');
+
+
+ 
+
+
 let con = mysql.createConnection({
   host: "localhost",
   port: "3306",
@@ -24,7 +35,132 @@ var connection = new MySql({
   multipleStatements : true
 });
 
-function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal,oldBalData,frieght , res){
+function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal,oldBalData,page, res){
+  if(page == 0)
+  {
+    let doc = new PDFDocument({ size: 'A6', margins: {
+      top: 3,
+      bottom: 3,
+      left: 10,
+      right:5
+    }
+    });
+  doc.pipe(res);
+  doc
+      .fontSize(14)
+      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+      .text('ಸೋಮನಾಥ  ಸ್ಟೋರ್', {align: 'center'})
+  doc 
+      .fontSize(10)
+      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+      .text('ಮರವಂತೆ - ೫೭೬೨೨೪',105,20 )
+  doc
+      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\Work_Sans\\static\\WorkSans-Regular.ttf')
+      .fontSize(11)
+      .text('MRP',110, 66,{ width: 50, align: "right" })
+      .fontSize(9)
+      .text('GST : 29ATBPS7012G1ZN',10,35 )
+      .text('Mob  : 9902664717',10,45)
+      .text(`Bill No:    ${BillNumber}`,190,35)
+      .text(`${Date}`,190,45)
+      .fontSize(10)
+      .text(`To    : ${customerName}`,10,55)
+  doc
+      .moveTo(5, 66)
+      .lineTo(295,65)
+      .stroke()
+      .moveTo(5, 82)
+      .lineTo(295,82)
+      .stroke();
+  doc
+      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Light.ttf')
+      .fontSize(12)
+      .text('ವಿವರಗಳು',30,66 )
+      .text('ದರ',145,66,{ width: 50, align: "right" })
+      .text('ಪ್ರಮಾಣ',195,66, { width: 50, align: "right" })
+      .text('ಮೊತ್ತ',0,66,{ align: "right" })
+      .text()
+      const prodName = Object.keys(InvoiceData)
+      let pageTop = 62
+      let position = 0
+      let count = 0
+      let maxPage = 385
+      let numberOfItems = prodName.length
+      let saved = 0
+      //Show old Balance
+      if(old_bal && numberOfItems > 18) maxPage = 365
+      let mrp
+      for (let i = 0; i < numberOfItems; i++) {
+        count += 1
+        position = pageTop + ((count + 1) * 10);//gap between rows 
+        if (InvoiceData[prodName[i]][0] != 0){
+          mrp = (InvoiceData[prodName[i]][0]).toFixed(1)
+          saved += (InvoiceData[prodName[i]][0] - InvoiceData[prodName[i]][1])*InvoiceData[prodName[i]][2]
+        }
+        else
+          mrp = ''
+        if(InvoiceData[prodName[i]][4]==''){
+          x = position
+          doc
+            .fontSize(8.5)
+            .font("C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\Work_Sans\\static\\WorkSans-Regular.ttf")
+            .text(prodName[i].slice(0,23),5, x )
+            .text(mrp, 110, x,{ width: 50, align: "right" })
+            .text((InvoiceData[prodName[i]][1]).toFixed(1), 145, x, { width: 50, align: "right" })
+            .text((InvoiceData[prodName[i]][2]).toFixed(3) , 195, x, { width: 50, align: "right" })
+            .text((InvoiceData[prodName[i]][3]).toFixed(2), 0, x, { align: "right" });
+        }
+        else{
+          doc
+        .fontSize(8.5)
+        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+        .text(InvoiceData[prodName[i]][4].slice(0,23),5, position)
+        .text(mrp, 110, position,{ width: 50, align: "right" })
+        .text((InvoiceData[prodName[i]][1]).toFixed(1), 145, position, { width: 50, align: "right" })
+        .text((InvoiceData[prodName[i]][2]).toFixed(3) , 195, position, { width: 50, align: "right" })
+        .text((InvoiceData[prodName[i]][3]).toFixed(2), 0, position, { align: "right" });
+        }
+        
+        if(position > maxPage )
+          {
+              doc.addPage({size: "A6",margins: {
+                  top: 0,
+                  bottom: 0,
+                  left: 10,
+                  right:5
+                }})
+              count = 0
+              pageTop = -15
+              position = 0
+          }
+      }
+  doc
+      .moveTo(5, position+15)
+      .lineTo(295,position+15)
+      .stroke();
+  doc
+      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+      .text(`ಒಟ್ಟು : ₹ ${Number(BillTotal).toFixed(2)}`,0,position+20,{ align: "right" })
+
+  if(old_bal === 'True'){
+  doc
+      .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Number(oldBalData['old_bal']).toFixed(2)}`,10,position+20,{ align: "left" })
+      .text(`ಜಮಾ      : ₹ ${Number(oldBalData['amountPaid']).toFixed(2)}`,10,position+40,{ align: "left" })
+      .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Number(oldBalData['remaining_bal']).toFixed(2)}`,0,position+40,{ align: "right" })
+  }
+
+  if(saved>1){
+    doc 
+      .font("C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\Work_Sans\\static\\WorkSans-Regular.ttf")
+      .text(`You have Saved Rs.${saved} on MRP`,{align:"center"})
+  }
+  
+  doc .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+      .text("ನಮ್ಮೊಂದಿಗೆ ವ್ಯವಹರಿಸಿದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಮತ್ತೆ ಬನ್ನಿ",{align:"center"})
+  doc.end();
+  }
+
+  else{
   const prodName = Object.keys(InvoiceData)
   let numberOfItems = prodName.length
   height = 85+ numberOfItems*20.5+50
@@ -37,8 +173,6 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
       }
       });
  
-    //@ to save on server
-    fileName = customerName.toUpperCase()+"_"+BillNumber
     doc.pipe(res);
 
     doc 
@@ -83,8 +217,6 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
         let position1 = 10
         let pageTop = 10
         let count = 1
-        let maxPage = 385
-        
         //Show old Balance
         if(old_bal && numberOfItems > 18) maxPage = 365
         let mrp
@@ -106,14 +238,6 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
           .text((InvoiceData[prodName[i]][3]).toFixed(2), 0, position1, { align: "right" });
           
         }
-    if(parseFloat(frieght)>0){
-        doc
-          .fontSize(8.5)
-          .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
-          .text('ಬಾಡಿಗೆ',5, position+10)
-          .text(Number(frieght).toFixed(2), 0, position+10, { align: "right" });
-          position += 5
-        }
         position += 10
     doc
         .moveTo(5, position+8)
@@ -131,16 +255,13 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
     }
     doc .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
         .text("ನಮ್ಮೊಂದಿಗೆ ವ್ಯವಹರಿಸಿದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಮತ್ತೆ ಬನ್ನಿ",{align:"center"})
-
-    
-
-        
     doc.end();
+  }
 }
 
 function voucher( Date, customerName, oldBalData , res){
   // start pdf document
-  let doc = new PDFDocument({ size: [225,60], margins: {
+  let doc = new PDFDocument({ size: 'A6', margins: {
       top: 3,
       bottom: 3,
       left: 10,
@@ -153,7 +274,7 @@ function voucher( Date, customerName, oldBalData , res){
   doc.pipe(res);
   doc 
       .font('Helvetica')
-      .fontSize(10)
+      .fontSize(12)
       .text(`${customerName}`,0,5,{ align: "center" })
       
   doc
@@ -169,22 +290,51 @@ function voucher( Date, customerName, oldBalData , res){
 
 }
 
-function barcode(product){
-  // start pdf document
-  let doc = new PDFDocument({ size: [107.7,42.5], margins: {
+function barcode_50_25(image,name,mrp,cp,sp,count){
+
+  let doc = new PDFDocument({ size: [141.7, 70.8], margins: {
       top: 0,
       bottom: 0,
-      left: 0,
-      right: 0
+      left: 2,
+      right: 2
     }
     });
-  doc.pipe(createWriteStream('C:\Users\vijay\Desktop\Hosangadi2.0\barcode.pdf'));
-    
-  doc 
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Medium.ttf')
-      .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Number(oldBalData['old_bal']).toFixed(2)}`,10,20,{ align: "left" })
+  doc.pipe(createWriteStream('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\barcode.pdf'));
+  for(i = 0; i<count;i++)
+  {   
+      if(parseFloat(mrp)>99){
+        mrp = mrp.split('.')[0]
+        sp =sp.split('.')[0]
+      }
+      sp+=" "
+      x = ''
+      y='center'
+      if(parseFloat(mrp)>parseFloat(sp)){
+        x = ` MRP:${"Rs"}${mrp}`
+        y='right'
+      }
+      
+      doc.image(image, 26, 33,{width: 90, height: 20,align : 'center'})
+        .fontSize(10)
+        .text(`${cp}`, 0, 56,{align: 'center'})
+        .text(`Price:${"Rs"}${sp}`, 0, 20,{align: y})
+        .text(`${name}`.slice(0,22),4,8,{align: 'center'})
+        .text(x,0,20,{align: 'left'})
+        if(i<count-1)
+        {
+          doc.addPage({
+                      size: [141.7, 70.8], 
+                      margins: 
+                      {
+                        top: 0,
+                        bottom: 0,
+                        left: 2,
+                        right: 2
+                      }
+                    });
+        }
+      }
   doc.end();
-
 }
 
 function dbDataPurchase(firm,dbYear,year,firstDay,lastDay,month,res){
@@ -656,7 +806,7 @@ function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
     total[12][1] = total[12][1].toFixed(2)
     total[18][1] = total[18][1].toFixed(2)
     total[28][1] = total[28][1].toFixed(2)
-
+    //location
     const workbook = XLSX.readFile("C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\printer_server\\GSTR1_Excel_Workbook_Template_V1.81.xlsx");
 
 SheetNames = ['Help Instruction', 'b2b','b2ba','b2cl','b2cla','b2cs','b2csa','cdnr','cdnra','cdnur','cdnura','exp','expa','at','ata','atadj','atadja','exemp','hsn','docs','master']
@@ -888,27 +1038,135 @@ SheetNames.forEach( SheetName => {
 });
 
 XLSX.writeFile(newBook,"GSTR1_"+month+".xlsx")
-    
 }
 
     else{
       res.sendStatus(201)
     }
-
   })
 }
 
-app.get('/sales/voucherPrint1', (req,res) =>{
-  product = req.query.product
-  barcode(req.query.product)
-  res.sendStatus(200)
-})
+function orderList(list,res)
+{
+  singlePage = true
+  if(parseInt(list[0][3])>5)
+      {
+        singlePage = false
+      }
+
+  let doc = new PDFDocument({ size: 'A6', margins: {
+    top: 3,
+    bottom: 3,
+    left: 10,
+    right:5
+  }
+  });
+
+doc.pipe(res);
+if(singlePage)
+  {
+    doc .fontSize(12)
+    .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+    .text('ಸೋಮನಾಥ  ಸ್ಟೋರ್', {align: 'center'})
+    }
+let position = 0
+let count = 0
+let numberOfItems = list.length
+let j = 0;
+for (i = 0  ;i < numberOfItems; i++){
+  if(parseInt(list[i][3])>5)
+  {
+    j = i
+    break
+  }
+  
+    count += 1
+    position = 10 + count*10;//gap between rows 
+    doc
+    .fontSize(8.5)
+    .font("Helvetica")
+    .text(list[i][0],5, position)
+    .text(list[i][1],145, position, { width: 50, align: "right" })
+    .text(list[i][2],195, position, { width: 100, align: "center" })
+
+    if(count == 39 ) 
+      {
+          doc.addPage({size: "A6",margins: {
+              top: 0,
+              bottom: 0,
+              left: 10,
+              right:5
+            }})
+            doc
+            .fontSize(12)
+            .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+            .text('ಸೋಮನಾಥ  ಸ್ಟೋರ್', {align: 'center'})
+          count = 0
+      }
+  
+
+}
+ if(singlePage){
+  doc.addPage({size: "A6",margins: {
+    top: 0,
+    bottom: 0,
+    left: 10,
+    right:5
+  }})
+ }
+      count = 0
+      doc
+      .fontSize(12)
+      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+      .text('ಸೋಮನಾಥ  ಎಂಟರ್ಪ್ರೈಸ್', {align: 'center'})
+      
+      
+      for(j ; j<numberOfItems ; j++)
+      {
+      count += 1
+      position = 10 + count*10;//gap between rows 
+      doc
+      .fontSize(8.5)
+      .font("Helvetica")
+      .text(list[j][0],5, position)
+      .text(list[j][1],145, position, { width: 50, align: "right" })
+      .text(list[j][2],195, position, { width: 100, align: "center" })
+
+      if(count == 39 ) 
+        {
+            doc.addPage({size: "A6",margins: {
+                top: 0,
+                bottom: 0,
+                left: 10,
+                right:5
+              }})
+              doc
+              .fontSize(12)
+              .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+              .text('ಸೋಮನಾಥ  ಎಂಟರ್ಪ್ರೈಸ್', {align: 'center'})
+            count = 0
+        }
+      }    
+doc.end();
+}
+
+
+app.get('/Barcode', (req,res) =>{
+  req.query.a[1]
+  toBuffer({bcid: "code128",text: req.query.barcode.split(':')[1],},
+          (err,png)=>{
+          res.sendStatus(200)
+          
+          barcode_50_25(png,req.query.name,req.query.mrp,req.query.cp,req.query.sp,req.query.count)
+          //print.print('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\barcode.pdf')
+      })
+    })
 
 //Invoice
 app.get('/sales/invoice', (req,res) =>{
   invoiceData = JSON.parse(req.query.invoiceData)
   oldBalData = JSON.parse(req.query.oldBalData)
-  Invoice(req.query.billNo, req.query.Date, req.query.customerName,invoiceData , req.query.billTotal,req.query.oldBal,oldBalData,req.query.frieght , res)
+  Invoice(req.query.billNo, req.query.Date, req.query.customerName,invoiceData , req.query.billTotal,req.query.oldBal,oldBalData,req.query.page,res)
   
 })
 
@@ -939,131 +1197,132 @@ app.get('/PurchaseReport',(req,res)=>{
 app.get('/SalesReport',(req,res)=>{
   dbDataSales(req.query.firm,req.query.dbYear,req.query.firstDay,req.query.lastDay,req.query.month,res)
 });
-app.listen(7000);
 
-/*
-a6 page 
-// start pdf document
-    let doc = new PDFDocument({ size: 'A6', margins: {
-        top: 3,
-        bottom: 3,
-        left: 10,
-        right:5
-      }
-      });
+app.get('/orderList',(req,res)=>{
+  list = JSON.parse(req.query.values)
+  orderList(list,res)
+})
 
-    
-    //@ to save on server
-    fileName = customerName.toUpperCase()+"_"+BillNumber
-    doc.pipe(res);
+app.get('/onlySql' , (req , res)=>{
 
-    doc 
-        .fontSize(14)
-        
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
-        .text('ಸೋಮನಾಥ  ಸ್ಟೋರ್', {align: 'center'})
+  sql = req.query.sql
+  con.query(sql , (err , result)=>{
+    res.send(result)
+  })
+})
 
-    doc 
-        .fontSize(10)
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Medium.ttf')
-        .text('ಮರವಂತೆ - ೫೭೬೨೨೪',105,20 )
-    doc 
-        .font('Helvetica')
-        .fontSize(11)
-        .text('MRP',110, 69,{ width: 50, align: "right" })
-        .fontSize(9)
-        .text('GST : 29ATBPS7012G1ZN',10,35 )
-        .text('Mob  : 9902664717',10,45)
-        .text(`Bill No:    ${BillNumber}`,190,35)
-        .text(`${Date}`,190,45)
-        .fontSize(10)
-        .text(`To    : ${customerName}`,10,55)
-        
-      
-    doc
-        .moveTo(5, 65)
-        .lineTo(295,65)
-        .stroke()
-        .moveTo(5, 82)
-        .lineTo(295,82)
-        .stroke();
-        
-    doc
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Light.ttf')
-        .fontSize(12)
-        .text('ವಿವರಗಳು',30,66 )
-        .text('ದರ',145,66,{ width: 50, align: "right" })
-        .text('ಪ್ರಮಾಣ',195,66, { width: 50, align: "right" })
-        .text('ಮೊತ್ತ',0,66,{ align: "right" })
-        .text()
-        const prodName = Object.keys(InvoiceData)
-        let pageTop = 70
-        let position = 0
-        let count = 0
-        let maxPage = 385
-        let numberOfItems = prodName.length
-        //Show old Balance
-        if(old_bal && numberOfItems > 18) maxPage = 365
-        let mrp
-        for (let i = 0; i < numberOfItems; i++) {
-          count += 1
-          position = pageTop + ((count + 1) * 10);//gap between rows 
-          if (InvoiceData[prodName[i]][0] != 0)
-            mrp = (InvoiceData[prodName[i]][0]).toFixed(1)
-          else
-            mrp = ''
-          doc
-          .fontSize(8.5)
-          //.font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
-          //.text("ಕನ್ನಡ ", 5, position)
-          .font("Helvetica")
-          .text(prodName[i].slice(0,23),5, position)
-          .text(mrp, 110, position,{ width: 50, align: "right" })
-          .text((InvoiceData[prodName[i]][1]).toFixed(1), 145, position, { width: 50, align: "right" })
-          .text((InvoiceData[prodName[i]][2]).toFixed(3) , 195, position, { width: 50, align: "right" })
-          .text((InvoiceData[prodName[i]][3]).toFixed(2), 0, position, { align: "right" });
-          if(position > maxPage ) 
-            {
-                doc.addPage({size: "A6",margins: {
-                    top: 0,
-                    bottom: 0,
-                    left: 10,
-                    right:5
-                  }})
-                count = 0
-                pageTop = -25
-                position = 0
-            }
-        }
-    if(parseFloat(frieght)>0){
-        doc
-          .fontSize(8.5)
-          .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
-          .text('ಬಾಡಿಗೆ',5, position+10)
-          .text(Number(frieght).toFixed(2), 0, position+10, { align: "right" });
-          position += 5
-        }
-    doc
-        .moveTo(5, position+15)
-        .lineTo(295,position+15)
-        .stroke();
-    doc
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
-        .text(`ಒಟ್ಟು : ₹ ${Number(BillTotal).toFixed(2)}`,0,position+20,{ align: "right" })
+app.get('/billOnly',(req, res)=>{
 
-    if(old_bal === 'True'){
-    doc
-        .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Number(oldBalData['old_bal']).toFixed(2)}`,10,position+20,{ align: "left" })
-        .text(`ಜಮಾ      : ₹ ${Number(oldBalData['amountPaid']).toFixed(2)}`,10,position+40,{ align: "left" })
-        .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Number(oldBalData['remaining_bal']).toFixed(2)}`,0,position+40,{ align: "right" })
+  dbYear = req.query.dbYear
+  billNumber = req.query.billNumber
+  sql = "SELECT  acc_name , sales_prod_id , sales_prod_qty , sales_prod_sp , date_format(sale_date,'%d-%m-%Y') as Date  , discount, acc_cls_bal_firm1 + acc_cls_bal_firm2 + acc_cls_bal_firm3 as remaining_bal,trans_amt_firm1+trans_amt_firm2+trans_amt_firm3 as bill_amt,amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank as amountPaid"
+  sql += " FROM somanath20"+dbYear+".sales, somanath.accounts, somanath20"+dbYear+".acc_bal, somanath20"+dbYear+".cashflow_sales where somanath20"+dbYear+".sales.sales_id = '"+dbYear+"_"+billNumber+"'" 
+  sql += " and somanath20"+dbYear+".sales.sales_acc = somanath.accounts.acc_id  and somanath20"+dbYear+".acc_bal.acc_id = somanath20"+dbYear+".sales.sales_acc and somanath20"+dbYear+".cashflow_sales.trans_sales = somanath20"+dbYear+".sales.sales_id;"
+  con.query(sql,(err,result)=>{
+    if(result.length==0){
+      res.sendStatus(201)
     }
+    else{
+      prodName = []
+      prodQty = []
+      prodSp = []
+      result1 = {}
+      j=0
+      Object.keys(result).forEach(element => {
+        Qty = result[element]['sales_prod_qty'].split(':').slice(1,-1)
+        Sp = result[element]['sales_prod_sp'].split(':').slice(1,-1)
+        i = 0
+        prod = result[element]['sales_prod_id'].split(':').slice(1,-1)
+        prod.forEach(id => {
+          prodQty.push(Qty[i])
+          prodSp.push(Sp[i])
+          prodDeatils = connection.query("SELECT prod_name,prod_mrp,prod_id,prod_name_kan FROM somanath.products where prod_id ="+id)
+          result1[j] = prodDeatils
+          i+=1
+          j+=1
+        });
+      });
+      invoiceData = {}
+      i = 0
+      grandTotal = 0
+      Object.keys(result1).forEach(element => {
+        each = result1[element][0]
+        if(each['prod_name'] in invoiceData){
+          x = invoiceData[each['prod_name']]
+          tot = parseFloat(prodQty[i])*parseFloat(prodSp[i]) + x[3]
+          qty = x[2] + parseFloat(prodQty[i])
+          sp = parseFloat((tot/qty).toFixed(2))
+          grandTotal += tot
+          invoiceData[each['prod_name']] = [x[0],sp,qty,tot,x[4]]
+        }
+        else{
+          MRP = parseFloat(each['prod_mrp'])
+          if ( MRP <= parseFloat(prodSp[i]) )
+              MRP = 0
+          tot = parseFloat(prodQty[i])*parseFloat(prodSp[i])
+          grandTotal += tot
+          invoiceData[each['prod_name']] = [ MRP , parseFloat(prodSp[i]) , parseFloat(prodQty[i]) , tot,each['prod_name_kan'] ]
+        }
+        i += 1
+      });
+      voucher ={
+        'old_bal' : parseFloat(result[0]['remaining_bal'])  - ( grandTotal - parseFloat(result[0]['amountPaid']) ),
+        'amountPaid': result[0]['amountPaid'],
+        'remaining_bal': result[0]['remaining_bal']
+      }
+      Invoice(billNumber, result[0]['Date'], result[0]['acc_name'],invoiceData , grandTotal,'True',voucher,0,res)
+    }
+  })
+})
 
-    doc .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
-        .text("ನಮ್ಮೊಂದಿಗೆ ವ್ಯವಹರಿಸಿದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಮತ್ತೆ ಬನ್ನಿ",{align:"center"})
-
+app.get('/cmp08',(req,res)=>{
+  sql = "SELECT sales_prod_sp,sales_prod_qty FROM somanath20"+req.query.dbYear+".sales where sales_ref regexp 'SEM' and sale_date>='"+req.query.firstDay+"' and sale_date<='"+req.query.lastDay+"';"//sales_ref regexp 'SCM' and 
+  con.query(sql,(err,result)=>{
+    totalSales = 0
+    if(result.length==0){
+      res.sendStatus(201)
+    }
+    else{
+      res.sendStatus(200)
+      Object.keys(result).forEach(element => {
+        sp = result[element].sales_prod_sp.split(':').slice(1,-1)
+        i = 0
+        result[element].sales_prod_qty.split(':').slice(1,-1).forEach(qty => {
+          totalSales += qty*sp[i]
+          i++
+        });
+      });
+      writeFileSync('cmp08.txt',`Somanath Enterprices\nQuarter     : ${req.query.quarter}\nTotal Sales : ${totalSales.toFixed(2)}` );
+    }
     
+  })
+  
+})
 
-        
-    doc.end();
-*/
 
+
+
+
+process.on('uncaughtException', (error) => {
+  console.log("here",error.message);
+  socket.emit('sendError' ,"\n"+String(error.stack))
+  process.exit(1)
+  
+});
+
+process.on('unhandledRejection', (error, promise)  => {
+  console.log('Alert!----------------- ERROR : ',  error);
+  socket.emit('sendError' , error)
+  process.exit(1); // Exit your app 
+})
+
+function myCustomErrorHandler(err, req, res, next) {
+  console.log(err.stack);
+  socket.emit('sendError' ,req.path+"\n"+String(err.stack))
+  process.exit(1);
+
+}
+app.use(myCustomErrorHandler);
+
+
+app.listen(7000);
