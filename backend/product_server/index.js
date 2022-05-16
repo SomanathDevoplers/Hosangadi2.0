@@ -47,7 +47,6 @@ socket.on("refreshProductServer" , ()=>{
     })
   })
 
-console.log("refreshed!!");
 });
 
 
@@ -55,14 +54,12 @@ con.query("select  prod_name from somanath.products where prod_hide = 'False' or
     result.forEach(element => {
         prod_list_show.push(element['prod_name'])
     });
-    //console.log(prod_list_show);
 })
 
 con.query("select  prod_name from somanath.products order by prod_name" , (err , result) =>{
   result.forEach(element => {
       prod_list_all.push(element['prod_name'])
   })
-  //console.log(prod_list_show);
 });
 
 con.query("select  acc_name from somanath.accounts where acc_type = 'CUST' order by acc_name" , (err , result) => {
@@ -76,7 +73,6 @@ app.get('/onlySql' , (req , res)=>{
 
   sql = req.query.sql
   con.query(sql , (err , result)=>{
-    console.log(err);
     res.send(result)
   })
 })
@@ -90,7 +86,6 @@ app.get('/getNameAll' , (req,res) => {
             matched_products.push(element)
   })
   res.send(matched_products)
-  //console.log("matched : " , matched_products);
 })
 
 app.get('/getNameFew' , (req,res) => {
@@ -102,7 +97,6 @@ app.get('/getNameFew' , (req,res) => {
             matched_products.push(element)
   })
   res.send(matched_products)
-  //console.log("matched : " , matched_products);
 })
 
 app.get('/getProdByBar' , (req , res )=>{
@@ -134,19 +128,16 @@ app.get('/getCustName' , (req , res) => {
 
 
 process.on('uncaughtException', (error) => {
-  console.log("here",error.message);
   socket.emit('sendError' ,"\n"+String(error.stack))
   process.exit(1)
 });
 
 process.on('unhandledRejection', (error, promise)  => {
-  console.log('Alert!----------------- ERROR : ',  error);
   socket.emit('sendError' , error)
   process.exit(1); // Exit your app 
 })
 
 function myCustomErrorHandler(err, req, res, next) {
-  console.log(err.stack);
   socket.emit('sendError' ,req.path+"\n"+String(err.stack))
   process.exit(1);
 

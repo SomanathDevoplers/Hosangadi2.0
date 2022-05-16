@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server)
-
+const homeDir = require('os').homedir()
 const clientIo = require('socket.io-client')
 
 
@@ -14,6 +14,7 @@ const { nanoid } = require('nanoid');
 const { connect } = require('http2');
 var MySql = require('sync-mysql');
 const fs = require('fs');
+const path = require('path');
 var connection = new MySql({
   host: "localhost",
   port: "3306",
@@ -48,15 +49,14 @@ let productStocks = {}
 const systemOs = "ubuntu"
 let purchaseSaving = false
 let salesSaving = false
+//@change c:// to homDir
 
 
-let backedUpdata = fs.readFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',{encoding:'utf8', flag:'r'});
-
+let backedUpdata = fs.readFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),{encoding:'utf8', flag:'r'});
 if (backedUpdata != "{}"){
         backedUpdata = JSON.parse(backedUpdata)
 }
-console.log(backedUpdata)
-fs.writeFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',"{}");
+fs.writeFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),"{}");
 
 
 let getTime = () => {
@@ -118,7 +118,6 @@ function insertToStocks( stkId ,purId , accId , firmId , dbYear , Time , userNam
         clientResponse.sendStatus(200)
         sqlStock = sqlStock.slice(0 , -1)
         con.query(sqlStock , (err , res) => {
-            console.log(err);
             purchaseSaving = false})
         con.commit()
         
@@ -138,7 +137,6 @@ function insertToStocks( stkId ,purId , accId , firmId , dbYear , Time , userNam
 
             sqln1 = "update somanath20"+dbYear+".stocks set stk_tot_qty = " + totStk + " where stk_prod_id = "+ prodId[n]
             con.query(sqln1 , (errn1 , resultn1) => {
-                      console.log(errn1);
                       nmlSp = ":" +  products[prodId[n]][6] + ":" +  products[prodId[n]][7] + ":" +  products[prodId[n]][8] + ":" +  products[prodId[n]][9] + ":"
                       htlSp = ":" +  products[prodId[n]][10] + ":" +  products[prodId[n]][11] + ":" +  products[prodId[n]][12] + ":" +  products[prodId[n]][13] + ":"
                       angSp = ":" +  products[prodId[n]][14] + ":" +  products[prodId[n]][15] + ":" +  products[prodId[n]][16] + ":" +  products[prodId[n]][17] + ":"
@@ -149,7 +147,6 @@ function insertToStocks( stkId ,purId , accId , firmId , dbYear , Time , userNam
                       else
                         sqlStock +="('" + dbYear +"_"+stkId + "' , '"+purId + "'," + prodId[n] + "," + stk_prod_qty + "," +totStk + "," + products[prodId[n]][2] + ",'" + nmlSp + "','" + htlSp + "','" + angSp + "','" + splSp + "'," + products[prodId[n]][22] + "," + accId + "," + firmId + ",'" + Time+ "',(select user_id from somanath.users where user_name = '"+userName+"'), NULL , NULL),"
 
-                      console.log(sqlStock);
                       stkId += 1
                       n+=1
                       if (n<=max)
@@ -174,7 +171,6 @@ function purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientR
   
         sql = "SELECT acc_cls_bal_firm"+ firmId +" as acc_cls_bal FROM somanath20"+dbYear+".acc_bal where acc_id ="+accId
         con.query(sql,(err,result)=>{
-            console.log(err);
                 acc_cls_bal = result[0].acc_cls_bal - (balDiff[0]-balDiff[1])
                 sql = "UPDATE somanath20"+dbYear+".acc_bal SET acc_cls_bal_firm"+ firmId +" = "+acc_cls_bal.toFixed(1) +" where acc_id="+accId
                 con.query(sql)
@@ -199,9 +195,7 @@ function purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientR
                                       element.purchases.products = stockDiff
                                       element.purchases['insertTime'] = insertTime
                                       element.purchases['insertId'] = insertId
-                                      console.log(element);
                             });
-                            console.log("purchaseEdit :\n",usersLogged); 
                             return 0
 
                 })
@@ -261,7 +255,6 @@ function getSalesStocks(stocks , n , max , clientResponse)
     if (n>=max)
       {
           clientResponse.send(stocks)
-          //console.log(stocks);
       }
     else  
       {
@@ -273,14 +266,12 @@ function getSalesStocks(stocks , n , max , clientResponse)
                     stocks[n]['firm_suffix'] = result1[0]['firm_suffix']
 
                     sql2 = "select acc_name from somanath.accounts where acc_id = " + stocks[n]['stk_sup_id']
-                    //@console.log(sql2);
                     con.query(sql2, (err2 , result2) =>{
 
                             
                               stocks[n]['acc_name'] = result2[0]['acc_name']
 
                               sql3 = "select date_format(pur_date , '%d-%m-%Y') as pur_date from somanath20"+dbYear+".purchases where pur_id = '" + stocks[n]['stk_pur_id'] +"'"
-                              console.log(sql3);
                               con.query(sql3 , (err3 , result3) =>{
                                               if(result3.length>0){
                                                 stocks[n]['pur_date'] = result3[0]['pur_date']
@@ -404,7 +395,6 @@ io.on('connection', function (socket) {
     //all the params passed pushed to usersLogged
     socketData = socket.handshake.headers
 
-
     if ( socketData['user-agent'] ==  "node-XMLHttpRequest" )
         servers.push({"id" : socket.id })
     else
@@ -414,7 +404,6 @@ io.on('connection', function (socket) {
         if (backedUpdata != "{}")
         {
           backedupuser = backedUpdata[clientIp]
-          console.log(backedupuser  , 'here');
           newUser.sales = backedupuser.sales
           newUser.purchases = backedupuser.purchases
           delete backedUpdata[clientIp]
@@ -423,12 +412,10 @@ io.on('connection', function (socket) {
         }
 
         usersLogged.push(newUser)
-        console.log("data : " , backedUpdata);
         
       }
     
     
-    console.log("connection event starts ",usersLogged);
 
     //connection event ends 
 
@@ -453,15 +440,11 @@ io.on('connection', function (socket) {
 
     //
           socket.on('purchaseError' , () => {
-            console.log(usersLogged);
-            console.log("purchaseError");
           }) 
 
           socket.on('sendError' , (data) =>{
               socket.broadcast.emit('error' , data)
-              console.log("Hi123" , data);
           })
-
 
 
 
@@ -560,7 +543,6 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
                              
                           }
                         
-                          console.log("addEditPurDetails :\n",usersLogged[0]);
                   });
                   
                   res.sendStatus(200)
@@ -581,7 +563,6 @@ app.get('/purchases/cancelPurchase' , (req , res) => {
             element.purchases = {}
           }
     });
-    console.log("cancelPurchase\n",usersLogged);
     res.sendStatus(200)
 
 
@@ -645,7 +626,6 @@ app.get('/purchases/addPurchaseProduct' , (req , res) =>{
           newArray.push(productData[26])
           
           element.purchases.products[prodId] = newArray
-          console.log("Products Added :\n " , element.purchases);
         }
   });
   res.sendStatus(200)
@@ -665,7 +645,6 @@ app.get('/purchases/removePurchaseProduct' , (req , res) =>{
           
           delete element.purchases.products[prodId]
          
-          console.log("After delete : \n" , element.purchases);
         }
   });
   res.sendStatus(200)
@@ -712,16 +691,13 @@ app.get('/purchases/save'  , (req , res) =>{
         
         sql = "select firm_id from somanath.firms where firm_name = '"+purDetails.firmName+"'"
         con.query(sql , (err , result) =>{
-                  console.log(err);
                   firmId = result[0]['firm_id']
                   sql1 = "select acc_id from somanath.accounts where acc_name = '"+purDetails.supName+"'"
                   con.query(sql1 , (err1 , result1)=>{
-                            console.log(err1);
 
                             accId = result1[0]['acc_id']
                             sql2 = "select purchases , cashflow_purchase as cashflow , stocks , acc_cls_bal_firm"+firmId+" as acc_cls_bal from somanath20"+dbYear+".max_id , somanath20"+dbYear+".acc_bal where acc_bal.acc_id = " + accId
                             con.query(sql2 , (err2 , result2) => {
-                                      console.log(err2);
 
                                       maxPurId = parseInt(result2[0]['purchases'])+1
                                     //correct +1
@@ -775,7 +751,6 @@ app.get('/purchases/save'  , (req , res) =>{
                                       
                                       sqlStock =  "insert into somanath20"+dbYear+".stocks values "
                                       con.query(sql3 + sql4 + sql5 + sql6 + sqlProdHideUpdate , (err3, result3) =>{
-                                        console.log(err3);
                                         insertToStocks(maxStockId , dbYear+"_"+ maxPurId , accId , firmId , dbYear , Time , userName, purDetails.products , Object.keys(purDetails.products) , 0 , Object.keys(purDetails.products).length , res , sqlStock , editState , purDetails.insertTime , purDetails.insertId) 
                                       })
                                       
@@ -880,14 +855,11 @@ app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
   ip = req.socket.remoteAddress
   salesDetails = req.query
   usersLogged.forEach(element => {
-                    
     if(element.ip == ip)
-        {   
+        {
           saleId = salesDetails.sale_id 
           if (saleId == '')
             saleId = String(nanoid())
-
-          
           newSaleObject = {
                 'saleDate' : salesDetails.sale_date , 
                 'custName' : salesDetails.cust_name , 
@@ -896,11 +868,8 @@ app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
 
           element.sales[saleId] = newSaleObject
 
-          //console.log("addEditNewSalesDetails :\n",element.sales);
-        }
-        
-
-});
+    }
+})
 
 res.send({'saleId' : saleId})
 
@@ -919,7 +888,6 @@ app.get('/sales/getSalesStocks' , (req , res) =>{
 
   sql = "SELECT stk_id,stk_prod_qty,stk_tot_qty,stk_cost,stk_pur_id , stk_firm_id , stk_sup_id, stk_sp_"+spType+",prod_name , prod_mrp , prod_mrp_old  , prod_unit_type , "+spType+"_unit , prod_gst , prod_cess FROM somanath20"+dbYear+".stocks , somanath.products where stk_prod_id = "+prodId+"  and stk_prod_qty > 0 and somanath.products.prod_id = somanath20"+dbYear+".stocks.stk_prod_id  order  by somanath20"+dbYear+".stocks.insert_time ;"
 
-  console.log(sql,'----------------------------------------------');
   con.query(sql , (err , result) => {
       getSalesStocks(result , 0 , result.length , res)
   })
@@ -931,7 +899,6 @@ app.get('/sales/getSalesStocks' , (req , res) =>{
 app.get('/sales/addSalesProduct' , (req , res) =>{
   ip = req.socket.remoteAddress
   saleId = req.query.sale_id
-  console.log(saleId);
   productData = req.query.product
   usersLogged.forEach(element => {
 
@@ -989,8 +956,6 @@ app.get('/sales/addSalesProduct' , (req , res) =>{
               element.sales[saleId].products[prodId]['stkId'] = newArray
             }
             
-            console.log(element.sales[saleId].products);
-            console.log(productStocks);
         }
   });
   res.sendStatus(200)
@@ -1047,8 +1012,6 @@ app.get('/sales/removeSalesProduct' , (req , res) =>{
                       }
                   
 
-                  console.log(element.sales);
-                  console.log(productStocks);
                     
                 }
           })
@@ -1080,9 +1043,7 @@ app.get('/sales/cancelSales' , (req , res) => {
 
 
   });
-  console.log("cancelled Sale \n",usersLogged);
   res.sendStatus(200)
-  console.log(productStocks)
 
 
 })
@@ -1147,12 +1108,9 @@ app.get('/sales/save' , (req , res) =>{
             }
           } 
           
-          //console.time("t1")
 
           availList = checkStockAvailable(  toCheckStockAvailable ,  dbYear)
           
-          //console.log("After Check");
-          //console.timeLog("t1")
           
           available = availList[0]
           nonAvailable = availList[1] 
@@ -1196,7 +1154,6 @@ app.get('/sales/save' , (req , res) =>{
                                       if( i == 0 )
                                           {
                                                 sql = "update somanath20" + dbYear + ".stocks set stk_tot_qty = " + (available[element]['stkId'][11] - reducedQty).toFixed(3) + " where stk_prod_id = " + element +';'
-                                                //console.log(sql);
                                                 SqlFinal +=  sql
                                           }
                                           temp = salesSaveData[result[i]['stk_firm_id']]
@@ -1270,7 +1227,6 @@ app.get('/sales/save' , (req , res) =>{
                             temp.sales_profit =  ( parseFloat(temp.sales_profit) + ( ( parseFloat(temp1[2]) - parseFloat(temp1[15]) ) * parseFloat( temp1[1]) ) ).toFixed(2)
                             sql2   = "update somanath20"+dbYear+".stocks set stk_prod_qty = " + Number(stkQty).toFixed(3) + " where stk_id = '" + item + "';" 
                             
-                            //console.log(sql2);
                             SqlFinal += sql2
                         });
 
@@ -1471,7 +1427,6 @@ app.get('/sales/edit',(req,res)=>{
                     else if(sale_ref[0] === 'SCM'){ saleIds[2] = result[k]['sales_ref'] }
                     else{ saleIds[3] = result[k]['sales_ref'] }
                   }
-                  console.log(saleIds);
                   usersLogged.forEach((element)=>{
                         
                         if (element.ip == ip)
@@ -1489,7 +1444,6 @@ app.get('/sales/edit',(req,res)=>{
                               }
                               index++
                     })
-                  console.log( "edit :-------------------- ", usersLogged[0]['sales']);
                   let values = []
                   //let products = {}
                   let Total = 0
@@ -1511,7 +1465,6 @@ app.get('/sales/edit',(req,res)=>{
                     result[k]["sales_pur_id"].split(':').slice(1,-1).forEach(purchaseId=>{
                       sql2 = "SELECT stk_id,prod_name  FROM somanath20"+dbYear+".stocks,somanath.products where stk_pur_id = '"+purchaseId+"' and stk_prod_id ="+prodId[i]+" and stk_prod_id = prod_id;"
                       result3 = connection.query(sql2)
-                      console.log(result3,"SELECT stk_id,prod_name  FROM somanath20"+dbYear+".stocks,somanath.products where stk_pur_id = '"+purchaseId+"' and stk_prod_id ="+prodId[i]+" and stk_prod_id = prod_id;");
                       prodTotal = parseFloat(qty[i])*parseFloat(sp[i])
                       Total += prodTotal
                       prodTotalHsn = ( parseFloat(sp[i])-parseFloat(prodCp[i]) ) * parseFloat(qty[i])
@@ -1530,12 +1483,10 @@ app.get('/sales/edit',(req,res)=>{
 
                       values.push([slNO,result3[0]['prod_name'],qty[i],sp[i],(prodTotal).toFixed(2),(prodTotalHsn).toFixed(2),units,spList,prodCp[[i]],qty[i],prodGst[i],prodCess[i],result3[0]['stk_id'],prodId[i]])
                       sale_ref = result[k]['sales_ref'].split('_').slice(0,-1)
-                      console.log(sale_ref);
                       let firmId = 1
                       if(sale_ref[0] === 'SSM'){ firmId = 1}
                       else if(sale_ref[0] === 'SCM'){ firmId = 2}
                       else {firmId = 3}
-                      console.log(firmId);
                       //@ added E
                       backEndValues= ['E', result3[0]['prod_name'] ,  String(qty[i]), String(sp[i]), String((prodTotal).toFixed(2)), String((prodTotalHsn).toFixed(2)) , backEndUnits , backEndSpList,String(prodCp[[i]]), String(qty[i]), String(prodGst[i]), String(prodCess[i]),0,0,purchaseId,firmId,parseFloat(prodCp[i])]
                       slNO++
@@ -1574,6 +1525,7 @@ app.get('/sales/voucher',(req,res)=>{
     firm3_frontend = req.query.firm3
     if(req.query.billNo === '')
     { 
+      //@ Need to check NULL
       billNo = 'NULL'
       firm1_frontend = 0
       firm2_frontend = 0
@@ -1845,7 +1797,6 @@ app.get('/sales/voucher',(req,res)=>{
         con.query(sql3)
         sql4 = `UPDATE somanath20${dbYear}.acc_bal set acc_cls_bal_firm1 =${firm1_bal.toFixed(2)} ,acc_cls_bal_firm2=${firm2_bal.toFixed(2)},acc_cls_bal_firm3=${firm3_bal.toFixed(2)} where acc_id = ${result[0]['acc_id']}`
         con.query(sql4)
-        console.log(sql3);
         res.send(oldBal)
       })
       
@@ -1859,13 +1810,12 @@ app.get('/sales/voucher',(req,res)=>{
 
 
 process.on('uncaughtException', (error) => {
-  console.log("here123",error.message , error.stack);
 
   backupData = {}
   usersLogged.forEach(element =>{
       backupData[element.ip] = element
   })
-  fs.writeFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',JSON.stringify(backupData));
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backupData));
   //connection.query("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
 
   io.sockets.emit('sendError' ,"\n"+String(error.stack))
@@ -1873,29 +1823,22 @@ process.on('uncaughtException', (error) => {
 });
 
 process.on('unhandledRejection', (error, promise)  => {
-  console.log('Alert!----------------- ERROR : ',  error);
   backupData = {}
   usersLogged.forEach(element =>{
       backupData[element.ip] = element
   })
-  fs.writeFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',JSON.stringify(backupData));
-  //connection.query("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backupData));
   io.sockets.emit('sendError' , error)
   process.exit(1); // Exit your app 
 })
 
 
 function myCustomErrorHandler(err, req, res, next) {
-  //console.log(err.stack);
   backupData = {}
   usersLogged.forEach(element =>{
       backupData[element.ip] = element
   })
-  fs.writeFileSync('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\socket_server\\NodeErr.txt',JSON.stringify(backupData));
-  //console.log("HEREKKONJ");
-  //console.log(JSON.stringify(backupData));
-  //console.log("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
-  //connection.query("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backupData));
   io.sockets.emit('sendError' ,req.path+"\n"+String(err.stack))
   process.exit(1);
 }

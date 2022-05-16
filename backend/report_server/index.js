@@ -8,7 +8,6 @@ const mysql = require('mysql')
 const multer = require('multer')
 const fs = require('fs')
 const mv = require('mv')
-const { homedir } = require('os');
 const { Console, dir, log } = require('console')
 const { response } = require('express')
 const { execPath } = require('process')
@@ -47,7 +46,6 @@ const storage = multer.diskStorage({
     fileName = "temp"+Math.floor(Math.random()*100) + "." + originalName.slice(-1)
     photos.push(fileName)
     cb(null, fileName)
-    console.log(photos);
   }
   
 })
@@ -89,9 +87,7 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
         sql += " and firm_id !="+ ID
         edit = true
       }  
-      console.log(sql);
       con.query(sql , (err1 , result1) => {
-                            console.log(err1 , result1);
                             if (result1.length > 0)
                               {
                                    res.sendStatus(201)
@@ -107,7 +103,6 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
                                     {
                                                   sql1 = "select max(firm_id) from somanath.firms"
                                                     con.query(sql1 , (err1 , result1)=>{
-                                                      console.log(result1);
                                                       if (result1 == null)
                                                         ID = 1
                                                       else
@@ -151,9 +146,7 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
                                     
                                                                                                                                                                                                                                                                                                                                                                    
                                                       sql2 = "insert into somanath.firms values("+String(ID)+",'"+sqlInputs.firm_type+"','"+sqlInputs.firm_name+"','"+sqlInputs.firm_suffix+"','"+sqlInputs.firm_email+"','"+sqlInputs.firm_mobile+"','"+sqlInputs.firm_website+"','"+sqlInputs.firm_address+"','"+sqlInputs.firm_gst+"','"+sqlInputs.firm_pan+"','"+sqlInputs.firm_bank+"','"+sqlInputs.firm_acno+"','"+sqlInputs.firm_ifsc+"','"+sqlInputs.firm_upiid+"','"+sqlInputs.firm_qr+"','"+sqlInputs.firm_logo+"','"+sqlInputs.firm_photo+"','"+Time+"',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') , NULL , NULL)" 
-                                                      console.log(sql2);
                                                       con.query(sql2 , (err2 , result2)=>{
-                                                            console.log(err2);
                                                             //con.commit()
                                                             res.sendStatus(200)
                                                         })
@@ -200,9 +193,7 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
 
 
                                                   sql2 = "update somanath.firms set firm_tax = '"+sqlInputs.firm_type+"', firm_name = '"+sqlInputs.firm_name+"', firm_suffix = '"+sqlInputs.firm_suffix+"', firm_email = '"+sqlInputs.firm_email+"', firm_mobile = '"+sqlInputs.firm_mobile+"', firm_website = '"+sqlInputs.firm_website+"', firm_address = '"+sqlInputs.firm_address+"', firm_gstin = '"+sqlInputs.firm_gst+"', firm_pan = '"+sqlInputs.firm_pan+"', firm_bank = '"+sqlInputs.firm_bank+"', firm_accno = '"+sqlInputs.firm_acno+"', firm_ifsc = '"+sqlInputs.firm_ifsc+"', firm_upid = '"+sqlInputs.firm_upiid+"', firm_upiqr = '"+sqlInputs.firm_qr+"', firm_logo = '"+sqlInputs.firm_logo+"', firm_photo = '"+sqlInputs.firm_photo+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where firm_id = "+String(ID) 
-                                                  console.log(sql2);
                                                   con.query(sql2 , (err2 , result2)=>{
-                                                    console.log(err2);
                                                     con.commit()
                                                     res.sendStatus(200)
                                                 })
@@ -217,7 +208,6 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
 })
 
 app.get('/firms/getFirmList' , (req , res )=>{
-  console.log("----------");
   sql = "select firm_id , firm_suffix , firm_name from somanath.firms"
   if(req.query.tax_check == "True")
     sql += " where firm_tax != 'CASH'"
@@ -225,7 +215,6 @@ app.get('/firms/getFirmList' , (req , res )=>{
 
   con.query(sql , (err , result)=>{
     res.send(result)
-    console.log(result);
   })
 })
 
@@ -247,7 +236,6 @@ app.get('/firms/getSelectedFirm' , (req,res) => {
 
 //TAXES
 app.post('/taxes/save' , (req,res) => {
-  console.log(req.query);
   let sqlInputs = req.query
   ID = sqlInputs['tax_id']
   edit = false
@@ -257,9 +245,7 @@ app.post('/taxes/save' , (req,res) => {
         sql += " and tax_id != "+ ID
         edit = true
       } 
-  console.log(sql);
   con.query(sql , (err , result)=>{
-      console.log(err , result);
       if (result.length > 0)
         {
              res.sendStatus(201)
@@ -336,7 +322,6 @@ app.get('/taxes/getTaxList' , (req , res )=>{
 //Category
 app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
   let sqlInputs = req.query
-  console.log(sqlInputs);
   ID = sqlInputs['cat_id']
   edit = false
   sql = "select cat_name from somanath.categories where cat_name = '"+sqlInputs['cat_name']+"'"
@@ -346,7 +331,6 @@ app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
       sql += " and cat_id != "+ ID
     }
     con.query(sql , (err , result)=>{
-            console.log(err , result);
             if (result.length > 0)
               {
                   res.sendStatus(201)
@@ -357,7 +341,6 @@ app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
               {
                 Time = new Date
                 Time = Time.getFullYear()+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+String(Time.getDate()).padStart(2 , '0')+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
-                console.log(edit);
                 if(edit)
                     {
                               newDirectory =  path.join(homeDir , "angadiImages" , "categories" , String(ID))
@@ -374,9 +357,7 @@ app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
 
 
                             sql1 = "update somanath.categories set cat_name = '"+sqlInputs.cat_name+"', cat_image = '"+sqlInputs.cat_image+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where cat_id = "+String(ID) 
-                            console.log(sql1);
                             con.query(sql1 , (err1 , result1)=>{
-                              console.log(err1);
                               con.commit()
                               res.sendStatus(200)
                           })
@@ -388,7 +369,6 @@ app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
                     {
                       sql1 = "select max(cat_id) from somanath.categories"
                       con.query(sql1 , (err1 , result1)=>{
-                              console.log(err1);
                               if (result1 == null)
                                 ID = 1
                               else
@@ -410,7 +390,6 @@ app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
 
                               sql2 =  "insert into somanath.categories values ("+String(ID)+",'"+sqlInputs.cat_name+"','"+sqlInputs.cat_image+"','"+Time+"',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')"+" , NULL , NULL)"
                               con.query(sql2 , (err2 , result2) => {
-                                console.log(sql2 , err2);
                                   con.commit()
                                   res.sendStatus(200)
                                 //#socket call refresh event
@@ -584,9 +563,7 @@ app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
                                             photos = []
 
                                             sql2 = "update somanath.products set prod_bar = '" + sqlInputs.prod_bar + "', prod_name = '"+ sqlInputs.prod_name + "', prod_cat = '"+ sqlInputs.prod_cat + "', prod_hsn = '" + sqlInputs.prod_hsn + "', prod_shelf = '" + sqlInputs.prod_shelf +"', prod_name_kan = '" + sqlInputs.prod_name_kan + "',  prod_name_eng = '" +sqlInputs.prod_name_eng + "', prod_min_qty = " + sqlInputs.prod_min_qty + ", prod_expiry = " + sqlInputs.prod_expiry + ", prod_mrp = " + sqlInputs.prod_mrp + ", prod_mrp_old = " + sqlInputs.prod_mrp_old + ", prod_sup = '" + sqlInputs.prod_sup + "',  prod_gst =  (select tax_id from somanath.taxes where tax_type = 0 and tax_per = " + sqlInputs.prod_gst + ") , prod_cess = (select tax_id from somanath.taxes where tax_type = 1 and tax_per = " + sqlInputs.prod_cess + "), prod_unit_type = '" + sqlInputs.prod_unit_type +"', nml_unit = '" + sqlInputs.nml_unit + "', htl_unit = '"   + sqlInputs.htl_unit + "', spl_unit = '"  + sqlInputs.spl_unit + "',  ang_unit =  '"  + sqlInputs.ang_unit + "', prod_hide = '"+sqlInputs.prod_hide+"',prod_desc = '" + sqlInputs.prod_desc + "', high_img = '" + sqlInputs.img_high + "', low_img = '" + sqlInputs.img_low +"',update_time = '" + Time + "',update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')  where prod_id = "+ ID
-                                            console.log(sql2);
                                             con.query(sql2 , (err2 , result2)=>{
-                                                  console.log(err2);
                                                   con.commit()                          
                                                   res.sendStatus(200)
                                                   socket.emit("refresh")
@@ -605,7 +582,6 @@ app.get('/products/getProductList' , (req , res )=>{
   sql = req.query.sql
     con.query(sql ,(err , result)=>{
       res.send(result)
-      console.log(err);
     })
 })
 
@@ -614,7 +590,6 @@ app.get('/products/getSelectedProduct' , (req,res) => {
 
   con.query(sql , (err , result) =>{
     res.send(result)
-    console.log(result);
   })    
 })
 
@@ -641,7 +616,6 @@ app.post('/barcodes' , (req,res)=>{
                 
                 if(!exist)
                   barcodeInUse.push(bar)
-                console.log(exist , barcodeInUse)
               }
           else
               {
@@ -655,10 +629,8 @@ app.post('/barcodes' , (req,res)=>{
                 
                 if(!exist)
                   barcodeInUse.push(bar)
-                console.log(exist , barcodeInUse)
                 
               }
-              console.log("get : " , barcodeInUse);
       }
 
     if(type == 'update')
@@ -669,19 +641,15 @@ app.post('/barcodes' , (req,res)=>{
             if(element == bar)
               exist = true
         })
-        console.log(exist , barcodeInUse)
         if(!exist)
           barcodeInUse.push(bar)
-        console.log(barcodeInUse);
         res.sendStatus(200)
-        console.log("update : " , barcodeInUse);
       }
 
 
     if(type == 'save')
       {
         barcodeInUse = barcodeInUse.filter(function(f) { return f != parseInt(barcode) })
-        console.log(barcodeInUse);       
         max = true
         barcodeInUse.forEach(element => {
             if(barcode < element)
@@ -700,16 +668,13 @@ app.post('/barcodes' , (req,res)=>{
               
           
           
-            console.log("save : " , barcodeInUse);    
         
       }
-      console.log("end : " , barcodeInUse);
     
   })
 
 
 
-  console.log(barcodeInUse);
 })
 
 //products done!!
@@ -722,7 +687,6 @@ app.post('/barcodes' , (req,res)=>{
 
 app.post('/employs/save' , files.array('images', 1),(req,res) => {
   let sqlInputs = req.query
-  console.log(sqlInputs);
   ID = sqlInputs['emp_id']
   edit = false
   sql = "select emp_name from somanath.employs where emp_name = '"+sqlInputs['emp_name']+"'"
@@ -735,7 +699,6 @@ app.post('/employs/save' , files.array('images', 1),(req,res) => {
     
 
           con.query(sql , (err , result)=>{
-            console.log(err , result);
             if (result.length > 0)
               {
                   res.sendStatus(201)
@@ -763,9 +726,7 @@ app.post('/employs/save' , files.array('images', 1),(req,res) => {
 
                             //emp_id, emp_name, emp_address, emp_phone,emp_accno, emp_ifsc, emp_img, insert_time, insert_id, update_time, update_id
                             sql1 = "update somanath.employs set emp_name = '"+sqlInputs.emp_name+"',emp_address = '"+sqlInputs.emp_add+"',emp_phone = '"+sqlInputs.emp_mob+"',emp_accno = '"+sqlInputs.emp_acno+"',emp_ifsc = '"+sqlInputs.emp_ifsc+"', emp_img = '"+sqlInputs.emp_img+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where emp_id = "+String(ID) 
-                            console.log(sql1);
                             con.query(sql1 , (err1 , result1)=>{
-                              console.log(err1);
                               con.commit()
                               res.sendStatus(200)
                           })
@@ -777,7 +738,6 @@ app.post('/employs/save' , files.array('images', 1),(req,res) => {
                     {
                       sql1 = "select max(emp_id) from somanath.employs"
                       con.query(sql1 , (err1 , result1)=>{
-                              console.log(err1);
                               if (result1 == null)
                                 ID = 1
                               else
@@ -799,7 +759,6 @@ app.post('/employs/save' , files.array('images', 1),(req,res) => {
                               //                                                                                                                                            emp_id, emp_name, emp_address, emp_phone, emp_accno, emp_ifsc, emp_img, insert_time, insert_id, update_time, update_id                                                                                             
                               sql2 =  "insert into somanath.employs values ("+String(ID)+",'"+sqlInputs.emp_name+"','"+sqlInputs.emp_add+"','"+sqlInputs.emp_mob+"','"+sqlInputs.emp_acno+"','"+sqlInputs.emp_ifsc+"','"+sqlInputs.emp_img+"','"+Time+"',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')"+" , NULL , NULL)"
                               con.query(sql2 , (err2 , result2) => {
-                                console.log(sql2 , err2);
                                   con.commit()
                                   res.sendStatus(200)
                                 //#socket call refresh event
@@ -831,7 +790,6 @@ app.get('/employs/getSelectedEmp' , (req,res) => {
 
   con.query(sql , (err , result) =>{
     res.send(result)
-    console.log(result);
   })    
 })
 
@@ -851,16 +809,13 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
   sql += ")"
 
   
-  console.log(sql);
 
   if(ID != '')
     {
       sql += " and acc_id !="+ ID
       edit = true
     }  
-    console.log(sql);
     con.query(sql , (err1 , result1) => {
-                          console.log(err1 , result1);
                           if (result1.length > 0)
                             {
                                  res.sendStatus(201)
@@ -877,7 +832,6 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                                   {
                                                 sql1 = "select max(acc_id) from somanath.accounts"
                                                   con.query(sql1 , (err1 , result1)=>{
-                                                    console.log(result1);
                                                     if (result1 == null)
                                                       ID = 1
                                                     else
@@ -907,9 +861,7 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                                                                                                                                                                                                       //acc_id, acc_type, acc_name, acc_email, acc_add, acc_mob1, acc_mob2, acc_gstin, acc_accno, acc_ifsc, acc_cus_type, acc_img, insert_time, insert_id, update_time, update_id
                                                     sql2 = "insert into somanath.accounts values (" + String(ID) + ",'" + sqlInputs.acc_type + "','"+ sqlInputs.acc_name + "','"+ sqlInputs.acc_email + "','" + sqlInputs.acc_add + "','" + sqlInputs.acc_mob1+ "','" + sqlInputs.acc_mob2+ "','" + sqlInputs.acc_gstin+ "','" + sqlInputs.acc_accno+ "','" + sqlInputs.acc_ifsc+ "','" + sqlInputs.acc_cus_type + "','" +sqlInputs.acc_img+"','" + Time + "',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"'),NULL,NULL);"
                                                     sql2 += "insert into somanath20"+sqlInputs.db_year+".acc_bal values("+String(ID)+",0.00,0.00,0.00,0.00,0.00,0.00)"
-                                                    console.log(sql2);
                                                     con.query(sql2 , (err2 , result2)=>{
-                                                          console.log(err2);
                                                           con.commit()
                                                           res.sendStatus(200)
                                                           socket.emit("refresh")
@@ -927,9 +879,7 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                                                     }
                                                     photos = []
                                                 sql2 = "update somanath.accounts set acc_type = '"+sqlInputs.acc_type+"', acc_name = '"+sqlInputs.acc_name+"', acc_email = '"+sqlInputs.acc_email+"', acc_add = '"+sqlInputs.acc_add+"', acc_mob1 = '"+sqlInputs.acc_mob1+"', acc_mob2 = '"+sqlInputs.acc_mob2+"',acc_gstin = '"+sqlInputs.acc_gstin+"', acc_accno = '"+sqlInputs.acc_accno+"', acc_ifsc = '"+sqlInputs.acc_ifsc+"', acc_cus_type = '"+sqlInputs.acc_cus_type+"', acc_img = '"+sqlInputs.acc_img+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where acc_id = "+String(ID) 
-                                                console.log(sql2);
                                                 con.query(sql2 , (err2 , result2)=>{
-                                                  console.log(err2);
                                                   con.commit()
                                                   res.sendStatus(200)
                                                   socket.emit("refresh")
@@ -947,13 +897,11 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
 app.get('/accounts/getAccList' , (req , res )=>{
   
   sql = req.query['sql']
-  console.log(req.query['tax_check'])
   if (req.query['tax_check'] == "True")
     sql = "SELECT acc_id,acc_name,acc_type FROM somanath.accounts where acc_id not in (select acc_id from somanath.accounts where acc_type = 'SUPP' and acc_gstin = '') order by acc_type , acc_name"
   
 
   
-  console.log(sql);
   
 
   con.query(sql , (err , result)=>{
@@ -967,7 +915,6 @@ app.get('/accounts/getSelectedAcc' , (req,res) => {
   con.query(sql , (err , result) =>{
 
     res.send(result)
-    console.log(result);
   })    
 })
 
@@ -1149,7 +1096,6 @@ function getOldtrans(  dbYear , mindbYear  , bills , nBill , max ,sqlwhere, clie
       {
 
         sql = "SELECT date_format(trans_date,'%d-%b-%y') as transdate, trans_sales , trans_amt_firm1+trans_amt_firm2+trans_amt_firm3 as trans_amt , amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank as amt_paid,(trans_amt_firm1+trans_amt_firm2+trans_amt_firm3)-(amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank) as bal , trans_id FROM somanath20"+dbYear+".cashflow_sales where "+ sqlwhere
-        console.log(sql);
         con.query(sql , (err , res) =>  {
 
                 res.forEach(element => {
@@ -1175,7 +1121,6 @@ app.get('/reports/getCashflowSales' ,  (req,res) => {
   sqlmin = "SELECT date_format(insert_time,'%y') as year,date_format(insert_time,'%m') as month , acc_id FROM somanath.accounts where acc_name = '"+accName+"'"
   
   con.query(sqlmin,(err,result)=>{
-    console.log(err);
     y = parseInt(result[0].year)
     m = parseInt(result[0].month)
     accId = result[0].acc_id
@@ -1278,7 +1223,6 @@ function getOldBill(  dbYear , mindbYear , acc_id , bills , nBill , max ,sqlwher
       {
 
         sql = "SELECT sales_id,sales_prod_id,sales_prod_qty,sales_prod_sp,date_format(sale_date,'%d-%b-%y') as date FROM somanath20"+dbYear+".sales where sales_acc ="+acc_id+ sqlwhere
-        console.log(sql);
 
         con.query(sql , (err , res) =>  {
           if (res.length>0)
@@ -1322,16 +1266,13 @@ app.get('/reports/getCustomersales' ,  (req,res) => {
         {
 
           accName = accName[0]['acc_name']
-          console.log(accName);
         }
     }
 
   if (!responseSent)
   {
           
-          console.log(accName);
           sqlmin = "SELECT date_format(insert_time,'%y') as year,date_format(insert_time,'%m') as month ,acc_id FROM somanath.accounts  where acc_name = '"+accName+"'"
-          console.log(sqlmin);
           con.query(sqlmin,(err,result)=>{
             y = parseInt(result[0].year)
             m = parseInt(result[0].month)
@@ -1440,9 +1381,7 @@ function getoneMonthBills(  dbYear , mindbYear , acc_id , bills , nBill , max ,s
       {
         
         sql = "SELECT sales_prod_id,sales_prod_qty,sales_prod_sp,date_format(sale_date,'%d-%b-%y') as date  FROM somanath20"+dbYear+".sales where sales_acc ="+(parseInt(acc_id))+ sqlwhere
-        console.log(sql);
         con.query(sql , (err , res) =>  {
-          console.log(max);
                 res.forEach(element => {
                   
                   if(nBill < max){
@@ -1517,7 +1456,6 @@ function getOldtransPur(  dbYear , mindbYear  , bills , nBill , max ,sqlwhere, c
       {
 
         sql = "SELECT trans_pur,trans_amt,amt_paid,trans_mode,date_format(trans_date,'%d-%b-%y') as transdate FROM somanath20"+dbYear+".cashflow_purchase where "+ sqlwhere
-        console.log(sql);
         con.query(sql , (err , res) =>  {
                
                 res.forEach(element => {
@@ -1583,19 +1521,16 @@ app.get('/reports/getCashflowPurchase' ,  (req,res) => {
 })
 
 process.on('uncaughtException', (error) => {
-  console.log("here",error.message);
   socket.emit('sendError' ,"\n"+String(error.stack))
   process.exit(1)
 });
 
 process.on('unhandledRejection', (error, promise)  => {
-  console.log('Alert!----------------- ERROR : ',  error);
   socket.emit('sendError' , error)
   process.exit(1); // Exit your app 
 })
 
 function myCustomErrorHandler(err, req, res, next) {
-  console.log(err.stack);
   socket.emit('sendError' ,req.path+"\n"+String(err.stack))
   process.exit(1);
 }

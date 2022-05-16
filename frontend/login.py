@@ -2,7 +2,7 @@ import os
 import requests
 import style
 from datetime import datetime as date
-from tkinter import Tk
+from tkinter import Tk , PhotoImage
 from tkinter import constants as con
 from tkinter import messagebox as msg
 from tkinter import ttk
@@ -38,6 +38,7 @@ def submit(e):
     if len(rad_system.state())>0:
         server = "system"
         
+        
 
     if user_name == "" or user_pass =="":
         msg.showerror("Error" , "ENTER ALL DETAILS!")
@@ -52,11 +53,10 @@ def submit(e):
         return
 
     try:
-        if server == 'server':
-            resp = requests.get("http://"+ip+":5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year , "server" : server })           
-        else:
-            resp = requests.get("http://localhost:5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year , "server" : server })  
-            ip = "localhost"       
+        if server != 'server':
+            ip = "192.168.0.103" 
+        resp = requests.get("http://"+ip+":5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year , "server" : server })  
+             
     except:
         msg.showinfo("Info","Server Not Available")
         return
@@ -79,19 +79,22 @@ def submit(e):
     else:                                                                                                                               
         msg.showerror("ERROR" , "This User has logged in already!")
         return
-
     #@ set exe file location
 
-    root = os.path.expanduser('~')+"\\Desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
-    #root = "C:\\Program Files\\Hosangadi\\root\\root.exe "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
-    
-
+    #root = os.path.expanduser('~')+"\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
+    root = 'C:\\Program Files\\Hosangadi2.0\\root\\root.exe '+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip 
     login.destroy()
-    os.system(root)
+    #os.system(root)
+    check_output(args = root,shell = False) 
     
 
 
 login = Tk()
+
+
+photo = PhotoImage(file = "C:\\Program Files\\Hosangadi2.0\\logo_hosagadi.png")
+login.iconphoto(con.FALSE,photo)
+login.title("Hosangadi Login")
 num_alpha = login.register(val_num_alpha)
 pos_int = login.register(val_pos_int)
 login_hgt = login.winfo_screenheight()-34

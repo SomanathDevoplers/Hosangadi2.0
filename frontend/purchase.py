@@ -801,19 +801,9 @@ class purchase(base_window):
         self.btn_frame.grid(row = 5 ,column = 0 , sticky = con.E , pady = int(self.main_wdt*0.004))
 
 
-        #------temporary settings-------#
         
-        #self.btn_edit.invoke() 
-        
-        #self.destroy_pur_details(None)
-        #self.ent_bar.focus_set()
-        #-temporary settings ends here--#
-#@
-        self.i = 0
 
-        @self.sio.on('hello')
-        def hello():
-            print('I received a message!')
+     
     
     """--------------------------Purchase detail functions-----------------------------------------------"""
     def enable_pur_details(self) :

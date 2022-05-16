@@ -916,3 +916,4 @@ frontend/__pycache__/other_classes.cpython-38.pyc
 frontend/__pycache__/root.cpython-38.pyc
 .gitignore
 /backend/printer_server/node_modules
+/backend/barcode_server/node_modules

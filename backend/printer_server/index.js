@@ -1,23 +1,34 @@
+// to pdf to print only support windows not ubuntu
 //const io = require('socket.io-client')
 //const socket = io.connect('http://'+ip+':5000')
 const print = require("pdf-to-printer");
 const express = require('express')
 const app = express()
 const homeDir = require('os').homedir()
-const { createWriteStream ,writeFileSync} = require ("fs");
+const {writeFileSync} = require ("fs");
 const PDFDocument = require("pdfkit"); 
 XLSX = require('xlsx')
 var MySql = require('sync-mysql');
 const mysql = require('mysql');
-const { toBuffer } = require("bwip-js");
-const { Socket } = require("dgram");
 const io = require('socket.io-client')
 const socket = io.connect('http://localhost:5000' )
 const process = require('process');
+const multer = require('multer')
+const path = require('path');
 
 
- 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null , homeDir )  
+  },
 
+  filename: function (req, file, cb) {
+    cb(null, "invoice.pdf")
+  }
+  
+})
+
+const files = multer({storage : storage})
 
 let con = mysql.createConnection({
   host: "localhost",
@@ -48,14 +59,14 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
   doc.pipe(res);
   doc
       .fontSize(14)
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
-      .text('ಸೋಮನಾಥ  ಸ್ಟೋರ್', {align: 'center'})
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
+      .text('ಸೋಮನಾಥ ಸ್ಟೋರ್ಸ್', {align: 'center'})
   doc 
       .fontSize(10)
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
       .text('ಮರವಂತೆ - ೫೭೬೨೨೪',105,20 )
   doc
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\Work_Sans\\static\\WorkSans-Regular.ttf')
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','Work_Sans','static','WorkSans-Regular.ttf'))
       .fontSize(11)
       .text('MRP',110, 66,{ width: 50, align: "right" })
       .fontSize(9)
@@ -73,7 +84,7 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
       .lineTo(295,82)
       .stroke();
   doc
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Light.ttf')
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Light.ttf'))
       .fontSize(12)
       .text('ವಿವರಗಳು',30,66 )
       .text('ದರ',145,66,{ width: 50, align: "right" })
@@ -103,7 +114,7 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
           x = position
           doc
             .fontSize(8.5)
-            .font("C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\Work_Sans\\static\\WorkSans-Regular.ttf")
+            .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','Work_Sans','static','WorkSans-Regular.ttf'))
             .text(prodName[i].slice(0,23),5, x )
             .text(mrp, 110, x,{ width: 50, align: "right" })
             .text((InvoiceData[prodName[i]][1]).toFixed(1), 145, x, { width: 50, align: "right" })
@@ -113,7 +124,7 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
         else{
           doc
         .fontSize(8.5)
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+        .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
         .text(InvoiceData[prodName[i]][4].slice(0,23),5, position)
         .text(mrp, 110, position,{ width: 50, align: "right" })
         .text((InvoiceData[prodName[i]][1]).toFixed(1), 145, position, { width: 50, align: "right" })
@@ -139,7 +150,7 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
       .lineTo(295,position+15)
       .stroke();
   doc
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
       .text(`ಒಟ್ಟು : ₹ ${Number(BillTotal).toFixed(2)}`,0,position+20,{ align: "right" })
 
   if(old_bal === 'True'){
@@ -151,15 +162,14 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
 
   if(saved>1){
     doc 
-      .font("C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\Work_Sans\\static\\WorkSans-Regular.ttf")
-      .text(`You have Saved Rs.${saved} on MRP`,{align:"center"})
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','Work_Sans','static','WorkSans-Regular.ttf'))
+      .text(`You have Saved Rs.${saved.toFixed(2)} on MRP`,{align:"center"})
   }
   
-  doc .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+  doc .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
       .text("ನಮ್ಮೊಂದಿಗೆ ವ್ಯವಹರಿಸಿದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಮತ್ತೆ ಬನ್ನಿ",{align:"center"})
   doc.end();
   }
-
   else{
   const prodName = Object.keys(InvoiceData)
   let numberOfItems = prodName.length
@@ -177,12 +187,12 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
 
     doc 
         .fontSize(14)
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+        .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-SemiBold.ttf'))
         .text('ಸೋಮನಾಥ  ಸ್ಟೋರ್', {align: 'center'})
 
     doc 
         .fontSize(10)
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Medium.ttf')
+        .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Medium.ttf'))
         .text('ಮರವಂತೆ - ೫೭೬೨೨೪',0,20,{align: 'center'} )
     doc 
         .font('Helvetica')
@@ -205,7 +215,7 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
         .stroke();
         
     doc
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Light.ttf')
+        .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Light.ttf'))
         .fontSize(12)
         .text('ವಿವರಗಳು',15,66 )
         .text('ದರ',85,66,{ width: 50, align: "right" })
@@ -244,7 +254,7 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
         .lineTo(295,position+8)
         .stroke();
     doc
-        .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+        .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
         .text(`ಒಟ್ಟು : ₹ ${Number(BillTotal).toFixed(2)}`,0,position+10,{ align: "right" })
 
     if(old_bal === 'True'){
@@ -253,7 +263,7 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
         .text(`ಜಮಾ      : ₹ ${Number(oldBalData['amountPaid']).toFixed(2)}`,10,position+23,{ align: "left" })
         .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Number(oldBalData['remaining_bal']).toFixed(2)}`,0,position+23,{ align: "right" })
     }
-    doc .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Regular.ttf')
+    doc .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
         .text("ನಮ್ಮೊಂದಿಗೆ ವ್ಯವಹರಿಸಿದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಮತ್ತೆ ಬನ್ನಿ",{align:"center"})
     doc.end();
   }
@@ -278,7 +288,7 @@ function voucher( Date, customerName, oldBalData , res){
       .text(`${customerName}`,0,5,{ align: "center" })
       
   doc
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Medium.ttf')
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Medium.ttf'))
       .text(`ದಿನಾಂಕ :${Date}`,0,20,{ align: "right" })
       .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Number(oldBalData['old_bal']).toFixed(2)}`,10,20,{ align: "left" })
       .text(`ಜಮಾ      : ₹ ${Number(oldBalData['amountPaid']).toFixed(2)}`,10,40,{ align: "left" })
@@ -290,53 +300,6 @@ function voucher( Date, customerName, oldBalData , res){
 
 }
 
-function barcode_50_25(image,name,mrp,cp,sp,count){
-
-  let doc = new PDFDocument({ size: [141.7, 70.8], margins: {
-      top: 0,
-      bottom: 0,
-      left: 2,
-      right: 2
-    }
-    });
-  doc.pipe(createWriteStream('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\barcode.pdf'));
-  for(i = 0; i<count;i++)
-  {   
-      if(parseFloat(mrp)>99){
-        mrp = mrp.split('.')[0]
-        sp =sp.split('.')[0]
-      }
-      sp+=" "
-      x = ''
-      y='center'
-      if(parseFloat(mrp)>parseFloat(sp)){
-        x = ` MRP:${"Rs"}${mrp}`
-        y='right'
-      }
-      
-      doc.image(image, 26, 33,{width: 90, height: 20,align : 'center'})
-        .fontSize(10)
-        .text(`${cp}`, 0, 56,{align: 'center'})
-        .text(`Price:${"Rs"}${sp}`, 0, 20,{align: y})
-        .text(`${name}`.slice(0,22),4,8,{align: 'center'})
-        .text(x,0,20,{align: 'left'})
-        if(i<count-1)
-        {
-          doc.addPage({
-                      size: [141.7, 70.8], 
-                      margins: 
-                      {
-                        top: 0,
-                        bottom: 0,
-                        left: 2,
-                        right: 2
-                      }
-                    });
-        }
-      }
-  doc.end();
-}
-
 function dbDataPurchase(firm,dbYear,year,firstDay,lastDay,month,res){
 fromDb = {}
 
@@ -344,7 +307,6 @@ sql = "SELECT pur_id, pur_firm_id, pur_inv, pur_prod_id, pur_prod_qty, pur_exp, 
 
 allPurchases = connection.query(sql)
 noOfPurchase = allPurchases.length
-console.log(noOfPurchase);
 if(noOfPurchase>0){
   res.sendStatus(200)
   for(i=0;i<noOfPurchase;i++)
@@ -807,7 +769,7 @@ function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
     total[18][1] = total[18][1].toFixed(2)
     total[28][1] = total[28][1].toFixed(2)
     //location
-    const workbook = XLSX.readFile("C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\printer_server\\GSTR1_Excel_Workbook_Template_V1.81.xlsx");
+    const workbook = XLSX.readFile(path.join(homeDir,'Hosangadi2.0','backend','printer_server','GSTR1_Excel_Workbook_Template_V1.81.xlsx'));
 
 SheetNames = ['Help Instruction', 'b2b','b2ba','b2cl','b2cla','b2cs','b2csa','cdnr','cdnra','cdnur','cdnura','exp','expa','at','ata','atadj','atadja','exemp','hsn','docs','master']
 
@@ -1066,7 +1028,7 @@ doc.pipe(res);
 if(singlePage)
   {
     doc .fontSize(12)
-    .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+    .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-SemiBold.ttf'))
     .text('ಸೋಮನಾಥ  ಸ್ಟೋರ್', {align: 'center'})
     }
 let position = 0
@@ -1099,7 +1061,7 @@ for (i = 0  ;i < numberOfItems; i++){
             }})
             doc
             .fontSize(12)
-            .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+            .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-SemiBold.ttf'))
             .text('ಸೋಮನಾಥ  ಸ್ಟೋರ್', {align: 'center'})
           count = 0
       }
@@ -1117,7 +1079,7 @@ for (i = 0  ;i < numberOfItems; i++){
       count = 0
       doc
       .fontSize(12)
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-SemiBold.ttf'))
       .text('ಸೋಮನಾಥ  ಎಂಟರ್ಪ್ರೈಸ್', {align: 'center'})
       
       
@@ -1142,7 +1104,7 @@ for (i = 0  ;i < numberOfItems; i++){
               }})
               doc
               .fontSize(12)
-              .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-SemiBold.ttf')
+              .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-SemiBold.ttf'))
               .text('ಸೋಮನಾಥ  ಎಂಟರ್ಪ್ರೈಸ್', {align: 'center'})
             count = 0
         }
@@ -1150,24 +1112,11 @@ for (i = 0  ;i < numberOfItems; i++){
 doc.end();
 }
 
-
-app.get('/Barcode', (req,res) =>{
-  req.query.a[1]
-  toBuffer({bcid: "code128",text: req.query.barcode.split(':')[1],},
-          (err,png)=>{
-          res.sendStatus(200)
-          
-          barcode_50_25(png,req.query.name,req.query.mrp,req.query.cp,req.query.sp,req.query.count)
-          //print.print('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\barcode.pdf')
-      })
-    })
-
 //Invoice
 app.get('/sales/invoice', (req,res) =>{
   invoiceData = JSON.parse(req.query.invoiceData)
   oldBalData = JSON.parse(req.query.oldBalData)
   Invoice(req.query.billNo, req.query.Date, req.query.customerName,invoiceData , req.query.billTotal,req.query.oldBal,oldBalData,req.query.page,res)
-  
 })
 
 app.get('/sales/voucherPrint', (req,res) =>{
@@ -1179,7 +1128,7 @@ app.get('/sales/checkKannada', (req,res) =>{
   let doc = new PDFDocument();
   try{
     doc 
-      .font('C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\backend\\report_server\\Languages\\NotoFont\\static\\NotoSerifKannada-Medium.ttf')
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Medium.ttf'))
       .text(req.query.kannada,10,10)
       doc.end()
       res.sendStatus(200)
@@ -1299,25 +1248,48 @@ app.get('/cmp08',(req,res)=>{
   
 })
 
+app.post('/PrintInvoice' , files.single('file') ,(req,res) =>{
+    let printOptions = {}
+    if(req.query.range != '')
+      {
+        printOptions.range =  req.query.range
+        
+      }
+    else
+    if(req.query.even_odd != '-1')
+      {
+
+        if (req.query.even_odd == '0')
+          printOptions.subset = 'odd'
+        else
+          printOptions.subset = 'even'
+
+        
+      }
+    
+
+
+    print.print(path.join(homeDir , "invoice.pdf") , printOptions )
+      
+
+    res.sendStatus(200)
+}) 
 
 
 
 
 process.on('uncaughtException', (error) => {
-  console.log("here",error.message);
   socket.emit('sendError' ,"\n"+String(error.stack))
   process.exit(1)
   
 });
 
 process.on('unhandledRejection', (error, promise)  => {
-  console.log('Alert!----------------- ERROR : ',  error);
   socket.emit('sendError' , error)
   process.exit(1); // Exit your app 
 })
 
 function myCustomErrorHandler(err, req, res, next) {
-  console.log(err.stack);
   socket.emit('sendError' ,req.path+"\n"+String(err.stack))
   process.exit(1);
 

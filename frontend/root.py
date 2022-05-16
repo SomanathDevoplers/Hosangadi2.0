@@ -4,7 +4,7 @@ from datetime import datetime
 from tkinter import constants as con
 from tkinter import font as font
 from tkinter import messagebox as msg
-from tkinter import ttk , Frame,  Menu , Tk , Text
+from tkinter import ttk , Frame,  Menu , Tk , Text , PhotoImage
 import socketio
 import forms
 import style
@@ -16,7 +16,7 @@ from threading import Thread
 from playsound import playsound
 play_sound = False
 homedir = os.path.expanduser('~')
-
+#sys.setdefaultencoding('UTF8')
 
 
 
@@ -40,15 +40,15 @@ class notification:
         self.error_text.pack()
         view_ntfc(None)
         self.start_sound()
-        f = open("Error.txt", "a")
+        f = open("C:\\Program Files\\Hosangadi2.0\\Error.txt", "a")
         f.write('\n'+datetime.now().strftime("%d/%m/%Y %H:%M:%S")+'\n'+str(text)+'\n')
         f.close()
         
     def sound(self):
         global play_sound
         while(play_sound):
-            playsound("C:\\Users\\vijay\\Desktop\\Hosangadi2.0\\frontend\\error.mp3")
-        print("stopped")
+            playsound("C:\\Program Files\\Hosangadi2.0\\error.mp3")
+        
 
     def stop_sound(self , e):
         global play_sound
@@ -71,7 +71,7 @@ def show_error(*args):
     notification(traceback.format_tb(args[3]))
     #root.bell()
 
-Tk.report_callback_exception = show_error
+#Tk.report_callback_exception = show_error
 
 
 @sio.on('error')
@@ -96,6 +96,8 @@ update_sp_form = [0 , 3 , "Already 3 Update SP Forms are open"]
 order_list_form = [0 , 1 , "Already Order List Form is open"]
 purchase_cashflow_form = [0 , 1 , "Already Purchase Cashflow Form is open"]
 barcode_form = [0 , 1 , "Already Barcode Form is open"]
+db_form = [0 , 1 , "Already Backup Form is open"]
+
 
 #---------------------------------#
 
@@ -234,7 +236,7 @@ def val_none(char):
 
 def close(): 
     if play_sound:
-        msg.showinfo("Info" , "ಶಿವ ಇಲ್ಲ ಕೃಷ್ಣ ಕಾಲ್ ಮಾಡಿ")
+        msg.showinfo("Info" , "Call Shivanand / Krishnanand")
         
         return
 
@@ -338,6 +340,9 @@ def print_barcode(e = None):
         return
     forms.barcodes(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Barcodes" , [ name , pos_decimal , pos_integer] , [ip ,tax_check, user , year] , barcode_form )
 
+def data_backup(e = None):
+    forms.db(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Data Backup" , [name] , [ip , homedir, year] , db_form )
+
 #1{
 root = Tk()
 root.resizable(con.FALSE , con.FALSE)
@@ -356,6 +361,10 @@ root.bind_all("<Alt-a>", accounts)
 root.bind_all("<Alt-A>", accounts)
 
 
+photo = PhotoImage(file = "C:\\Program Files\\Hosangadi2.0\\logo_hosagadi.png")
+root.iconphoto(con.FALSE,photo)
+root.title("Hosangadi")
+root.title("Hosangadi                                                                                                                                                                                                                       Developed by :- Shiva & Krishna ")
 
 root_hgt = root.winfo_screenheight()-34
 root_wdt = root.winfo_screenwidth()-10
@@ -407,6 +416,7 @@ menu_settings = Menu(menu_settings_head , tearoff = 0 , font = ('Lucida Console'
 menu_settings.add_command(label = "CATEGORIES" , command = categories)
 menu_settings.add_command(label = "TAXES" , command = taxes)
 menu_settings.add_command(label = "EMPLOYEES" , command = employees)
+menu_settings.add_command(label = "DATA BACKUP" , command = data_backup)
 #menu_settings.add_command(label = "FIRMS" , command = firms)
 menu_settings_head.config(menu = menu_settings)
 
@@ -517,37 +527,39 @@ frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
 
 
-try:
-    lbl_user_name.config(text = sys.argv[1])    
-    lbl_user_type.config(text = sys.argv[2])
-    year = sys.argv[3][2:4]
-    
-    if(sys.argv[2]) == "TAXI":
-        userType = "ADMIN"
-        tax_check = True
-    else:
-        userType = sys.argv[2]
-    print(sys.argv)
-    lbl_user_type.config(text = userType)
-    lbl_fin_year.config(text = sys.argv[3])
-    lbl_server_name.config(text = sys.argv[4])
-    ip = sys.argv[5]  
+#try:
 
+lbl_user_name.config(text = sys.argv[1])    
+lbl_user_type.config(text = sys.argv[2])
+year = sys.argv[3][2:4]
 
-    #@ remove try excpet block
-except:
-    #ip = "192.168.1.33"
-    ip = "127.0.0.1"
+if(sys.argv[2]) == "TAXI":
+    userType = "ADMIN"
+    tax_check = True
+else:
+    userType = sys.argv[2]
+
+lbl_user_type.config(text = userType)
+lbl_fin_year.config(text = sys.argv[3])
+lbl_server_name.config(text = sys.argv[4])
+ip = sys.argv[5]  
+sio.connect("http://"+ip+":5000/", headers = {"user_name" :  sys.argv[1] , "user_type" : userType, "form_type" : "root" , "fin_year": sys.argv[3]})
+
+   #@ remove try excpet block
+"""except:
+    ip = "192.168.0.100"
+    #ip = "127.0.0.1"
     lbl_user_name.config(text = "ADMIN")    
     lbl_user_type.config(text = "ADMIN")
     lbl_fin_year.config(text = "2021-2022")
     lbl_server_name.config(text = "server")
     sio.connect("http://"+ip+":5000/", headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN", "form_type" : "root" , "fin_year":"2021-2022"})
-    year = "21"
+    year = "22"""
 
 user =lbl_user_name.cget("text")
 
 root.mainloop()
+
 
 
 

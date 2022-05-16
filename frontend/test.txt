@@ -2,3 +2,12 @@ https://ghostscript.com/releases/gsdnld.html
 this is required for pip install tkDocViewer
 
 http://timgolden.me.uk/python/win32_how_do_i/print.html
+
+use mysql_native_password 
+SET GLOBAL validate_password.policy=LOW;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'mysqlpassword5'
+Client does not support authentication protocol requested by server;
+
+
+c:\\backup\\
+usb:\\backup\\

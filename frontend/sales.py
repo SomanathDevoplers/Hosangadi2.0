@@ -1,7 +1,7 @@
 from forms import acc
 from pyperclip import copy as copy_text
 from tkinter import  constants as con  , messagebox as msg , ttk , Listbox , Text , IntVar
-from requests import get 
+from requests import get , post
 from other_classes import base_window
 import datetime
 import time
@@ -546,7 +546,7 @@ class sales(base_window):
         
         self.lbl_page_range = ttk.Label(self.frm_pdf , text = "Range:" , style = "window_text_medium.TLabel")
         self.ent_page_range = ttk.Entry(self.frm_pdf  , width = 10 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[8], '%P'))
-        self.ent_page_range.bind('<Return>' , self.show_page_range)
+        self.ent_page_range.bind('<KeyRelease>' , self.show_page_range)
         
 
         self.rad_odd_only = ttk.Radiobutton(self.frm_pdf , text = "Odd " ,  value = 0 , variable = self.rad_even_odd , style = "window_radio_med.TRadiobutton", state = con.DISABLED ,  command = self.show_odd_pages)
@@ -1469,7 +1469,6 @@ class sales(base_window):
         values[7] = str(values[7])
         
         get("http://"+self.ip+":5000/sales/addSalesProduct" , params = {"product" : values , 'sale_id' : self.sale_id} )
-        print(values)
 
 
     def select_from_treeview(self , e):
@@ -2028,7 +2027,6 @@ class sales(base_window):
                     self.tree_sales.detach(each)
                     self.tree_sales.insert('','end',tags=('avail'), values = values)
 
-
         elif(req.status_code == 200):
             for each in self.tree_sales.get_children():
                 values =  self.tree_sales.item(each)['values']
@@ -2127,7 +2125,6 @@ class sales(base_window):
                     j +=1
                     self.tree_sales.insert('','end',tags=(tag), values = values)
 
-            
             self.ent_cust_name.config(state = con.NORMAL)
             self.billInfo = json.dumps(invoiceData)
             oldBal = False
@@ -2147,6 +2144,7 @@ class sales(base_window):
             open(self.displayed_pdf,"wb").write(pdf.content)  
             self.pdf.display_file(self.displayed_pdf)
             self.change_page_count = True
+            self.rad_even_odd.set(-1)
 
 
             #enable bill_print right frame
@@ -2308,6 +2306,8 @@ class sales(base_window):
         open(self.displayed_pdf,"wb").write(pdf.content)  
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = True
+        #self.rad_even_odd.set(-1)
+
 
     def select_window(self , e):
         selected = self.rad_select_window.get()
@@ -2399,7 +2399,7 @@ class sales(base_window):
         self.rad_odd_only.config(state = con.NORMAL)
         self.rad_even_only.config(state = con.NORMAL)
         self.rad_printer_1.config(state = con.NORMAL)
-        self.rad_printer_2.config(state = con.NORMAL)
+        #self.rad_printer_2.config(state = con.NORMAL)
         self.btn_print_bill.config(state = con.NORMAL)
 
     def clear_print_details(self):
@@ -2463,7 +2463,7 @@ class sales(base_window):
         self.btn_save_vch.config(state = con.NORMAL)
         self.clear_print_details()
         self.disable_print_details()
-        
+
     def print_both(self , e):
         self.enable_print_details()
         self.clear_print_details()
@@ -2473,7 +2473,9 @@ class sales(base_window):
         open(self.displayed_pdf,"wb").write(pdf.content)  
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = True
-           
+        self.rad_even_odd.set(-1)
+
+
     def print_only_vch(self , e):
         self.enable_print_details()
         self.clear_print_details()
@@ -2482,10 +2484,24 @@ class sales(base_window):
         open(self.displayed_pdf ,"wb").write(pdf.content)
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = False
+        self.rad_even_odd.set(-1)
+
 
     def print(self , e):
         #After Print function
         #Reset sales Bill
+
+
+        if not self.pdf.rendered_page_count:
+            msg.showinfo("Info" , "Enter correct Page Number")
+            return
+
+        range = self.ent_page_range.get()
+        files = {'file': open(self.displayed_pdf, 'rb')}
+
+        post("http://"+self.ip+":7000/PrintInvoice" , params = {'range' : range , 'even_odd' : self.rad_even_odd.get() , 'total_pages' : self.rendered_page_count} , files = files)
+
+
         self.btn_edit.config(state = con.NORMAL)
         self.btn_new.config(state = con.NORMAL)
         self.btn_save.config(state = con.DISABLED)
@@ -2521,12 +2537,13 @@ class sales(base_window):
         self.firm_tot = []
         self.billInfo = {}
         self.voucher = {}
-        self.for_page_change = {}
+        """self.for_page_change = {}
         self.displayed_pdf = ""
         self.rendered_page_count = 0
         self.change_page_count = False
+        #self.ent_pdf_bill_no.delete(0,con.END)
+        #self.pdf.erase()"""
 
-        #@  get("http://printer server")
 
         self.enable_all_details()
         self.clear_all_details()
@@ -2547,20 +2564,17 @@ class sales(base_window):
         self.enable_vch_details()
         self.clear_vch_details()
         self.disable_vch_details()
-        self.enable_print_details()
-        self.clear_print_details()
-        self.disable_print_details()
+        #self.enable_print_details()
+        #self.clear_print_details()
+        #self.disable_print_details()
         self.clear_cust_details(None)
         self.btn_save_vch.config(state = con.DISABLED)
         self.btn_vch.config(state = con.DISABLED)
         self.btn_vch_bill.config(state = con.DISABLED)
         self.combo_cust_vch.config(state = con.DISABLED)
-        self.ent_pdf_bill_no.config(state = con.DISABLED)
-        self.pdf.erase()
         self.combo_cust_vch.config(state = con.NORMAL)
-        self.ent_pdf_bill_no.config(state= con.NORMAL)
         self.combo_cust_vch.delete(0,con.END)
-        self.ent_pdf_bill_no.delete(0,con.END)
+        self.ent_pdf_bill_no.config(state = con.NORMAL)
 
     def save_vch(self ,e):
         billNo = self.ent_pdf_bill_no.get()
@@ -2789,7 +2803,7 @@ class sales(base_window):
         sql = "SELECT  acc_name , sales_prod_id , sales_prod_qty , sales_prod_sp , date_format(sale_date,'%d-%m-%Y') as Date  , discount, acc_cls_bal_firm1 + acc_cls_bal_firm2 + acc_cls_bal_firm3 as remaining_bal,trans_amt_firm1+trans_amt_firm2+trans_amt_firm3 as bill_amt,amt_paid_firm1_cash+amt_paid_firm2_cash+amt_paid_firm3_cash+amt_paid_firm1_bank+amt_paid_firm2_bank+amt_paid_firm3_bank as amountPaid"
         sql += " FROM somanath20"+db_year+".sales, somanath.accounts, somanath20"+db_year+".acc_bal, somanath20"+db_year+".cashflow_sales where somanath20"+db_year+".sales.sales_id = '"+str(bill_number)+"'" 
         sql += " and somanath20"+db_year+".sales.sales_acc = somanath.accounts.acc_id  and somanath20"+db_year+".acc_bal.acc_id = somanath20"+db_year+".sales.sales_acc and somanath20"+db_year+".cashflow_sales.trans_sales = somanath20"+db_year+".sales.sales_id;"
-
+      
         bill_data = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql }).json()
 
         self.enable_vch_details()
@@ -2860,6 +2874,8 @@ class sales(base_window):
         self.change_page_count = True
         self.btn_vch.config(state = con.DISABLED)
         self.btn_vch_bill.config(state = con.DISABLED)
+        self.rad_even_odd.set(-1)
+    
         
     def show_even_pages(self):
         i = self.rendered_page_count
@@ -2871,7 +2887,8 @@ class sales(base_window):
         
         self.pdf.display_file(self.displayed_pdf , pages = even_page_string[0:-1] )
         self.change_page_count = False
-        
+        self.ent_page_range.delete(0 , con.END)
+ 
     def show_odd_pages(self):
         i = self.rendered_page_count
         odd_page_string = ""
@@ -2881,11 +2898,13 @@ class sales(base_window):
                 odd_page_string += str(k)+','
         self.pdf.display_file(self.displayed_pdf , pages = odd_page_string[0:-1] )
         self.change_page_count = False
+        self.ent_page_range.delete(0 , con.END)
 
     def show_page_range(self , e):
         range = self.ent_page_range.get()
         self.pdf.display_file(self.displayed_pdf , pages = range)
         self.change_page_count = False
+        self.rad_even_odd.set(-1)
 
     def pdf_loaded(self , e):
         if self.change_page_count:
@@ -3009,7 +3028,7 @@ class sales(base_window):
 
         if limit != "":
             from_date = ''
-            to_date = ''        
+            to_date = ''
         else:
             limit = 10000000
         req = get("http://"+self.ip+":6000/reports/getCashflowSales" , params = { "acc_name" : cust_name , "limit" : limit ,'sdate' : from_date ,'edate' :to_date,'db' : self.year  }) 
@@ -3225,6 +3244,3 @@ class sales(base_window):
                     i += 1
 
     """--------------------------------------------------------------------------------------------------"""
-    
-
-

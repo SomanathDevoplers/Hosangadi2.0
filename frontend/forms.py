@@ -3,15 +3,21 @@ import json
 from tkinter import Text , constants as con , filedialog , ttk , messagebox as msg , StringVar , IntVar , simpledialog
 from requests import get , post
 from PIL import Image,ImageTk
-import os
 from other_classes import base_window , image_viewer
 import os
 from reportlab.graphics.barcode import code128
+from reportlab.graphics.barcode import code93
+from reportlab.graphics.barcode import code39
+from reportlab.graphics.barcode import usps
+from reportlab.graphics.barcode import usps4s
+from reportlab.graphics.barcode import ecc200datamatrix
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm,mm
 from reportlab.pdfgen import canvas
 from math import floor
+from shutil import copyfile
 from webbrowser import open as edge
+import datetime
 
 class firm(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , firm_form):
@@ -710,6 +716,7 @@ class firm(base_window):
 
 
 
+
 class taxes(base_window):  
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,ip,user , tax_form):
         
@@ -1255,7 +1262,6 @@ class categories(base_window):
         self.ent_cat_name.config(state = con.DISABLED)
         self.btn_cat_img_brw.config(state = con.DISABLED)
         self.btn_cat_img_view.config(state = con.DISABLED)
-
 
 
 
@@ -3467,7 +3473,6 @@ class prods(base_window):
         self.btn_save.config(state = con.NORMAL)
 
         self.enable_all()
-        print(self.check_all.get())
         if self.check_all.get() == "False":
             self.clear_all()
 
@@ -4349,7 +4354,6 @@ class users(base_window):
     
     def combo_entry_out(self , e):
         e.widget.select_clear()
-
 
 
 
@@ -5984,6 +5988,7 @@ class order_list(base_window):
 
 
 
+
 class barcodes(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , update_sp_form , search_prod_id = -1 , prod_name = ""):
         base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , update_sp_form)
@@ -6222,8 +6227,13 @@ class barcodes(base_window):
         self.btn_epson.bind("<Return>" , self.print_epson)
         self.btn_hoin = ttk.Button(self.frm_print , text = "HOIN" , width = 8 , style = "window_btn_medium.TButton" ,command = lambda : self.print_hoin(None))
         self.btn_hoin.bind("<Return>" , self.print_hoin)
-        self.btn_hoin.pack()
-        self.btn_epson.pack()
+        
+        if self.root.winfo_screenheight() > 1000:
+            self.btn_hoin.pack()
+            self.btn_epson.pack()
+        else:
+            self.btn_hoin.pack(side = con.LEFT)
+            self.btn_epson.pack(side = con.RIGHT)
 
 
 
@@ -6246,7 +6256,12 @@ class barcodes(base_window):
         self.frm_tree_old_stock.grid(row = 0 , column = 1 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.N)
         self.frm_barcode.grid(row = 1 , column = 1 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.N)
         self.frm_tree_barcode.grid(row = 2 , column = 1 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.N)
-        self.frm_print.grid(row = 2 , column = 2 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.S)
+
+        if self.root.winfo_screenheight() > 1000:
+            self.frm_print.grid(row = 2 , column = 2 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.S)
+        else:
+            self.frm_print.grid(row = 3 , column = 1 , padx = 4 , pady = int(self.main_hgt*0.02) , sticky = con.S)
+
 
         self.product_list(None)
 
@@ -6523,7 +6538,7 @@ class barcodes(base_window):
         values = self.tree_barcodes.get_children()
         if len(values) == 0:
             return
-        
+        i = 0
         for each in values:
             values = self.tree_barcodes.item(each)['values']
 
@@ -6553,10 +6568,12 @@ class barcodes(base_window):
                 else:
                     pass
             
-            req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "SELECT prod_bar from somanath.products where prod_name='"+values[0]+"'"}).json()
-            print(req[0]['prod_bar'])
-            get("http://"+self.ip+":7000/Barcode" , params = {'name' : values[0],"barcode":req[0]['prod_bar'], 'mrp' : values[3], 'cp' : cp_text , 'sp' : values[4] , 'count' : values[1]})
-
+            req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "SELECT prod_bar from somanath.products where prod_bar regexp ':"+str(values[5])+":'"}).json()
+           
+            get("http://192.168.0.103:8000/Barcode", params = {'slno':i,'name' : values[0],"barcode":req[0]['prod_bar'], 'mrp' : values[3], 'cp' : cp_text , 'sp' : values[4] , 'count' : values[1]})
+            i+=1
+    
+    
     def createBarCodes(self,all_rows,start_N):
         dict_x = {3:0.48,2:5.7,1:10.9,0:16.15}
         dict_y = {0:1.6,1:2.9,2:4.3,3:5.6,4:6.85,5:8.15,6:9.4,7:10.65,8:11.95,9:13.3,10:14.6,11:15.9,12:17.2,13:18.45,14:19.7,15:21.05,16:22.35,17:23.6,18:24.95,19:26.15,20:27.50,21:1.6}
@@ -6570,7 +6587,7 @@ class barcodes(base_window):
         count = 0
         for each in all_rows:
             barcode_value = each[1]
-            if len(each[2]) > 6:
+            if str(each[1])[0] != 'S':
                 barcode128 = code128.Code128(barcode_value,barHeight=8*mm,barWidth = 0.32*mm)
             else:
                 barcode128 = code128.Code128(barcode_value,barHeight=8*mm,barWidth = 0.35*mm)
@@ -6585,7 +6602,8 @@ class barcodes(base_window):
                 if i == 0:
                     count = count + each[5]
                 X_l = X
-                if len(each[2]) > 6:  
+                #print(all_rows)
+                if str(each[1])[0] == 'S':  
                     c.setFont('Times-Bold',6,leading=None)
                     c.drawString(X_l*cm,y,"Rs.")
                     X_l += 0.3
@@ -6631,3 +6649,77 @@ class barcodes(base_window):
         for key,value in dict_x.items():
             if val == value:
                 return key
+
+
+
+
+class db(base_window):
+    def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , db_form ):
+        base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , db_form)
+        if base == None:
+            return
+        self.homedir = others[1]
+        self.year = others[2]
+        self.ip = others[0]
+        self.main_frame.grid_propagate(False)
+        self.root_frame = frames[0] 
+        self.main_hgt = self.main_frame.winfo_reqheight()
+        self.main_wdt = self.main_frame.winfo_reqwidth()
+        self.usb = StringVar()
+
+        self.chk_usb = ttk.Checkbutton(self.main_frame , text = "USB" , style = "window_check.TCheckbutton", variable = self.usb , onvalue = 'True' , offvalue = 'False' , command = self.usb_true)
+        self.ent_usb_letter = ttk.Entry(self.main_frame  , width = 3 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+
+        self.btn_backup = ttk.Button(self.main_frame , text = "BACKUP" , width = 10 , style = "window_btn_medium.TButton" ,command = lambda : self.backup(None))
+        self.btn_backup.bind("<Return>" , self.backup)
+
+        self.chk_usb.grid(row = 0 , column = 0 , pady = int(self.main_hgt *0.01) , padx = int(self.main_wdt *0.01))
+        self.ent_usb_letter.grid(row = 1 , column = 0 )
+        self.btn_backup.grid(row = 2 , column = 0 )
+
+    def usb_true(self):
+        if self.usb.get() == 'True':
+            self.ent_usb_letter.config(state = con.NORMAL)
+        else:
+            self.ent_usb_letter.config(state = con.DISABLED)
+
+    def backup(self , e):
+        
+        drive = self.ent_usb_letter.get().upper()
+        date = str(datetime.date.today())
+        date = date.split("-")
+
+        db_file = "somanathstores_"+str(int(date[0]))+"_"+str(int(date[1]))+"_"+str(int(date[2]))+".sql"
+        src = self.homedir+"\\angadiImages\\"+db_file
+
+        if self.usb.get() == 'True' and drive == "":
+            msg.showerror("ERROR" , "Enter Drive Letter ")
+            return  
+        
+        os.chdir("C:\\program files\\mysql\\mysql server 8.0\\bin")
+        sys = 'mysqldump -uadmin -pmysqlpassword5 -h '+self.ip+' --databases somanath somanath20'+ self.year +'>"'+src+'"'
+        os.system(sys)
+        
+        dir_folder = "C:\\backup\\"+db_file
+        copyfile(src,dir_folder)
+
+        #dir_folder = "A:\\G-drive\\backup\\"+db_file
+        #copyfile(src,dir_folder)
+
+        if self.usb.get() == 'True':
+            try:
+                dir_folder = drive+":\\backup\\"+db_file
+                copyfile(src,dir_folder)
+            except FileNotFoundError:
+                msg.showerror("ERROR" , "Enter Correct Usb Drive Letter \n Goto This Pc and find usb drive letter")         
+        os.remove(src)
+        msg.showinfo("Success!","Backup Complete")
+        self.close(None)
+
+        
+
+
+
+
+
+

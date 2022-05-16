@@ -14,12 +14,7 @@ import tkinter as tk
 import traceback
 import datetime
 
-def show_error(*args):
-        #err = traceback.format_exception(*args)
-        f = open("Error.txt", "a")
-        #f.write('\n'+datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")+'\n'+str(err)+'\n')
-        f.close()
-#tk.Tk.report_callback_exception = show_error
+
 
 class return_reports(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , return_report_form):
@@ -97,7 +92,7 @@ class return_reports(base_window):
         e.widget.select_clear()
 
     def filter_months(self , e):
-        1/0
+       
         quarter = self.combo_quarter.get()
 
         if quarter == '1st - APRIL-JUNE': 
@@ -221,7 +216,7 @@ class return_reports(base_window):
     def get_customers(self,e):
 
         text = e.widget.get()
-        print(text)
+        
         if text == "":
             sql = "select acc_name from somanath.accounts where acc_type = 'CUST' order by acc_name"
         else:
