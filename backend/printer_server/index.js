@@ -151,13 +151,13 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
       .stroke();
   doc
       .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
-      .text(`ಒಟ್ಟು : ₹ ${Number(BillTotal).toFixed(2)}`,0,position+20,{ align: "right" })
+      .text(`ಒಟ್ಟು : ₹ ${Math.round(Number(BillTotal)).toFixed(2)}`,0,position+20,{ align: "right" })
 
   if(old_bal === 'True'){
   doc
-      .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Number(oldBalData['old_bal']).toFixed(2)}`,10,position+20,{ align: "left" })
-      .text(`ಜಮಾ      : ₹ ${Number(oldBalData['amountPaid']).toFixed(2)}`,10,position+40,{ align: "left" })
-      .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Number(oldBalData['remaining_bal']).toFixed(2)}`,0,position+40,{ align: "right" })
+      .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['old_bal'])).toFixed(2)}`,10,position+20,{ align: "left" })
+      .text(`ಜಮಾ      : ₹ ${Math.round(Number(oldBalData['amountPaid'])).toFixed(2)}`,10,position+40,{ align: "left" })
+      .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['remaining_bal'])).toFixed(2)}`,0,position+40,{ align: "right" })
   }
 
   if(saved>1){

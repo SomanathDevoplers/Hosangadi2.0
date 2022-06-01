@@ -2704,7 +2704,7 @@ class prods(base_window):
         """===================pop up window to get set categories ends================================="""
 
         self.product_list(None)
-        self.btn_new.focus_set()
+        self.ent_prod_search.focus_set()
         
         if search_prod_id != -1:
             self.btn_img1_vw.config(state = con.DISABLED)
@@ -3016,9 +3016,34 @@ class prods(base_window):
         temp = [bar1 , bar2 , bar3 , bar4]
         for each in temp:
             if each not in barcodes:
-                barcodes.append(each)    
-            
+                if each != '':
+                    barcodes.append(each)    
         
+        self.ent_bar4.delete(0 , con.END)
+        self.ent_bar3.delete(0 , con.END)
+        self.ent_bar2.delete(0 , con.END)
+        self.ent_bar1.delete(0 , con.END)
+
+        if len(barcodes) == 4:
+            self.ent_bar4.insert(0 , barcodes[3])
+            self.ent_bar3.insert(0 , barcodes[2])
+            self.ent_bar2.insert(0 , barcodes[1])
+            self.ent_bar1.insert(0 , barcodes[0])
+
+        elif len(barcodes) == 3:
+            self.ent_bar3.insert(0 , barcodes[2])
+            self.ent_bar2.insert(0 , barcodes[1])
+            self.ent_bar1.insert(0 , barcodes[0])
+
+        elif len(barcodes) == 2:
+            self.ent_bar2.insert(0 , barcodes[1])
+            self.ent_bar1.insert(0 , barcodes[0])
+
+        elif len(barcodes) == 1:
+            self.ent_bar1.insert(0 , barcodes[0])
+        else:
+            pass
+
 
         if barGenerated:
             req = post("http://"+self.ip+":6000/barcodes" , params = {'type' : 'update' , 'barcode' : self.generated_bar})
@@ -4553,29 +4578,29 @@ class update_sp(base_window):
         
         
         self.ent_nml1.bind('<FocusOut>' , self.combo_entry_out)
-        self.ent_nml1.bind('<Control-w>' , self.cal_price)
-        self.ent_nml1.bind('<Control-W>' , self.cal_price)
+        self.ent_nml1.bind('<Control-S>' , self.cal_price)
+        self.ent_nml1.bind('<Control-s>' , self.cal_price)
         self.ent_nml1.bind('<Return>' , self.selling_price_filler)
 
         self.ent_nml2 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_nml2.bind('<FocusOut>' , self.combo_entry_out)
-        self.ent_nml2.bind('<Control-w>' , self.cal_price)
-        self.ent_nml2.bind('<Control-W>' , self.cal_price)
+        self.ent_nml2.bind('<Control-S>' , self.cal_price)
+        self.ent_nml2.bind('<Control-s>' , self.cal_price)
         self.ent_nml2.bind('<Return>' , self.selling_price_filler)
 
         self.ent_nml3 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_nml3.bind('<FocusOut>' , self.combo_entry_out)
-        self.ent_nml3.bind('<Control-w>' , self.cal_price)
-        self.ent_nml3.bind('<Control-W>' , self.cal_price)
+        self.ent_nml3.bind('<Control-S>' , self.cal_price)
+        self.ent_nml3.bind('<Control-s>' , self.cal_price)
         self.ent_nml3.bind('<Return>' , self.selling_price_filler)
 
         self.ent_nml4 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_nml4.bind('<FocusOut>' , self.combo_entry_out)
-        self.ent_nml4.bind('<Control-w>' , self.cal_price)
-        self.ent_nml4.bind('<Control-W>' , self.cal_price)
+        self.ent_nml4.bind('<Control-s>' , self.cal_price)
+        self.ent_nml4.bind('<Control-S>' , self.cal_price)
         self.ent_nml4.bind('<Return>' , self.selling_price_filler)
 
 
@@ -4589,30 +4614,30 @@ class update_sp(base_window):
         
         self.ent_htl1.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_htl1.bind('<Return>' , self.selling_price_filler)
-        self.ent_htl1.bind('<Control-w>' , self.cal_price)
-        self.ent_htl1.bind('<Control-W>' , self.cal_price)
+        self.ent_htl1.bind('<Control-s>' , self.cal_price)
+        self.ent_htl1.bind('<Control-S>' , self.cal_price)
 
 
         self.ent_htl2 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_htl2.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_htl2.bind('<Return>' , self.selling_price_filler)
-        self.ent_htl2.bind('<Control-w>' , self.cal_price)
-        self.ent_htl2.bind('<Control-W>' , self.cal_price)
+        self.ent_htl2.bind('<Control-S>' , self.cal_price)
+        self.ent_htl2.bind('<Control-s>' , self.cal_price)
 
         self.ent_htl3 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_htl3.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_htl3.bind('<Return>' , self.selling_price_filler)
-        self.ent_htl3.bind('<Control-w>' , self.cal_price)
-        self.ent_htl3.bind('<Control-W>' , self.cal_price)
+        self.ent_htl3.bind('<Control-s>' , self.cal_price)
+        self.ent_htl3.bind('<Control-S>' , self.cal_price)
 
         self.ent_htl4 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_htl4.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_htl4.bind('<Return>' , self.selling_price_filler)
-        self.ent_htl4.bind('<Control-w>' , self.cal_price)
-        self.ent_htl4.bind('<Control-W>' , self.cal_price)
+        self.ent_htl4.bind('<Control-s>' , self.cal_price)
+        self.ent_htl4.bind('<Control-S>' , self.cal_price)
 
         self.lbl_spl_txt = ttk.Label(self.frm_sp , text = "SPL  : "  , style = "window_text_medium.TLabel")
         self.lbl_spl1 = ttk.Label(self.frm_sp  , width = 6 , style = "window_lbl_ent.TLabel")
@@ -4624,29 +4649,29 @@ class update_sp(base_window):
         
         self.ent_spl1.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_spl1.bind('<Return>' , self.selling_price_filler)
-        self.ent_spl1.bind('<Control-w>' , self.cal_price)
-        self.ent_spl1.bind('<Control-W>' , self.cal_price)
+        self.ent_spl1.bind('<Control-s>' , self.cal_price)
+        self.ent_spl1.bind('<Control-S>' , self.cal_price)
 
         self.ent_spl2 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_spl2.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_spl2.bind('<Return>' , self.selling_price_filler)
-        self.ent_spl2.bind('<Control-w>' , self.cal_price)
-        self.ent_spl2.bind('<Control-W>' , self.cal_price)
+        self.ent_spl2.bind('<Control-s>' , self.cal_price)
+        self.ent_spl2.bind('<Control-S>' , self.cal_price)
 
         self.ent_spl3 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_spl3.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_spl3.bind('<Return>' , self.selling_price_filler)
-        self.ent_spl3.bind('<Control-w>' , self.cal_price)
-        self.ent_spl3.bind('<Control-W>' , self.cal_price)
+        self.ent_spl3.bind('<Control-s>' , self.cal_price)
+        self.ent_spl3.bind('<Control-S>' , self.cal_price)
 
         self.ent_spl4 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_spl4.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_spl4.bind('<Return>' , self.selling_price_filler)
-        self.ent_spl4.bind('<Control-w>' , self.cal_price)
-        self.ent_spl4.bind('<Control-W>' , self.cal_price)
+        self.ent_spl4.bind('<Control-s>' , self.cal_price)
+        self.ent_spl4.bind('<Control-S>' , self.cal_price)
 
         self.lbl_ang_txt = ttk.Label(self.frm_sp , text = "  ANG   : "  , style = "window_text_medium.TLabel")
         self.lbl_ang1 = ttk.Label(self.frm_sp  , width = 6 , style = "window_lbl_ent.TLabel")
@@ -4658,28 +4683,28 @@ class update_sp(base_window):
         
         self.ent_ang1.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_ang1.bind('<Return>' , self.selling_price_filler)
-        self.ent_ang1.bind('<Control-w>' , self.cal_price)
-        self.ent_ang1.bind('<Control-W>' , self.cal_price)
+        self.ent_ang1.bind('<Control-s>' , self.cal_price)
+        self.ent_ang1.bind('<Control-S>' , self.cal_price)
 
         self.ent_ang2 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_ang2.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_ang2.bind('<Return>' , self.selling_price_filler)
-        self.ent_ang2.bind('<Control-w>' , self.cal_price)
-        self.ent_ang2.bind('<Control-W>' , self.cal_price)
+        self.ent_ang2.bind('<Control-s>' , self.cal_price)
+        self.ent_ang2.bind('<Control-S>' , self.cal_price)
 
         self.ent_ang3 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_ang3.bind('<FocusOut>' , self.combo_entry_out)
         self.ent_ang3.bind('<Return>' , self.selling_price_filler)
-        self.ent_ang3.bind('<Control-w>' , self.cal_price)
-        self.ent_ang3.bind('<Control-W>' , self.cal_price)
+        self.ent_ang3.bind('<Control-s>' , self.cal_price)
+        self.ent_ang3.bind('<Control-S>' , self.cal_price)
 
         self.ent_ang4 = ttk.Entry(self.frm_sp  , width = 6 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[1], '%P'))
         
         self.ent_ang4.bind('<FocusOut>' , self.combo_entry_out)
-        self.ent_ang4.bind('<Control-w>' , self.cal_price)
-        self.ent_ang4.bind('<Control-W>' , self.cal_price)
+        self.ent_ang4.bind('<Control-s>' , self.cal_price)
+        self.ent_ang4.bind('<Control-S>' , self.cal_price)
 
         self.frm_last_row = ttk.Frame( self.main_frame  , style = "root_main.TFrame")
         self.btn_clear_sp = ttk.Button(self.frm_last_row , text = "CLEAR" , width = 8 , style = "window_btn_medium.TButton" ,command = lambda : self.clear_sp_only(None))
@@ -4955,9 +4980,7 @@ class update_sp(base_window):
 
         self.prod_id = values[1]
         self.pur_id = ''
-
         old_stks = get("http://"+self.ip+":5000/getOldStocks" , params = {'prod_id' : values[1], 'year' : self.year , 'max' : 3})
-
         if old_stks.status_code == 200:
             old_stks = old_stks.json()
             self.ent_mrp_1.config(state = con.NORMAL)
@@ -4977,7 +5000,7 @@ class update_sp(base_window):
             i = 0
             for each in self.tree_old_stk.get_children():
                 self.tree_old_stk.delete(each)
-            
+            #stk_pur_id , stk_prod_qty , stk_cost, stk_sp_nml, stk_sp_htl, stk_sp_spl, stk_sp_ang , acc_name , date_format(pur_date , '%d-%b-%Y') as pur_date 
             old_stks['stocks'].reverse()
             for each in old_stks['stocks']:
                 nml = each[4].split(":")[1:-1]
@@ -4986,7 +5009,6 @@ class update_sp(base_window):
                 ang = each[7].split(":")[1:-1]
                 pur_id = each[8]
                 values = (each[0] , each[1] , "{:.2f}".format(float(each[2])) , "{:.3f}".format(float(each[3])) , nml[0]  , nml[1] , nml[2] , nml[3] , htl[0]  , htl[1] , htl[2] , htl[3] , spl[0]  , spl[1] , spl[2] , spl[3] , ang[0]  , ang[1] , ang[2] , ang[3], pur_id)
-
                 if i%2 == 0:    self.tree_old_stk.insert('','end' ,tags=('a',), values = values)
                 else       :    self.tree_old_stk.insert('','end' ,tags=('b',), values = values)
 
@@ -5600,31 +5622,32 @@ class update_sp(base_window):
             return
         
 
-        nml =  ":"+"{:.2f}".format(round(float(nml1),2))
-        nml += ":"+"{:.2f}".format(round(float(nml2),2))
-        nml += ":"+"{:.2f}".format(round(float(nml3),2))
-        nml += ":"+"{:.2f}".format(round(float(nml4),2))+":"
+        nml =  ":"+"{:.3f}".format(round(float(nml1),2))
+        nml += ":"+"{:.3f}".format(round(float(nml2),2))
+        nml += ":"+"{:.3f}".format(round(float(nml3),2))
+        nml += ":"+"{:.3f}".format(round(float(nml4),2))+":"
 
-        htl = ":"+"{:.2f}".format(round(float(htl1),2))
-        htl += ":"+"{:.2f}".format(round(float(htl2),2))
-        htl += ":"+"{:.2f}".format(round(float(htl3),2))
-        htl += ":"+"{:.2f}".format(round(float(htl4),2))+":"
+        htl = ":"+"{:.3f}".format(round(float(htl1),2))
+        htl += ":"+"{:.3f}".format(round(float(htl2),2))
+        htl += ":"+"{:.3f}".format(round(float(htl3),2))
+        htl += ":"+"{:.3f}".format(round(float(htl4),2))+":"
 
-        spl = ":"+"{:.2f}".format(round(float(spl1),2))
-        spl += ":"+"{:.2f}".format(round(float(spl2),2))
-        spl += ":"+"{:.2f}".format(round(float(spl3),2))
-        spl += ":"+"{:.2f}".format(round(float(spl4),2))+":"
+        spl = ":"+"{:.3f}".format(round(float(spl1),2))
+        spl += ":"+"{:.3f}".format(round(float(spl2),2))
+        spl += ":"+"{:.3f}".format(round(float(spl3),2))
+        spl += ":"+"{:.3f}".format(round(float(spl4),2))+":"
 
-        ang = ":"+"{:.2f}".format(round(float(ang1),2))
-        ang += ":"+"{:.2f}".format(round(float(ang2),2))
-        ang += ":"+"{:.2f}".format(round(float(ang3),2))
-        ang += ":"+"{:.2f}".format(round(float(ang4),2))+":"
+        ang = ":"+"{:.3f}".format(round(float(ang1),2))
+        ang += ":"+"{:.3f}".format(round(float(ang2),2))
+        ang += ":"+"{:.3f}".format(round(float(ang3),2))
+        ang += ":"+"{:.3f}".format(round(float(ang4),2))+":"
 
-        sql = "update somanath2021.stocks set stk_sp_nml = '"+nml+"',stk_sp_htl = '"+ htl+"' , stk_sp_spl = '"+spl +"',stk_sp_ang = '"+ang +"' where stk_pur_id = '"+self.pur_id+"' and stk_prod_id = "+str(self.prod_id)
+        sql = "update somanath20"+self.year+".stocks set stk_sp_nml = '"+nml+"',stk_sp_htl = '"+ htl+"' , stk_sp_spl = '"+spl +"',stk_sp_ang = '"+ang +"' where stk_pur_id = '"+self.pur_id+"' and stk_prod_id = "+str(self.prod_id)
         get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
         self.clear_sp()
         self.disable_sp()
         self.get_stocks(None)
+        
 
 
 
@@ -5690,7 +5713,7 @@ class order_list(base_window):
         
 
         self.frm_prod_search = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
-        self.ent_prod_search = ttk.Entry(self.frm_prod_search  , width = 47 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_prod_search = ttk.Entry(self.frm_prod_search , state = con.DISABLED , width = 47 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
         self.ent_prod_search.bind('<FocusOut>', self.combo_entry_out)
         self.ent_prod_search.bind('<Return>', self.product_list)
        
@@ -5799,7 +5822,7 @@ class order_list(base_window):
         self.tree_order.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
         self.tree_order_frame.grid(row = 1 , column = 1  , padx = int(self.main_wdt*0.01) , pady = int(self.main_hgt*0.01)  , sticky = con.NE)
         self.frm_page_setup.grid(row = 2 , column = 1  , padx = int(self.main_wdt*0.01) , pady = int(self.main_hgt*0.01) , sticky = con.E)
-        self.product_list(None)
+        #self.product_list(None)
 
     def combo_entry_out(self , e):
         e.widget.select_clear()
@@ -5844,9 +5867,9 @@ class order_list(base_window):
         sup2 = self.combo_sup2.get()
         prod = self.ent_prod_search.get().upper()
         
-
+        prod = ''
         firstSql = True
-        sql = "select distinct(stk_tot_qty) as tot_qty, prod_name , prod_id , tax_per  from somanath.products , somanath.taxes , somanath20" + str(self.year) + ".stocks"
+        sql = "select prod_name , prod_id , tax_per  from somanath.products , somanath.taxes"
 
         if self.cat_state.get() == 'True':
             if cat1 != "":
@@ -5901,16 +5924,19 @@ class order_list(base_window):
             else:
                 sql += " and prod_name regexp '"+prod+"'"
 
-        if (sql == "select distinct(stk_tot_qty) as tot_qty, prod_name , prod_id , tax_per  from somanath.products , somanath.taxes , somanath20" + str(self.year) + ".stocks"):
+        if (sql == "select prod_name , prod_id , tax_per  from somanath.products , somanath.taxes"):
             sql += ' where '
         else:
             sql += ' and '
 
-        sql += ' stk_prod_id = prod_id and prod_gst = tax_id order by prod_name'
+        sql += ' prod_gst = tax_id order by prod_name'
 
+       
 
         req = get("http://"+self.ip+":6000/Products/getProductList" , params = {'sql' : sql})
         
+      
+
         for each in self.tree.get_children():
             self.tree.delete(each)
 
@@ -5919,12 +5945,18 @@ class order_list(base_window):
             resp = req.json()
             tag_index = 0
             for each in resp:
+                tot_stk = get("http://"+self.ip+":6000/Products/getProductList" , params = {'sql' : "select stk_tot_qty from somanath20" + self.year + ".stocks where stk_prod_id = " + str(each['prod_id'])}).json()
+                if tot_stk == []:
+                    tot_stk = 0
+                else:
+                    tot_stk = tot_stk[0]['stk_tot_qty']
+        
                 if tag_index%2:
                     tag = 'a'
                 else:
                     tag = 'b'
                 tag_index += 1
-                self.tree.insert('','end' ,tags=(tag,), values = ( each['prod_name'] , "{:.3f}".format(round(float(each['tot_qty']),3)) , each['tax_per'], each['prod_id']))
+                self.tree.insert('','end' ,tags=(tag,), values = ( each['prod_name'] , "{:.3f}".format(round(float(tot_stk),3)) , each['tax_per'], each['prod_id']))
 
     def select_prod(self , e):
         cur_item = self.tree.focus()
@@ -6393,6 +6425,7 @@ class barcodes(base_window):
 
         self.selected_product = values
         sp = 0
+       
         old_stks = get("http://"+self.ip+":5000/getOldStocks" , params = {'prod_id' : values[2], 'year' : self.year , 'max' : 3})
 
         if old_stks.status_code == 200:
@@ -6569,10 +6602,9 @@ class barcodes(base_window):
                     pass
             
             req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "SELECT prod_bar from somanath.products where prod_bar regexp ':"+str(values[5])+":'"}).json()
-           
-            get("http://192.168.0.103:8000/Barcode", params = {'slno':i,'name' : values[0],"barcode":req[0]['prod_bar'], 'mrp' : values[3], 'cp' : cp_text , 'sp' : values[4] , 'count' : values[1]})
+            print(req[0]['prod_bar'].split(":")[1])
+            #get("http://192.168.0.103:8000/Barcode", params = {'slno':i,'name' : values[0],"barcode":req[0]['prod_bar'], 'mrp' : values[3], 'cp' : cp_text , 'sp' : values[4] , 'count' : values[1]})
             i+=1
-    
     
     def createBarCodes(self,all_rows,start_N):
         dict_x = {3:0.48,2:5.7,1:10.9,0:16.15}
@@ -6602,7 +6634,6 @@ class barcodes(base_window):
                 if i == 0:
                     count = count + each[5]
                 X_l = X
-                #print(all_rows)
                 if str(each[1])[0] == 'S':  
                     c.setFont('Times-Bold',6,leading=None)
                     c.drawString(X_l*cm,y,"Rs.")

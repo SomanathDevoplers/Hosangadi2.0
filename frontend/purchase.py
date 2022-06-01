@@ -683,6 +683,8 @@ class purchase(base_window):
         self.lbl_tot_amt = ttk.Label(self.frm_totals  , width = 11 , style = "window_lbl_ent.TLabel")
 
         self.lbl_cp_filler = ttk.Label(self.frm_totals  , width = 11 , style = "window_lbl_ent.TLabel")
+        self.btn_clear_sp = ttk.Button(self.frm_totals , text = "CLEAR SP"  , style = "window_btn_medium.TButton" ,command = lambda : self.clear_sp(None))
+
 
         self.lbl_tot_exp = ttk.Label(self.frm_totals , text = "   TTL Expense :"  , style = "window_text_medium.TLabel")
         self.ent_tot_exp = ttk.Entry(self.frm_totals , width = 11 , state = con.DISABLED ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[2], '%P'))
@@ -703,6 +705,7 @@ class purchase(base_window):
         self.lbl_tot_amt_txt.grid(row = 2 , column = 0)
         self.lbl_tot_amt.grid(row = 2 , column = 1)
         self.lbl_cp_filler.grid(row = 0 , column = 4)
+        self.btn_clear_sp.grid(row = 0 , column = 3)
         self.lbl_tot_exp.grid(row = 1 , column = 3)
         self.ent_tot_exp.grid(row = 1 , column = 4)
         self.lbl_grd_tot_txt.grid(row = 2 , column = 3)
@@ -773,9 +776,9 @@ class purchase(base_window):
         self.btn_new.bind("<Return>" , self.new) 
         self.btn_edit = ttk.Button(self.btn_frame , text = "Edit" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.edit(None))
         self.btn_edit.bind("<Return>" , self.edit)
-        self.btn_save = ttk.Button(self.btn_frame , text = "Save" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.save(None))
+        self.btn_save = ttk.Button(self.btn_frame , text = "Save" , width = 6 , state = con.DISABLED , style = "window_btn_medium.TButton" ,command = lambda : self.save(None))
         self.btn_save.bind("<Return>" , self.save)
-        self.btn_cancel = ttk.Button(self.btn_frame , text = "Cancel" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.cancel(None))
+        self.btn_cancel = ttk.Button(self.btn_frame , text = "Cancel" , width = 6 ,state = con.DISABLED , style = "window_btn_medium.TButton" ,command = lambda : self.cancel(None))
         self.btn_cancel.bind("<Return>" , self.cancel)
         self.btn_refresh = ttk.Button(self.btn_frame , text = "Refresh" , width = 7 , style = "window_btn_medium.TButton" ,command = lambda : self.refresh(None))
         self.btn_refresh.bind("<Return>" , self.refresh)
@@ -839,7 +842,6 @@ class purchase(base_window):
         self.disable_all()
 
     def destroy_pur_details(self , e):
-
         sup_name = self.combo_supplier.get().upper()
         sup_gst = self.lbl_sup_gst.cget("text")
         self.selected_tax_meth = self.combo_tax_meth.get()
@@ -1514,13 +1516,13 @@ class purchase(base_window):
             pro_per = 0
             sp = 0
     
-        elif cp == "" or cp ==".":
+        if cp == "" or cp ==".":
             pro_per = 0
             cp = 0
-
+        
         try:
             pro_per = (float(sp) - float(cp)) / float(cp) * 100
-        except ZeroDivisionError:
+        except ZeroDivisionError or ValueError:
             pro_per = 0
 
 
@@ -1618,8 +1620,10 @@ class purchase(base_window):
         
         prod = get("http://"+self.ip+":4000/getProdByBar" , params = {'prod_bar' : ":"+bar+":"}).json()
         if prod == []:
-            msg.showinfo("Info" , "Product Not found!")
+            msg.showinfo("Info" , "Product Not found! Add Product")
             self.root.bell()
+            arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Products" , [ self.args[5][0]  , self.args[5][9] , self.args[5][2] , self.args[5][3] , self.args[5][4]  , self.args[5][2] ,  self.args[5][6] ] , [  self.args[6][4] , self.args[6][0] , self.args[6][2] ] ,  self.args[9]]
+            prods(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] )
             return
         prod = prod[0]
 
@@ -1784,7 +1788,7 @@ class purchase(base_window):
 
 
         if self.root.winfo_screenheight()>1000: self.frm_stk_sug.place( x = 0, y = self.main_hgt*0.170)
-        else : self.frm_stk_sug.place( x = 0, y = self.main_hgt*0.185)
+        else : self.frm_stk_sug.place( x = 0, y = self.main_hgt*0.165)
         
         self.frm_stk_sug.lift()
 
@@ -2117,21 +2121,23 @@ class purchase(base_window):
             cur_stk_sp.append(float(each))
             values.append("{:.3f}".format(each))
 
-        prev_stk_sp = self.tree_old_stk.get_children()
-        if prev_stk_sp!= []:
-            prev_stk_sp = self.tree_old_stk.item(prev_stk_sp[0])['values'][4:20]
+
+        tot_stk = self.lbl_tot_stk.cget('text')
+        if float(tot_stk) > 0:
+            prev_stk_sp = self.tree_old_stk.get_children()
+            if len(prev_stk_sp)!= 0:
+                prev_stk_sp = self.tree_old_stk.item(prev_stk_sp[0])['values'][4:20]
+                
+                temp = prev_stk_sp
+                prev_stk_sp = []
+                for each in temp:
+                    prev_stk_sp.append(float(each))
+
             
-
-        temp = prev_stk_sp
-        prev_stk_sp = []
-        for each in temp:
-            prev_stk_sp.append(float(each))
-
-       
-        if prev_stk_sp != cur_stk_sp:
-            msg.showinfo("Info" , " SET SELLING PRICE")
-            arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
-            update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
+                if prev_stk_sp != cur_stk_sp:
+                    msg.showinfo("Info" , " SET SELLING PRICE")
+                    arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
+                    update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
 
 
         prod_exp = self.ent_exp.get()
@@ -2306,6 +2312,29 @@ class purchase(base_window):
         self.selected_sl_no = 0
         self.tree_pur.detach(curItemNo)
         self.ent_bar.focus_set()
+
+    def clear_sp(self , e):
+        self.ent_nml1.delete( 0 , con.END)
+        self.ent_nml2.delete( 0 , con.END)
+        self.ent_nml3.delete( 0 , con.END)
+        self.ent_nml4.delete( 0 , con.END)
+
+        self.ent_htl1.delete( 0 , con.END)
+        self.ent_htl2.delete( 0 , con.END)
+        self.ent_htl3.delete( 0 , con.END)
+        self.ent_htl4.delete( 0 , con.END)
+
+        self.ent_spl1.delete( 0 , con.END)
+        self.ent_spl2.delete( 0 , con.END)
+        self.ent_spl3.delete( 0 , con.END)
+        self.ent_spl4.delete( 0 , con.END)
+
+        self.ent_ang1.delete( 0 , con.END)
+        self.ent_ang2.delete( 0 , con.END)
+        self.ent_ang3.delete( 0 , con.END)
+        self.ent_ang4.delete( 0 , con.END)
+
+        self.ent_nml1.focus_set()
 
     """--------------------------Product entry functions Ends here---------------------------------------"""
 
@@ -2504,7 +2533,7 @@ class purchase(base_window):
             self.combo_tax_meth.config(state = con.NORMAL)
             self.combo_tax_meth.insert(0, "In-State")
             self.combo_tax_meth.config(state = "readonly")
-            self.ent_pur_date.insert(0, datetime.date.today().strftime("%d") + "-" +datetime.date.today().strftime("%m") + "-" + datetime.date.today().strftime("%Y"))
+            #self.ent_pur_date.insert(0, datetime.date.today().strftime("%d") + "-" +datetime.date.today().strftime("%m") + "-" + datetime.date.today().strftime("%Y"))
 
         self.lbl_tot_cgst.config(text = "0.00")
         self.lbl_tot_sgst.config(text = "0.00")
@@ -2530,7 +2559,6 @@ class purchase(base_window):
         arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
         update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
         
-
     def upd_prod(self , e):
         arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Products" , [ self.args[5][0]  , self.args[5][9] , self.args[5][2] , self.args[5][3] , self.args[5][4]  , self.args[5][2] ,  self.args[5][6] ] , [  self.args[6][4] , self.args[6][0] , self.args[6][2] ] ,  self.args[9]]
         prods(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id )

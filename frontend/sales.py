@@ -18,6 +18,8 @@ class sales(base_window):
         if base == None:
             return
         
+        self.sio = sio
+
         self.args = [root ,frames , dmsn , lbls ,title,validations, others , sales_form , sio , accounts_form]
         self.main_frame.grid_propagate(False)
         self.root_frame = frames[0] 
@@ -563,7 +565,10 @@ class sales(base_window):
         self.pdf.bind('<<DocumentFinished>>' , self.pdf_loaded)
         self.pdf.pack(fill = con.BOTH ,expand = 1 )
         
-        self.btn_print_bill = ttk.Button(self.frm_pdf , text = "PRINT", state = con.DISABLED , width = 6, style = "window_btn_medium.TButton" ,command = lambda : self.print(None))
+        #self.print_btn_frame = ttk.Frame(self.frm_pdf , style = "root_main.TFrame")
+        self.btn_bill_only = ttk.Button(self.frm_pdf , text = "BILL" , state = con.DISABLED , width = 5 , style = "window_btn_medium.TButton" ,command = lambda : self.print_only_bill(None))
+        self.btn_bill_only.bind("<Return>" , self.print_only_bill)
+        self.btn_print_bill = ttk.Button(self.frm_pdf , text = "PRINT", state = con.DISABLED , width = 5, style = "window_btn_medium.TButton" ,command = lambda : self.print(None))
         self.btn_print_bill.bind("<Return>" , self.print)
 
         #self.lbl_vch_bill_no_txt.grid(row = 0 , column = 0 , pady = int(self.main_hgt*0.01))
@@ -605,11 +610,17 @@ class sales(base_window):
         self.rad_printer_2.grid(row = 6 , column = 4)
 
         if self.screen_height>1000:
-            self.frm_bill.grid(row = 7 , column = 0 , columnspan = 4)
-            self.btn_print_bill.grid(row = 7 , column = 4 , sticky = con.S )
+            self.frm_bill.grid(row = 7 , column = 0 , columnspan =  4 , rowspan = 2)
+            #self.print_btn_frame.grid(row = 7 , column = 4 , sticky = con.S)
+            self.btn_bill_only.grid(row = 7 , column = 4 , sticky = con.S)
+            self.btn_print_bill.grid(row = 8 , column = 4 , sticky = con.S)
+
         else:
             self.frm_bill.grid(row = 7 , column = 0 , columnspan = 5)
-            self.btn_print_bill.grid(row = 8 , column = 4 ,  pady = int(self.main_hgt*0.01))
+            #self.print_btn_frame.grid(row = 8 , column = 1  , sticky = con.W,  pady = int(self.main_hgt*0.01))
+            self.btn_bill_only.grid(row = 8 , column = 1  , sticky = con.W,  pady = int(self.main_hgt*0.01))
+            self.btn_print_bill.grid(row = 8 , column = 3  , sticky = con.W,  pady = int(self.main_hgt*0.01))
+
 
         self.frm_pdf.pack(pady = 4)
         #====================================bill print window End Here==================================================================#
@@ -1374,6 +1385,14 @@ class sales(base_window):
         qty = self.ent_prod_qty.get()
         name = self.ent_prod.get()
         
+        try:
+            float(qty)
+        except ValueError:
+            msg.showinfo("Info" , "ENTER QTY")
+            return
+
+
+
         if float(qty) > float(self.max_qty):
             msg.showinfo("Info" , "ENTER QTY < " + "{:.3f}".format(round(self.max_qty,3)))
             self.ent_prod_qty.delete(0,con.END)
@@ -1469,6 +1488,12 @@ class sales(base_window):
         values[7] = str(values[7])
         
         get("http://"+self.ip+":5000/sales/addSalesProduct" , params = {"product" : values , 'sale_id' : self.sale_id} )
+
+        #@
+        if self.sl_no % 3 == 0:
+            self.sio.disconnect()
+            self.sio.connect("http://localhost:5000/", headers = {"user_name" : "VIJAY" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023"})
+        #@
 
 
     def select_from_treeview(self , e):
@@ -2366,6 +2391,8 @@ class sales(base_window):
         self.rad_printer_1.config(state = con.DISABLED)
         self.rad_printer_2.config(state = con.DISABLED)
         self.btn_print_bill.config(state = con.DISABLED)
+        self.btn_bill_only.config(state = con.DISABLED)
+
         self.btn_save_vch.config(state = con.DISABLED)
         self.clear_print_details()
         self.disable_print_details()
@@ -2401,6 +2428,8 @@ class sales(base_window):
         self.rad_printer_1.config(state = con.NORMAL)
         #self.rad_printer_2.config(state = con.NORMAL)
         self.btn_print_bill.config(state = con.NORMAL)
+        self.btn_bill_only.config(state = con.NORMAL)
+
 
     def clear_print_details(self):
         self.ent_pdf_bill_no.delete(0 , con.END)
@@ -2417,6 +2446,8 @@ class sales(base_window):
         self.rad_printer_1.config(state = con.DISABLED)
         self.rad_printer_2.config(state = con.DISABLED)
         self.btn_print_bill.config(state = con.DISABLED)
+        self.btn_bill_only.config(state = con.DISABLED)
+
    
     def get_customers(self,e):
         text = e.widget.get()
@@ -2475,7 +2506,6 @@ class sales(base_window):
         self.change_page_count = True
         self.rad_even_odd.set(-1)
 
-
     def print_only_vch(self , e):
         self.enable_print_details()
         self.clear_print_details()
@@ -2486,6 +2516,24 @@ class sales(base_window):
         self.change_page_count = False
         self.rad_even_odd.set(-1)
 
+    def print_only_bill(self , e):
+        self.enable_print_details()
+        self.clear_print_details()
+        if len(self.ent_bill_date.get()) == 0:
+            date = self.voucher['bill_date']
+            cust = self.voucher['cust_name']
+            bill_no = self.voucher['bill_no']
+        else:
+            date = self.ent_bill_date.get()
+            cust = self.ent_cust_name.get().title()
+            bill_no = self.ent_bill_no.get()
+        pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : bill_no, 'Date' : date, 'customerName':  cust,'invoiceData':self.billInfo , 'billTotal': self.voucher['bill_amt'] , 'oldBal' : False , 'oldBalData':json.dumps(self.voucher),'page':self.rad_printer.get()})
+        self.for_page_change = {'billNo' : bill_no, 'Date' : date, 'customerName': cust ,'invoiceData':self.billInfo , 'billTotal': self.voucher['bill_amt'] , 'oldBal' : False , 'oldBalData':json.dumps(self.voucher)}
+        self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
+        open(self.displayed_pdf,"wb").write(pdf.content)  
+        self.pdf.display_file(self.displayed_pdf)
+        self.change_page_count = True
+        self.rad_even_odd.set(-1)
 
     def print(self , e):
         #After Print function
@@ -2648,6 +2696,8 @@ class sales(base_window):
         self.edit_state = False
         self.new_state = False
         self.after_save = False
+        self.btn_new.config(state = con.NORMAL)
+        self.btn_edit.config(state = con.NORMAL)
 
     """--------------------------------------------------------------------------------------------------"""
 
@@ -2673,11 +2723,10 @@ class sales(base_window):
             return
         
         ans = msg.askyesno("ಇದೆಯಾ" , "ಗಿರಾಕಿ : "+cust[0]['acc_name']+"\n ಬಿಲ್ ತಾರಿಕ್: "+cust[0]['sale_date']+"\n ಎಡಿಟ್ ಮಾಡುಕ್ ಹೊದ್ ಇದ್ ಅಲ್ಲದಿರೆ NO ವತ್ತಿ")
-        
-
         if not ans:
             self.ent_bill_no.select_range(0,con.END)
             self.ent_bill_no.focus_set()
+            self.btn_cancel.invoke()
             return
         
         self.sale_id = self.year+"_"+bill_no
@@ -2861,13 +2910,18 @@ class sales(base_window):
             
             
         voucher = {
+            'bill_amt' : grandTotal,
             'old_bal' : float(bill_data[0]['remaining_bal'])  - ( grandTotal - float(bill_data[0]['amountPaid']) ) ,
             'amountPaid': bill_data[0]['amountPaid'],
-            'remaining_bal': bill_data[0]['remaining_bal']
+            'remaining_bal': bill_data[0]['remaining_bal'],
+            'bill_date': bill_data[0]['Date'],
+            'cust_name': bill_data[0]['acc_name'],
+            'bill_no' : self.ent_pdf_bill_no.get()
         } 
-
-        pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] ,'invoiceData':json.dumps(invoiceData) , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher),'page': self.rad_printer.get()})
-        self.for_page_change = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] ,'invoiceData':json.dumps(invoiceData) , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher)}
+        self.voucher =  voucher
+        self.billInfo = json.dumps(invoiceData)
+        pdf = get("http://"+self.ip+":7000/sales/invoice" , params = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] ,'invoiceData':self.billInfo , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher),'page': self.rad_printer.get()})
+        self.for_page_change = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] ,'invoiceData':self.billInfo , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher)}
         self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
         open(self.displayed_pdf,"wb").write(pdf.content)  
         self.pdf.display_file(self.displayed_pdf)

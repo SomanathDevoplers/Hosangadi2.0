@@ -15,6 +15,7 @@ const { connect } = require('http2');
 var MySql = require('sync-mysql');
 const fs = require('fs');
 const path = require('path');
+const { type } = require('os');
 var connection = new MySql({
   host: "localhost",
   port: "3306",
@@ -43,7 +44,7 @@ con.connect()
 //server initialization with database connection
 //global variables start
 
-let usersLogged = []
+let usersLogged = {}
 let servers = []
 let productStocks = {}
 const systemOs = "ubuntu"
@@ -51,13 +52,14 @@ let purchaseSaving = false
 let salesSaving = false
 //@change c:// to homDir
 
-
+/*
 let backedUpdata = fs.readFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),{encoding:'utf8', flag:'r'});
 if (backedUpdata != "{}"){
         backedUpdata = JSON.parse(backedUpdata)
 }
 fs.writeFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),"{}");
 
+*/
 
 let getTime = () => {
     today = new Date()
@@ -76,9 +78,9 @@ let getTime = () => {
     return time
 }
 
-function getOldStocks(prodId , dbYear , minYear , stocks , nStocks , max , clientResponse)
+function getOldStocks(prodId , curYear ,dbYear , minYear , stocks , nStocks , max , clientResponse)
 {
-  
+
     if(dbYear<minYear)
       {
           clientResponse.send(stocks)
@@ -91,18 +93,23 @@ function getOldStocks(prodId , dbYear , minYear , stocks , nStocks , max , clien
       }
     else
       {
+        condition = ''
+        if(dbYear != curYear)
+          condition = ' stk_prod_qty = 0 and'
 
-        sql1 = "SELECT stk_pur_id , stk_prod_qty , stk_cost, stk_sp_nml, stk_sp_htl, stk_sp_spl, stk_sp_ang , acc_name , date_format(pur_date , '%d-%b-%Y') as pur_date   FROM somanath20"+dbYear+".stocks , somanath.accounts , somanath20"+dbYear+".purchases  where stk_prod_id = "+prodId+" and somanath20"+dbYear+".purchases.pur_acc = somanath.accounts.acc_id and somanath20"+dbYear+".stocks.stk_pur_id = somanath20"+dbYear+".purchases.pur_id order by  somanath20"+dbYear+".stocks.insert_time DESC, stk_prod_qty"
+        sql1 = "SELECT stk_pur_id , stk_prod_qty , stk_cost, stk_sp_nml, stk_sp_htl, stk_sp_spl, stk_sp_ang    FROM somanath20"+dbYear+".stocks where"+ condition +" stk_prod_id = "+prodId+" order by  somanath20"+dbYear+".stocks.insert_time DESC, stk_prod_qty"
         con.query(sql1 , (err1 , res1) =>  {
                 for( i = 0 ; i<res1.length  && nStocks < max; i++)
-                  {
-                      
+                  {   
+                      puryear =  res1[i]['stk_pur_id'].split("_")[0]
+                      sqlpur = " select acc_name , date_format(pur_date , '%d-%b-%Y') as pur_date from somanath.accounts , somanath20"+puryear+".purchases where  somanath20"+puryear+".purchases.pur_acc = somanath.accounts.acc_id and somanath20"+puryear+".purchases.pur_id = '" + res1[i]['stk_pur_id'] + "'"
+                      sqlpur = connection.query(sqlpur)
                       stocks['totQty'] = parseFloat(stocks['totQty'])  + res1[i]['stk_prod_qty']
-                      stocks['stocks'].push([ res1[i]['pur_date'] ,  res1[i]['acc_name'] ,  res1[i]['stk_cost'] ,  res1[i]['stk_prod_qty'] ,  res1[i]['stk_sp_nml'],  res1[i]['stk_sp_htl'],  res1[i]['stk_sp_spl'],  res1[i]['stk_sp_ang'], res1[i]['stk_pur_id']] )
+                      stocks['stocks'].push([ sqlpur[0]['pur_date'] ,  sqlpur[0]['acc_name'] ,  res1[i]['stk_cost'] ,  res1[i]['stk_prod_qty'] ,  res1[i]['stk_sp_nml'],  res1[i]['stk_sp_htl'],  res1[i]['stk_sp_spl'],  res1[i]['stk_sp_ang'], res1[i]['stk_pur_id']] )
                       nStocks += 1
                   }
                 
-                getOldStocks( prodId, dbYear - 1 , minYear , stocks , nStocks , max , clientResponse)
+                getOldStocks( prodId, curYear ,dbYear - 1 , minYear , stocks , nStocks , max , clientResponse)
 
           })
 
@@ -190,12 +197,11 @@ function purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientR
                             delete stockDiff.trans
                             
 
-                            usersLogged.forEach(element => {
-                              if(element.ip == ip)
-                                      element.purchases.products = stockDiff
-                                      element.purchases['insertTime'] = insertTime
-                                      element.purchases['insertId'] = insertId
-                            });
+                            
+                              usersLogged[ip].purchases.products = stockDiff
+                              usersLogged[ip].purchases['insertTime'] = insertTime
+                              usersLogged[ip].purchases['insertId'] = insertId
+                            
                             return 0
 
                 })
@@ -390,28 +396,40 @@ io.on('connection', function (socket) {
     //adds data to usersLogged when login is approved
     
     clientIp = socket.handshake.address
-
     
+    if (clientIp == '::1')
+        clientIp = '::ffff:127.0.0.1'
     //all the params passed pushed to usersLogged
     socketData = socket.handshake.headers
 
-    if ( socketData['user-agent'] ==  "node-XMLHttpRequest" )
+    //take all available old data
+    let backedUpdata = fs.readFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),{encoding:'utf8', flag:'r'});
+    if (backedUpdata != "{}"){
+      backedUpdata = JSON.parse(backedUpdata)
+    }
+
+    if (socketData['user-agent'] ==  "node-XMLHttpRequest" )
         servers.push({"id" : socket.id })
     else
       {
         
-        newUser = {"id" : socket.id , "ip" : clientIp , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime() , "purchases" : {} , "sales" : {}}
+        newUser = {"id" : socket.id , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime() , "purchases" : {} , "sales" : {}}
+        
+
+        
         if (backedUpdata != "{}")
         {
           backedupuser = backedUpdata[clientIp]
           newUser.sales = backedupuser.sales
           newUser.purchases = backedupuser.purchases
           delete backedUpdata[clientIp]
-          if (backedUpdata.length == 0)
-              backedUpdata = "{}"
+          fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backedUpdata));
         }
+            
+        
 
-        usersLogged.push(newUser)
+        usersLogged[clientIp] = newUser
+        console.log(usersLogged);
         
       }
     
@@ -421,13 +439,16 @@ io.on('connection', function (socket) {
 
     //root window disconnect event
           socket.on('disconnect' , (data)=> {
-                  socketData = socket.handshake.headers
-                  for (user = 0 ; user<usersLogged.length ; user ++)
-                      {   
-                          if(usersLogged[user].ip == socket.handshake.address)
-                            usersLogged.splice(user , 1)
-                      }
-                    
+                clientIp = socket.handshake.address
+                if (clientIp == '::1')
+                    clientIp = '::ffff:127.0.0.1';
+                console.log(usersLogged); 
+
+                if (usersLogged[clientIp].sales.length != 0 || usersLogged[clientIp].purchases.length != 0)
+                  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+                delete usersLogged[clientIp]
+                console.log('\n',usersLogged);
+                console.log('---------dis----------'); 
           });   
   
 
@@ -438,56 +459,53 @@ io.on('connection', function (socket) {
 
 
 
-    //
-          socket.on('purchaseError' , () => {
+    //stayconnected 
+          socket.on('keepAlive' , () => {
+              console.log("I am Alive",new Date());
           }) 
 
+      //error
           socket.on('sendError' , (data) =>{
               socket.broadcast.emit('error' , data)
           })
 
 
 
-
 })
-
-
-
-
-
 
 app.get('/login' , (req,res) => {                                                                                                          //for user login authentication
   sql = "select user_type from somanath.users where user_name = '"+ req.query.user_name + "' and user_pass = '"+req.query.user_pass+"'"
-  responseSent = false
-  
-
-  usersLogged.forEach( user => {
-    if(user.ip == req.socket.remoteAddress)
-       {
-          responseSent = true
-          res.sendStatus(101)
-       }
-    if(!responseSent && user.userName == req.query.user_name)
-       {
-          responseSent = true
-          res.sendStatus(102)
-       }
-          
-    });                                                                                                                                     //checks if same two clients are from same ip or from same user name
-                                                                                                                                           //responds {"NOT FOUND"}
-  if(!responseSent)
-        con.query(sql, (err , userType)=>{
-          res.send(userType)
-        });  
-
-    
-                                                                                                                                       //returns null when not found else returns {""}
+    responseSent = false
+    console.log(req.socket.remoteAddress);
+    console.log( usersLogged , usersLogged[req.socket.remoteAddress],'uuuu' );
+    ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
+    user = usersLogged[ip]
+    if (user == undefined)
+        {
+            con.query(sql, (err , userType)=>{
+                res.send(userType)
+            });
+        } 
+        
+    else 
+        {
+            responseSent = true
+            res.sendStatus(101)  
+            if(!responseSent && user.userName == req.query.user_name)
+                res.sendStatus(102)
+               
+        }
+      
 });
 
 //purchase entry routes
 app.get('/purchases/addEditPurDetails' , (req , res) => {
 
-  ip = req.socket.remoteAddress
+    ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
   purDetails = req.query
   
   
@@ -503,12 +521,12 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
       
       else
         {    
-            usersLogged.forEach(element => {
+            Object.keys(usersLogged).forEach(element => {
 
-                        if (element.purchases.supName == purDetails.sup_name && element.purchases.invNo ==  purDetails.inv_no)
+                        if (usersLogged[element].purchases.supName == purDetails.sup_name && usersLogged[element].purchases.invNo ==  purDetails.inv_no)
                         {
                            found = true
-                           found_ip = element.ip
+                           found_ip = usersLogged[element].ip
                         }
             });
 
@@ -520,32 +538,26 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
             else
               {
 
-                 
-                  usersLogged.forEach(element => {
-                    
-                      if(element.ip == ip)
-                          {   
                               
-                              element.purchases.purDate = purDetails.date
-                              element.purchases.invNo =  purDetails.inv_no
-                              element.purchases.taxMethod =  purDetails.tax_method
-                              element.purchases.firmName = purDetails.firm_name 
-                              element.purchases.supName = purDetails.sup_name
+                              usersLogged[ip].purchases.purDate = purDetails.date
+                              usersLogged[ip].purchases.invNo =  purDetails.inv_no
+                              usersLogged[ip].purchases.taxMethod =  purDetails.tax_method
+                              usersLogged[ip].purchases.firmName = purDetails.firm_name 
+                              usersLogged[ip].purchases.supName = purDetails.sup_name
                              
                               if (purDetails.editState == 'False') 
                                 {
-                                  element.purchases.purId = "new"
+                                    usersLogged[ip].purchases.purId = "new"
                                    
                                   if (purDetails.productsAdded == 'False')  
-                                    element.purchases.products = {}
-                                  
+                                    usersLogged[ip].purchases.products = {}
+                
                                 }
                              
-                          }
-                        
-                  });
+                     
                   
                   res.sendStatus(200)
+                  console.log(usersLogged);
               }
         }
   })
@@ -555,14 +567,12 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
 app.get('/purchases/cancelPurchase' , (req , res) => {
 
     ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
 
-    usersLogged.forEach(element => {
-
-          if (element.ip == ip )
-          {
-            element.purchases = {}
-          }
-    });
+    usersLogged[ip].purchases = {}
+     
+        console.log(usersLogged);
     res.sendStatus(200)
 
 
@@ -585,20 +595,19 @@ app.get('/getOldStocks' ,  (req , res )=>{
     stocks['totQty'] = 0
     stocks['stocks'] = []
     minYear = result[0]['minDate']
-
     sql2 = "SELECT count(stk_prod_id) as max FROM somanath20"+dbYear+".stocks where stk_prod_qty >0 and stk_prod_id = " + prodId
     con.query(sql2 , (err2 , result2) =>{
 
             newMax = result2[0].max
-         
+
 
             if(newMax > max)
                 max = newMax
-                
+
             if(dbYear >= minYear)
             {
                 
-              n =  getOldStocks(prodId , dbYear , minYear , stocks , nStocks , max , res);
+              n =  getOldStocks(prodId , dbYear ,dbYear , minYear , stocks , nStocks , max , res);
             }
           if(n)
               res.send(stocks)
@@ -613,40 +622,34 @@ app.get('/getOldStocks' ,  (req , res )=>{
 })
 
 app.get('/purchases/addPurchaseProduct' , (req , res) =>{
-  ip = req.socket.remoteAddress
+    ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
   productData = req.query.value
-  usersLogged.forEach(element => {
 
-        if (element.ip == ip ) 
-        {
           prodId = String(productData[24])
           
           newArray = productData.slice(1,24)
           newArray.push(productData[25])
           newArray.push(productData[26])
           
-          element.purchases.products[prodId] = newArray
-        }
-  });
+          usersLogged[ip].purchases.products[prodId] = newArray
+        
+  console.log(usersLogged , usersLogged[ip].purchases.products);
   res.sendStatus(200)
 
  
 })
 
 app.get('/purchases/removePurchaseProduct' , (req , res) =>{
-  ip = req.socket.remoteAddress
+    ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
   prodId = req.query.prod_id
 
-  
-  usersLogged.forEach(element => {
+    delete usersLogged[ip].purchases.products[prodId]
 
-        if (element.ip == ip )
-        {
-          
-          delete element.purchases.products[prodId]
-         
-        }
-  });
+
   res.sendStatus(200)
 })
 
@@ -660,6 +663,8 @@ app.get('/purchases/save'  , (req , res) =>{
       {
         purchaseSaving = true
         ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
         editState = false
         if (req.query.edit_state == 'True')
             editState = true
@@ -681,13 +686,10 @@ app.get('/purchases/save'  , (req , res) =>{
         Time = Time.getFullYear()+"-"+String(Time.getMonth()+1).padStart(2 , '0')+"-"+String(Time.getDate()).padStart(2 , '0')+" "+String(Time.getHours()).padStart(2 , '0')+":"+String(Time.getMinutes()).padStart(2 , '0')+":"+String(Time.getSeconds()).padStart(2 , '0')
 
 
-        usersLogged.forEach((element)=>{
-            if (element.ip == ip)
-            {
-               purDetails = element.purchases  
-               element.purchases = {}
-            }
-        })
+        
+        purDetails = usersLogged[ip].purchases  
+        usersLogged[ip].purchases = {}
+          
         
         sql = "select firm_id from somanath.firms where firm_name = '"+purDetails.firmName+"'"
         con.query(sql , (err , result) =>{
@@ -778,6 +780,9 @@ app.get('/purchases/edit' , (req , res) =>{
               purId = purDetails['pur_id']
               dbYear = parseInt(purDetails['pur_id'].split("_")[0])
               ip = req.socket.remoteAddress
+                if (ip == '::1')
+                    ip = '::ffff:127.0.0.1'
+              
               //con.query("SELECT acc_cls_bal FROM somanath20"+dbYear+".acc_bal where acc_id = "+accId , (err1 , result1) =>{
                             
 
@@ -790,6 +795,7 @@ app.get('/purchases/edit' , (req , res) =>{
 
                                         sql3 = "SELECT stk_id, stk_pur_id, stk_prod_id, stk_prod_qty, stk_tot_qty, stk_cost, stk_sp_nml, stk_sp_htl, stk_sp_spl, stk_sp_ang, stk_exp, stk_sup_id, stk_firm_id , prod_name , prod_cess , tax_per as gst   from somanath20"+dbYear+".stocks , somanath.products , somanath.taxes where stk_pur_id = '"+purId+"' and stk_prod_id = prod_id and prod_gst = tax_id  order by stk_prod_id"
                                         con.query(sql3 , (err3 , result3) => {
+                                                
                                               prodId = purDetails['pur_prod_id'].split(':')
                                               prodId.shift()
                                               prodId.pop()
@@ -809,26 +815,24 @@ app.get('/purchases/edit' , (req , res) =>{
                                               
                                               
 
-                                              usersLogged.forEach(element => {
-                                                if(element.ip == ip)
-                                                    {
-                                                        element.purchases.purId =  purId
-                                                        element.purchases.purDate = purDetails.pur_date
-                                                        element.purchases.invNo =  purDetails.pur_inv
+                                             
+                                                        usersLogged[ip].purchases.purId =  purId
+                                                        usersLogged[ip].purchases.purDate = purDetails.pur_date
+                                                        usersLogged[ip].purchases.invNo =  purDetails.pur_inv
 
                                                         if (purDetails.tax_method == "OUT")
                                                             taxMethod = "Out-Of-State"
                                                         else  
                                                             taxMethod = "In-State"
 
-                                                        element.purchases.taxMethod =  taxMethod
-                                                        element.purchases.firmName = purDetails.pur_firm_name
-                                                        element.purchases.supName = purDetails.pur_acc_name   
-                                                        element.purchases.products = {}
-                                                    }
+                                                        usersLogged[ip].purchases.taxMethod =  taxMethod
+                                                        usersLogged[ip].purchases.firmName = purDetails.pur_firm_name
+                                                        usersLogged[ip].purchases.supName = purDetails.pur_acc_name   
+                                                        usersLogged[ip].purchases.products = {}
+                                                    
                                                      
                                                   
-                                              });
+                                              
 
                                               
                                               purchaseEdit( Object.keys(stockDiff) , balDiff , stockDiff , prodQty , result3 , res , 0 , Object.keys(stockDiff).length, accId , ip , firmId)
@@ -852,27 +856,42 @@ app.get('/purchases/edit' , (req , res) =>{
 
 app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
  
-  ip = req.socket.remoteAddress
-  salesDetails = req.query
-  usersLogged.forEach(element => {
-    if(element.ip == ip)
-        {
-          saleId = salesDetails.sale_id 
-          if (saleId == '')
-            saleId = String(nanoid())
-          newSaleObject = {
-                'saleDate' : salesDetails.sale_date , 
-                'custName' : salesDetails.cust_name , 
-                'products' : {}
-          }
+    ip = req.socket.remoteAddress
+    console.log(ip);
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
+    salesDetails = req.query
 
-          element.sales[saleId] = newSaleObject
+    
+    sales = usersLogged[ip].sales[salesDetails.sale_id]
+    
+    
 
-    }
-})
+    
+
+    saleId = salesDetails.sale_id
+    if (saleId == '')
+        saleId = String(nanoid())
+    if (sales != undefined)
+            {
+                newSaleObject = sales
+                newSaleObject.custName = salesDetails.cust_name
+            }
+
+    else
+        newSaleObject = {
+            'saleDate' : salesDetails.sale_date , 
+            'custName' : salesDetails.cust_name , 
+            'products' : {}
+        }
+
+    usersLogged[ip].sales[saleId] = newSaleObject
+
+
 
 res.send({'saleId' : saleId})
 
+console.log( "added ---------" , usersLogged[ip] , ip);
 
 
 
@@ -897,13 +916,14 @@ app.get('/sales/getSalesStocks' , (req , res) =>{
 })
 
 app.get('/sales/addSalesProduct' , (req , res) =>{
-  ip = req.socket.remoteAddress
+    ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
   saleId = req.query.sale_id
   productData = req.query.product
-  usersLogged.forEach(element => {
+  
 
-        if (element.ip == ip ) 
-        {
+        
             prodId = productData[13]
             stkId = productData[12]
             
@@ -939,32 +959,33 @@ app.get('/sales/addSalesProduct' , (req , res) =>{
             if (stkId != '')
             {
               
-                if(element.sales[saleId].products.hasOwnProperty(prodId))
+                if(usersLogged[ip].sales[saleId].products.hasOwnProperty(prodId))
                 {
-                    element.sales[saleId].products[prodId][stkId] = newArray
+                    usersLogged[ip].sales[saleId].products[prodId][stkId] = newArray
                 }
                 else
                 {
-                    element.sales[saleId].products[prodId] = {}
-                    element.sales[saleId].products[prodId][stkId] = newArray
+                    usersLogged[ip].sales[saleId].products[prodId] = {}
+                    usersLogged[ip].sales[saleId].products[prodId][stkId] = newArray
                 }
           
             }
             else
             {
-              element.sales[saleId].products[prodId] = {}
-              element.sales[saleId].products[prodId]['stkId'] = newArray
+                usersLogged[ip].sales[saleId].products[prodId] = {}
+                usersLogged[ip].sales[saleId].products[prodId]['stkId'] = newArray
             }
             
-        }
-  });
+        console.log(usersLogged[ip].sales[saleId]);
   res.sendStatus(200)
   
 })
 
 app.get('/sales/removeSalesProduct' , (req , res) =>{
   
-          ip = req.socket.remoteAddress
+    ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
           saleId = req.query.sale_id
           dbYear = req.query.db_year
           newProduct = req.query.newBill
@@ -975,13 +996,11 @@ app.get('/sales/removeSalesProduct' , (req , res) =>{
               stkId = 'stkId'
             }
 
-          usersLogged.forEach(element => {
 
-                if (element.ip == ip ) 
-                {
-                    delete element.sales[saleId].products[prodId][stkId]
-                    if(Object.keys(element.sales[saleId].products[prodId]).length === 0)
-                          delete element.sales[saleId].products[prodId]
+                    //console.log(usersLogged,ip);
+                    delete usersLogged[ip].sales[saleId].products[prodId][stkId]
+                    if(Object.keys(usersLogged[ip].sales[saleId].products[prodId]).length === 0)
+                          delete usersLogged[ip].sales[saleId].products[prodId]
 
                     if (newProduct == 'True')
                     {
@@ -1013,9 +1032,8 @@ app.get('/sales/removeSalesProduct' , (req , res) =>{
                   
 
                     
-                }
-          })
-
+                      //console.log(usersLogged[ip].sales[saleId].products);
+    
           res.sendStatus(200)
 })
 
@@ -1030,19 +1048,20 @@ app.get('/getGlobalStocks' , (req , res) =>{
 
 app.get('/sales/cancelSales' , (req , res) => {
 
-  ip = req.socket.remoteAddress
+    ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
   saleId = req.query.sale_id
-  usersLogged.forEach(element => {
+ 
 
-        if (element.ip == ip )
-        { 
-              delete element.sales[saleId]
+         
+              delete usersLogged[ip].sales[saleId]
     
-        }
+       
         
 
-
-  });
+    console.log( "removed ---------" , usersLogged[ip]);
+  
   res.sendStatus(200)
 
 
@@ -1062,13 +1081,13 @@ app.get('/sales/save' , (req , res) =>{
             saleDate1 = req.query.sale_date
 
             ip = req.socket.remoteAddress
+            if (ip == '::1')
+                ip = '::ffff:127.0.0.1'
 
-            usersLogged.forEach((element)=>{
-              if (element.ip == ip)
-              {
-                 salesDetails = element.sales[saleId]  
-              }
-          })
+            
+            salesDetails = usersLogged[ip].sales[saleId] 
+
+         //console.log(salesDetails , '----here');
           toCheckStockAvailable = salesDetails.products
           editDirectSave = {}
           if(saleId.length<15)
@@ -1393,11 +1412,14 @@ app.get('/sales/save' , (req , res) =>{
 
 app.get('/sales/edit',(req,res)=>{
   responseSent = false
+  ip = req.socket.remoteAddress
+    if (ip == '::1')
+        ip = '::ffff:127.0.0.1'
   BillNumber = req.query.billNo
 
-  usersLogged.forEach(element =>{
+  Object.keys(usersLogged).forEach(element =>{
 
-      if(element.sales.hasOwnProperty(BillNumber))
+      if(usersLogged[element].sales.hasOwnProperty(BillNumber))
         {
           res.sendStatus(201)
           responseSent = true
@@ -1408,7 +1430,7 @@ app.get('/sales/edit',(req,res)=>{
   if (!responseSent)
   {
 
-                ip = req.socket.remoteAddress
+                
                 userName = req.query.user
                 dbYear = req.query.dbYear
                 saleDate = req.query.sale_date
@@ -1427,10 +1449,7 @@ app.get('/sales/edit',(req,res)=>{
                     else if(sale_ref[0] === 'SCM'){ saleIds[2] = result[k]['sales_ref'] }
                     else{ saleIds[3] = result[k]['sales_ref'] }
                   }
-                  usersLogged.forEach((element)=>{
-                        
-                        if (element.ip == ip)
-                              { 
+                  
                                 newSaleObject = {
                                   'saleDate' : saleDate , 
                                   'custName' : custName , 
@@ -1439,11 +1458,8 @@ app.get('/sales/edit',(req,res)=>{
                                    'sales_ids' : saleIds,
                                   'products' : {}
                                 }
-                                element.sales[BillNumber] = newSaleObject
-                                userIndex = index
-                              }
-                              index++
-                    })
+                                usersLogged[ip].sales[BillNumber] = newSaleObject
+                    
                   let values = []
                   //let products = {}
                   let Total = 0
@@ -1465,6 +1481,7 @@ app.get('/sales/edit',(req,res)=>{
                     result[k]["sales_pur_id"].split(':').slice(1,-1).forEach(purchaseId=>{
                       sql2 = "SELECT stk_id,prod_name  FROM somanath20"+dbYear+".stocks,somanath.products where stk_pur_id = '"+purchaseId+"' and stk_prod_id ="+prodId[i]+" and stk_prod_id = prod_id;"
                       result3 = connection.query(sql2)
+                      
                       prodTotal = parseFloat(qty[i])*parseFloat(sp[i])
                       Total += prodTotal
                       prodTotalHsn = ( parseFloat(sp[i])-parseFloat(prodCp[i]) ) * parseFloat(qty[i])
@@ -1490,9 +1507,9 @@ app.get('/sales/edit',(req,res)=>{
                       //@ added E
                       backEndValues= ['E', result3[0]['prod_name'] ,  String(qty[i]), String(sp[i]), String((prodTotal).toFixed(2)), String((prodTotalHsn).toFixed(2)) , backEndUnits , backEndSpList,String(prodCp[[i]]), String(qty[i]), String(prodGst[i]), String(prodCess[i]),0,0,purchaseId,firmId,parseFloat(prodCp[i])]
                       slNO++
-                      if(! usersLogged[userIndex].sales[BillNumber].products.hasOwnProperty(prodId[i]))
-                          usersLogged[userIndex].sales[BillNumber].products[prodId[i]] = {}
-                      usersLogged[userIndex].sales[BillNumber].products[prodId[i]][result3[0]['stk_id']] = backEndValues
+                      if(! usersLogged[ip].sales[BillNumber].products.hasOwnProperty(prodId[i]))
+                          usersLogged[ip].sales[BillNumber].products[prodId[i]] = {}
+                      usersLogged[ip].sales[BillNumber].products[prodId[i]][result3[0]['stk_id']] = backEndValues
                       i++
                     })
 
@@ -1811,35 +1828,27 @@ app.get('/sales/voucher',(req,res)=>{
 
 process.on('uncaughtException', (error) => {
 
-  backupData = {}
-  usersLogged.forEach(element =>{
-      backupData[element.ip] = element
-  })
-  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backupData));
-  //connection.query("update somanath.data set userslogged = '" + JSON.stringify(backupData) + "'");
+  
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
 
-  io.sockets.emit('sendError' ,"\n"+String(error.stack))
+  io.sockets.emit('error' ,"\n"+String(error.stack))
+  console.log(error.stack);
   process.exit(1)  
 });
 
 process.on('unhandledRejection', (error, promise)  => {
-  backupData = {}
-  usersLogged.forEach(element =>{
-      backupData[element.ip] = element
-  })
-  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backupData));
-  io.sockets.emit('sendError' , error)
+  
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  io.sockets.emit('error' , error)
+  console.log(error);
   process.exit(1); // Exit your app 
 })
 
 
 function myCustomErrorHandler(err, req, res, next) {
-  backupData = {}
-  usersLogged.forEach(element =>{
-      backupData[element.ip] = element
-  })
-  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backupData));
-  io.sockets.emit('sendError' ,req.path+"\n"+String(err.stack))
+  
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
   process.exit(1);
 }
 app.use(myCustomErrorHandler);
@@ -1847,3 +1856,5 @@ app.use(myCustomErrorHandler);
 
 
 server.listen(5000);                                                                                                                           
+
+

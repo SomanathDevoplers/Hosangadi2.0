@@ -126,7 +126,7 @@ app.get('/getCustName' , (req , res) => {
 })
 
 
-
+/*
 process.on('uncaughtException', (error) => {
   socket.emit('sendError' ,"\n"+String(error.stack))
   process.exit(1)
@@ -144,7 +144,7 @@ function myCustomErrorHandler(err, req, res, next) {
 }
 
 app.use(myCustomErrorHandler);
-
+*/
 
 
 

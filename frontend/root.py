@@ -1,3 +1,4 @@
+from threading import Thread
 import os.path
 import sys
 from datetime import datetime
@@ -16,6 +17,7 @@ from threading import Thread
 from playsound import playsound
 play_sound = False
 homedir = os.path.expanduser('~')
+from time import sleep
 #sys.setdefaultencoding('UTF8')
 
 
@@ -71,15 +73,17 @@ def show_error(*args):
     notification(traceback.format_tb(args[3]))
     #root.bell()
 
-#Tk.report_callback_exception = show_error
+Tk.report_callback_exception = show_error
 
 
 @sio.on('error')
 def hello(data):
     notification(data)
     
-
-
+def socketKeepAlive():
+    while(True):
+        sio.emit('keepAlive')
+        sleep(30)
 
 
 #-------form open counts----------#
@@ -244,8 +248,9 @@ def close():
         msg.showinfo("Info" , "CLOSE ALL TABS BEFORE EXIT!")
         return
     
-    root.quit()
     sio.disconnect()
+    root.quit()
+    
 
 def firms(e = None): 
     user_type = lbl_user_type.cget("text")
@@ -363,8 +368,7 @@ root.bind_all("<Alt-A>", accounts)
 
 photo = PhotoImage(file = "C:\\Program Files\\Hosangadi2.0\\logo_hosagadi.png")
 root.iconphoto(con.FALSE,photo)
-root.title("Hosangadi")
-root.title("Hosangadi                                                                                                                                                                                                                       Developed by :- Shiva & Krishna ")
+root.title("Hosangadi                                                                                                                                                                                                                      Developed by :- Shiva & Krishna ")
 
 root_hgt = root.winfo_screenheight()-34
 root_wdt = root.winfo_screenwidth()-10
@@ -514,52 +518,41 @@ frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
 
 
+try:
 
+    lbl_user_name.config(text = sys.argv[1])    
+    lbl_user_type.config(text = sys.argv[2])
+    year = sys.argv[3][2:4]
 
+    if(sys.argv[2]) == "TAXI":
+        userType = "ADMIN"
+        tax_check = True
+    else:
+        userType = sys.argv[2]
 
+    lbl_user_type.config(text = userType)
+    lbl_fin_year.config(text = sys.argv[3])
+    lbl_server_name.config(text = sys.argv[4])
+    ip = sys.argv[5]  
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" :  sys.argv[1] , "user_type" : userType, "form_type" : "root" , "fin_year": sys.argv[3]})
 
-
-
-
-
-
-
-
-
-
-#try:
-
-lbl_user_name.config(text = sys.argv[1])    
-lbl_user_type.config(text = sys.argv[2])
-year = sys.argv[3][2:4]
-
-if(sys.argv[2]) == "TAXI":
-    userType = "ADMIN"
-    tax_check = True
-else:
-    userType = sys.argv[2]
-
-lbl_user_type.config(text = userType)
-lbl_fin_year.config(text = sys.argv[3])
-lbl_server_name.config(text = sys.argv[4])
-ip = sys.argv[5]  
-sio.connect("http://"+ip+":5000/", headers = {"user_name" :  sys.argv[1] , "user_type" : userType, "form_type" : "root" , "fin_year": sys.argv[3]})
-
-   #@ remove try excpet block
-"""except:
-    ip = "192.168.0.100"
-    #ip = "127.0.0.1"
-    lbl_user_name.config(text = "ADMIN")    
-    lbl_user_type.config(text = "ADMIN")
-    lbl_fin_year.config(text = "2021-2022")
-    lbl_server_name.config(text = "server")
-    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "ADMIN" , "user_type" : "ADMIN", "form_type" : "root" , "fin_year":"2021-2022"})
-    year = "22"""
+  #@ remove try excpet block
+except:
+    #ip = "192.168.0.100"
+    ip = "127.0.0.1"
+    lbl_user_name.config(text = "VIJAY")    
+    lbl_user_type.config(text = "OWNER")
+    lbl_fin_year.config(text = "2022-2023")
+    lbl_server_name.config(text = ip)
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "VIJAY" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023"})
+    year = "22"
 
 user =lbl_user_name.cget("text")
+ 
+Thread(target = socketKeepAlive , daemon = True).start()
 
 root.mainloop()
-
+#edhe
 
 
 

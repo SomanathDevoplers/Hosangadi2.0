@@ -54,7 +54,8 @@ def submit(e):
 
     try:
         if server != 'server':
-            ip = "192.168.0.103" 
+            ip = "localhost"
+            #ip = "192.168.0.103" 
         resp = requests.get("http://"+ip+":5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year , "server" : server })  
              
     except:
@@ -81,9 +82,10 @@ def submit(e):
         return
     #@ set exe file location
 
-    #root = os.path.expanduser('~')+"\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
+    #root = os.path.expanduser('~')+"\\Desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
     root = 'C:\\Program Files\\Hosangadi2.0\\root\\root.exe '+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip 
     login.destroy()
+    
     #os.system(root)
     check_output(args = root,shell = False) 
     
@@ -167,7 +169,7 @@ rad_server.grid(row = 3 , column = 2 , padx = int(login_wdt*0.01))
 
 btn_submit.grid(row = 4 , column = 0 )
 
-rad_server.invoke()
+rad_system.invoke()
 
 ent_user_name.focus_set()
 
