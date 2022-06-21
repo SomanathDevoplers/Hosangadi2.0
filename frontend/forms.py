@@ -2259,7 +2259,8 @@ class prods(base_window):
         self.main_wdt = self.main_frame.winfo_reqwidth()
         self.img_high = None                                                                       #high quality image
         self.img_low = None                                                                        #low quality image
-                                                                        
+        self.year = others[3]     
+        self.sio = others[4]                                                         
         self.img_high_loc = ""
         self.img_low_loc = ""
         self.selected_prod = -1                                                               
@@ -2368,6 +2369,9 @@ class prods(base_window):
         self.combo_tax2 = ttk.Combobox(self.main_frame  ,values = self.cess_values, state = con.DISABLED, font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 6) 
         self.combo_tax2.bind("<FocusOut>" , self.combo_entry_out)
 
+        self.btn_hide_prods = ttk.Button(self.main_frame  ,text = "HIDE PRODUCTS"  , style = "window_btn_medium.TButton" , command = lambda : self.hide_products(None) , takefocus= False)
+        self.btn_hide_prods.bind("<Return>" , self.hide_products)
+
 
         self.ent_mrp1 = ttk.Entry(self.main_frame , state = con.DISABLED , width = 7 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[5], '%P'))
         self.ent_mrp1.bind("<FocusOut>" , self.combo_entry_out)
@@ -2434,14 +2438,14 @@ class prods(base_window):
 
         self.frm_chk_cat = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_cat = ttk.Checkbutton(self.frm_chk_cat , text = "Category :" , style = "window_check.TCheckbutton" , variable = self.cat_state , onvalue = 'True' , offvalue = 'False')
-        self.combo_cat1 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , style = "window_combo.TCombobox") 
+        self.combo_cat1 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , style = "window_combo.TCombobox" ,  validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_cat1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_cat1.bind('<Down>', self.add_search_cats)
         self.combo_cat1.bind('<Button-1>', self.add_search_cats)
         self.combo_cat1.bind('<<ComboboxSelected>>', self.product_list)
-        #self.combo_cat1.bind("<KeyRelease>" , self.restrict_entry)
 
-        self.combo_cat2 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+
+        self.combo_cat2 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 ,  validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_cat2.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_cat2.bind('<Down>', self.add_search_cats)
         self.combo_cat2.bind('<Button-1>', self.add_search_cats)
@@ -2449,13 +2453,13 @@ class prods(base_window):
 
         self.frm_chk_sup = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_sup = ttk.Checkbutton(self.frm_chk_sup , text = "Supplier :" , style = "window_check.TCheckbutton", variable = self.sup_state , onvalue = 'True' , offvalue = 'False')
-        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 ,  validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup1.bind('<Down>', self.add_search_sup)
         self.combo_sup1.bind('<Button-1>', self.add_search_sup)
         self.combo_sup1.bind('<<ComboboxSelected>>', self.product_list)
 
-        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 ,  validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup2.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup2.bind('<Down>', self.add_search_sup)
         self.combo_sup2.bind('<Button-1>', self.add_search_sup)
@@ -2542,6 +2546,7 @@ class prods(base_window):
         self.combo_tax1.grid(row = 10 , column = 1 , sticky = con.W)
         self.lbl_tax2.grid(row = 10 , column = 2 , sticky = con.E)
         self.combo_tax2.grid(row = 10 , column = 3 , sticky = con.E)
+        self.btn_hide_prods.grid(row = 10 , column = 5 , columnspan = 3 , padx = self.main_wdt*0.01)
         self.ent_mrp1.grid(row = 11 , column = 1 , sticky = con.W)
         self.lbl_mrp2.grid(row = 11 , column = 2 , sticky = con.E)
         self.ent_mrp2.grid(row = 11 , column = 3 , sticky = con.E)
@@ -4239,7 +4244,12 @@ class prods(base_window):
         for each in req.json():
             self.cess_values.append(each['tax_per'])
 
-
+    def hide_products(self , e):
+        if msg.askokcancel("Info" , "DO YOU WANT TO HIDE ALL PRODUCTS HAVING NO STOCK?"):
+            sql = "update somanath.products ,  somanath20"+self.year+".stocks set prod_hide = 'True' where somanath20"+self.year+".stocks.stk_prod_id = somanath.products.prod_id and somanath20"+self.year+".stocks.stk_tot_qty <= 0"
+            get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+            self.product_list(None)
+            self.sio.emit('refreshProductServer1')
 
 
 class users(base_window):
@@ -4417,14 +4427,14 @@ class update_sp(base_window):
 
         self.frm_chk_cat = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_cat = ttk.Checkbutton(self.frm_chk_cat , text = "Category :" , style = "window_check.TCheckbutton" , variable = self.cat_state , onvalue = 'True' , offvalue = 'False')
-        self.combo_cat1 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , style = "window_combo.TCombobox") 
+        self.combo_cat1 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , style = "window_combo.TCombobox" ,  validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_cat1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_cat1.bind('<Down>', self.add_search_cats)
         self.combo_cat1.bind('<Button-1>', self.add_search_cats)
         self.combo_cat1.bind('<<ComboboxSelected>>', self.product_list)
-        self.combo_cat1.bind("<KeyRelease>" , self.restrict_entry)
+        
 
-        self.combo_cat2 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_cat2 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_cat2.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_cat2.bind('<Down>', self.add_search_cats)
         self.combo_cat2.bind('<Button-1>', self.add_search_cats)
@@ -4432,13 +4442,13 @@ class update_sp(base_window):
 
         self.frm_chk_sup = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_sup = ttk.Checkbutton(self.frm_chk_sup , text = "Supplier :" , style = "window_check.TCheckbutton", variable = self.sup_state , onvalue = 'True' , offvalue = 'False')
-        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup1.bind('<Down>', self.add_search_sup)
         self.combo_sup1.bind('<Button-1>', self.add_search_sup)
         self.combo_sup1.bind('<<ComboboxSelected>>', self.product_list)
 
-        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup2.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup2.bind('<Down>', self.add_search_sup)
         self.combo_sup2.bind('<Button-1>', self.add_search_sup)
@@ -5689,23 +5699,23 @@ class order_list(base_window):
         self.combo_cat1.bind('<Down>', self.add_search_cats)
         self.combo_cat1.bind('<Button-1>', self.add_search_cats)
         self.combo_cat1.bind('<<ComboboxSelected>>', self.product_list)
-        self.combo_cat1.bind("<KeyRelease>" , self.restrict_entry)
+        #self.combo_cat1.bind("<KeyRelease>" , self.restrict_entry)
 
         self.combo_cat2 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
         self.combo_cat2.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_cat2.bind('<Down>', self.add_search_cats)
         self.combo_cat2.bind('<Button-1>', self.add_search_cats)
-        self.combo_cat2.bind('<<ComboboxSelected>>', self.product_list)
+        #self.combo_cat2.bind('<<ComboboxSelected>>', self.product_list)
 
         self.frm_chk_sup = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_sup = ttk.Checkbutton(self.frm_chk_sup , text = "Supplier :" , style = "window_check.TCheckbutton", variable = self.sup_state , onvalue = 'True' , offvalue = 'False')
-        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 ,  validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup1.bind('<Down>', self.add_search_sup)
         self.combo_sup1.bind('<Button-1>', self.add_search_sup)
         self.combo_sup1.bind('<<ComboboxSelected>>', self.product_list)
 
-        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 ,  validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup2.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup2.bind('<Down>', self.add_search_sup)
         self.combo_sup2.bind('<Button-1>', self.add_search_sup)
@@ -6055,14 +6065,13 @@ class barcodes(base_window):
 
         self.frm_chk_cat = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_cat = ttk.Checkbutton(self.frm_chk_cat , text = "Category :" , style = "window_check.TCheckbutton" , variable = self.cat_state , onvalue = 'True' , offvalue = 'False')
-        self.combo_cat1 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , style = "window_combo.TCombobox") 
+        self.combo_cat1 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , style = "window_combo.TCombobox" , validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_cat1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_cat1.bind('<Down>', self.add_search_cats)
         self.combo_cat1.bind('<Button-1>', self.add_search_cats)
         self.combo_cat1.bind('<<ComboboxSelected>>', self.product_list)
-        self.combo_cat1.bind("<KeyRelease>" , self.restrict_entry)
 
-        self.combo_cat2 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_cat2 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_cat2.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_cat2.bind('<Down>', self.add_search_cats)
         self.combo_cat2.bind('<Button-1>', self.add_search_cats)
@@ -6070,13 +6079,13 @@ class barcodes(base_window):
 
         self.frm_chk_sup = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_sup = ttk.Checkbutton(self.frm_chk_sup , text = "Supplier :" , style = "window_check.TCheckbutton", variable = self.sup_state , onvalue = 'True' , offvalue = 'False')
-        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup1.bind('<Down>', self.add_search_sup)
         self.combo_sup1.bind('<Button-1>', self.add_search_sup)
         self.combo_sup1.bind('<<ComboboxSelected>>', self.product_list)
 
-        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22) 
+        self.combo_sup2 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup2.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup2.bind('<Down>', self.add_search_sup)
         self.combo_sup2.bind('<Button-1>', self.add_search_sup)
@@ -6602,8 +6611,7 @@ class barcodes(base_window):
                     pass
             
             req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "SELECT prod_bar from somanath.products where prod_bar regexp ':"+str(values[5])+":'"}).json()
-            print(req[0]['prod_bar'].split(":")[1])
-            #get("http://192.168.0.103:8000/Barcode", params = {'slno':i,'name' : values[0],"barcode":req[0]['prod_bar'], 'mrp' : values[3], 'cp' : cp_text , 'sp' : values[4] , 'count' : values[1]})
+            get("http://192.168.0.103:8000/Barcode", params = {'slno':i,'name' : values[0],"barcode":req[0]['prod_bar'], 'mrp' : values[3], 'cp' : cp_text , 'sp' : values[4] , 'count' : values[1]})
             i+=1
     
     def createBarCodes(self,all_rows,start_N):
@@ -6728,7 +6736,7 @@ class db(base_window):
             return  
         
         os.chdir("C:\\program files\\mysql\\mysql server 8.0\\bin")
-        sys = 'mysqldump -uadmin -pmysqlpassword5 -h '+self.ip+' --databases somanath somanath20'+ self.year +'>"'+src+'"'
+        sys = 'mysqldump -uroot -pmysqlpassword5 -h '+self.ip+' --databases somanath somanath20'+ self.year +'>"'+src+'"'
         os.system(sys)
         
         dir_folder = "C:\\backup\\"+db_file
@@ -6748,9 +6756,5 @@ class db(base_window):
         self.close(None)
 
         
-
-
-
-
 
 

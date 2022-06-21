@@ -55,6 +55,7 @@ con.connect()
 
 
 
+
 const files = multer({storage : storage})
 
 serveDirectory = path.join(homeDir , "angadiImages")
@@ -65,6 +66,7 @@ app.get('/onlySql' , (req , res)=>{
 
       sql = req.query.sql
       con.query(sql , (err , result)=>{
+
         res.send(result)
       })
 })

@@ -1,1 +1,1 @@
-{"::ffff:127.0.0.1":{"id":"0o4PoJjXYuBv2ZNWAAAB","userName":"VIJAY","userType":"OWNER","loggedInAt":"07:49","purchases":{},"sales":{"Gkr1q6gJGrs-0WDroZOuC":{"saleDate":"01-06-2022","custName":"CASH SALES","products":{"1788":{"stkId":["ARJUN JEERA 100G","1.000","32.00","32.00","7.80","['1.000', '10.000', '10.000', '10.000']","['32.000', '32.000', '32.000', '32.000']","24.2","46","5","0"]}}}}}}
+{}

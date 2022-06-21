@@ -1,5 +1,7 @@
+from cmath import log
 from threading import Thread
 import os.path
+import io
 import sys
 from datetime import datetime
 from tkinter import constants as con
@@ -18,6 +20,7 @@ from playsound import playsound
 play_sound = False
 homedir = os.path.expanduser('~')
 from time import sleep
+from requests import get
 #sys.setdefaultencoding('UTF8')
 
 
@@ -69,21 +72,52 @@ noti_place = False              #notification placement
 ip = None                       #server address
 tax_check = False
 
+
 def show_error(*args):
     notification(traceback.format_tb(args[3]))
     #root.bell()
 
 Tk.report_callback_exception = show_error
 
+def socketKeepAlive():
+    
+    while(True):
+        try:
+            sio.emit('keepAlive')
+            sleep(30)
+        except:
+            pass
+    
+    
 
 @sio.on('error')
 def hello(data):
     notification(data)
     
-def socketKeepAlive():
-    while(True):
-        sio.emit('keepAlive')
-        sleep(30)
+@sio.on('reportReady')
+def reportReady(data,fileName):
+
+    if data != "Purchase Report":
+        file = get("http://"+ip+":6000/images/"+str(fileName))
+        f = open(os.path.join(homedir , 'desktop' , 'Invoices' , 'reports',str(fileName)) , 'wb')
+        f.write(file.content)
+        f.close()
+    else:
+        
+        file = get("http://"+ip+":6000/images/"+str(fileName.split(" ")[0]))
+        f = open(os.path.join(homedir , 'desktop' , 'Invoices', 'reports',str(fileName.split(" ")[0])) , 'wb')
+        f.write(file.content)
+        f.close()
+        file = get("http://"+ip+":6000/images/"+str(fileName.split(" ")[1]))
+        f = open(os.path.join(homedir , 'desktop' , 'Invoices', 'reports',str(fileName.split(" ")[1])) , 'wb')
+        f.write(file.content)
+        f.close()
+
+    msg.showinfo("Info" , " Report is Ready")
+
+
+
+        
 
 
 #-------form open counts----------#
@@ -247,9 +281,9 @@ def close():
     if int(lbl_task_cnt.cget("text"))>0:
         msg.showinfo("Info" , "CLOSE ALL TABS BEFORE EXIT!")
         return
-    
-    sio.disconnect()
     root.quit()
+    sio.disconnect()
+    
     
 
 def firms(e = None): 
@@ -270,7 +304,7 @@ def products(e = None):
     if prod_form[0] == 'True':
         msg.showinfo('Info' , "It is already open")
         return
-    forms.prods(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer ] , [homedir , ip , user] , prod_form)
+    forms.prods(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Products" , [num_alpha ,email ,decimal , barcode , name  , decimal , pos_integer ] , [homedir , ip , user , year , sio] , prod_form)
   
 def taxes(e = None): 
     user_type = lbl_user_type.cget("text")
@@ -305,24 +339,24 @@ def purch(e = None):
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , homedir] , purchase_form , sio , prod_form , update_sp_form)
+    purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , homedir , form_id] , purchase_form , sio , prod_form , update_sp_form)
 
 def sales_bill(e = None):
-    sales.sales(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Sales Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , homedir] , sales_form , sio , account_form)
+    sales.sales(root, [frm_main , frm_task_sales , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Sales Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , homedir , form_id] , sales_form , sio , account_form)
 
 def updatesp(e = None):
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    forms.update_sp(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Update SP" , [ name , pos_decimal] , [ip ,tax_check, user , year] , update_sp_form )
+    forms.update_sp(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Update SP" , [ num_alpha , pos_decimal] , [ip ,tax_check, user , year] , update_sp_form )
     
 def orderList(e = None):
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    forms.order_list(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Order List" , [ name , pos_decimal] , [ip ,tax_check, user , year] , order_list_form )
+    forms.order_list(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Order List" , [ num_alpha , pos_decimal] , [ip ,tax_check, user , year] , order_list_form )
 
 def return_report(e = None):
     user_type = lbl_user_type.cget("text")
@@ -343,7 +377,7 @@ def print_barcode(e = None):
     if user_type == "EMPLOY" :
         msg.showerror("Error" , "You do not have the access to open this file")
         return
-    forms.barcodes(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Barcodes" , [ name , pos_decimal , pos_integer] , [ip ,tax_check, user , year] , barcode_form )
+    forms.barcodes(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Barcodes" , [ num_alpha , pos_decimal , pos_integer] , [ip ,tax_check, user , year] , barcode_form )
 
 def data_backup(e = None):
     forms.db(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Data Backup" , [name] , [ip , homedir, year] , db_form )
@@ -518,24 +552,25 @@ frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
 
 
-try:
 
-    lbl_user_name.config(text = sys.argv[1])    
-    lbl_user_type.config(text = sys.argv[2])
-    year = sys.argv[3][2:4]
 
-    if(sys.argv[2]) == "TAXI":
-        userType = "ADMIN"
-        tax_check = True
-    else:
-        userType = sys.argv[2]
+lbl_user_name.config(text = sys.argv[1])    
+lbl_user_type.config(text = sys.argv[2])
+year = sys.argv[3][2:4]
 
-    lbl_user_type.config(text = userType)
-    lbl_fin_year.config(text = sys.argv[3])
-    lbl_server_name.config(text = sys.argv[4])
-    ip = sys.argv[5]  
-    sio.connect("http://"+ip+":5000/", headers = {"user_name" :  sys.argv[1] , "user_type" : userType, "form_type" : "root" , "fin_year": sys.argv[3]})
+if(sys.argv[2]) == "TAXI":
+    userType = "ADMIN"
+    tax_check = True
+else:
+    userType = sys.argv[2]
 
+lbl_user_type.config(text = userType)
+lbl_fin_year.config(text = sys.argv[3])
+lbl_server_name.config(text = sys.argv[4])
+ip = sys.argv[5]  
+form_id = sys.argv[6]
+sio.connect("http://"+ip+":5000/", headers = {"user_name" :  sys.argv[1] , "user_type" : userType, "form_type" : "root" , "fin_year": sys.argv[3] , "form_id" : form_id})
+"""
   #@ remove try excpet block
 except:
     #ip = "192.168.0.100"
@@ -544,12 +579,13 @@ except:
     lbl_user_type.config(text = "OWNER")
     lbl_fin_year.config(text = "2022-2023")
     lbl_server_name.config(text = ip)
-    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "VIJAY" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023"})
+    form_id = '1'
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "VIJAY" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023" , "form_id" : form_id })
     year = "22"
-
+"""
 user =lbl_user_name.cget("text")
- 
-Thread(target = socketKeepAlive , daemon = True).start()
+Thread(target=socketKeepAlive , daemon = True).start()
+
 
 root.mainloop()
 #edhe

@@ -38,7 +38,7 @@ class purchase(base_window):
         self.selected_tax_meth = None
         self.check_state = False
 
-
+        self.form_id = others[5]
         #----------------------------------------prod_name toplevel------------------------------------------------------------------------------#
         if root.winfo_screenheight()>1000:
             self.frm_prod_name = ttk.Frame( self.main_frame , height = self.main_hgt*0.594 , width = self.main_wdt*0.232 )#to give white border
@@ -917,7 +917,8 @@ class purchase(base_window):
                     "inv_no" : inv_no,
                     "year"  : self.year, 
                     "productsAdded" : False,
-                    "editState"  :   False
+                    "editState"  :   False,
+                    'form_id'   : self.form_id
         }
 
         if len(self.added_products) > 0:
@@ -1757,7 +1758,7 @@ class purchase(base_window):
             self.ent_bar.focus_set()
 
     def get_stk_sug(self ):
-        old_stks = get("http://"+self.ip+":5000/getOldStocks" , params = {'prod_id' : self.prod_id , 'year' : self.year , 'max' : 3})
+        old_stks = get("http://"+self.ip+":5000/getOldStocks" , params = {'prod_id' : self.prod_id , 'year' : self.year , 'max' : 3 , 'form_id'   : self.form_id})
 
         if old_stks.status_code == 200:
             old_stks = old_stks.json()
@@ -2183,7 +2184,7 @@ class purchase(base_window):
         self.ent_name.config(state = con.NORMAL)
 
         """"!!!! add products to socket """
-        get("http://"+self.ip+":5000/purchases/addPurchaseProduct" , params = {"value" : values} )
+        get("http://"+self.ip+":5000/purchases/addPurchaseProduct" , params = {"value" : values , 'form_id'   : self.form_id} )
 
         self.ent_bar.focus_set()
 
@@ -2237,7 +2238,7 @@ class purchase(base_window):
         self.ent_exp.insert(0,values[23])
         self.cal_final_totals(False)
         self.tree_pur.detach(curItemNo)
-        get("http://"+self.ip+":5000/purchases/removePurchaseProduct" , params = {"prod_id" : self.prod_id})
+        get("http://"+self.ip+":5000/purchases/removePurchaseProduct" , params = {"prod_id" : self.prod_id ,'form_id'   : self.form_id})
         self.ent_nml1.focus_set()
            
     def delete_from_treeview(self,e):
@@ -2287,7 +2288,7 @@ class purchase(base_window):
         self.ent_ang4.insert(0,values[22])
         self.ent_exp.insert(0,values[23])
         self.cal_final_totals(False)
-        get("http://"+self.ip+":5000/purchases/removePurchaseProduct" , params = {"prod_id" : self.prod_id})
+        get("http://"+self.ip+":5000/purchases/removePurchaseProduct" , params = {"prod_id" : self.prod_id , 'form_id'   : self.form_id})
 
         items = self.tree_pur.get_children()
         curIndex = self.tree_pur.index(curItemNo)
@@ -2669,6 +2670,7 @@ class purchase(base_window):
 
                     resp[0]['pur_firm_name'] = reqFirm.json()[0]['firm_name']
                     resp[0]['pur_acc_name'] = req1.json()[0]['acc_name'] 
+                    resp[0]['form_id'] = self.form_id
                     
 
                     
@@ -2883,7 +2885,8 @@ class purchase(base_window):
             "grand_total" : "{:.2f}".format(round(float(self.lbl_grd_tot.cget("text"))),2),
             "user_name" : self.user,
             "edit_state" : self.edit_state,
-            "pur_id" : self.pur_id
+            "pur_id" : self.pur_id,
+            'form_id'   : self.form_id
 
         }
 
@@ -2973,7 +2976,7 @@ class purchase(base_window):
         self.lbl_tot_tax.config(text = "")
         self.lbl_tot_amt.config(text = "")
         self.lbl_grd_tot.config(text = "")
-        get("http://"+self.ip+":5000/purchases/cancelPurchase" )
+        get("http://"+self.ip+":5000/purchases/cancelPurchase" , params = {'form_id'   : self.form_id})
                 
     def refresh(self , e):
         pass

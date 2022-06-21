@@ -2,9 +2,15 @@ const http = require('http');
 const express = require('express');
 const app = express();
 const server = http.createServer(app);
-const io = require('socket.io')(server)
+const io = require('socket.io')(server , {
+  pingTimeout: 120000 , 
+  pingInterval:5000 , 
+})
+
+
 const homeDir = require('os').homedir()
 const clientIo = require('socket.io-client')
+
 
 
 const mysql = require('mysql'); 
@@ -45,21 +51,12 @@ con.connect()
 //global variables start
 
 let usersLogged = {}
-let servers = []
 let productStocks = {}
-const systemOs = "ubuntu"
 let purchaseSaving = false
 let salesSaving = false
 //@change c:// to homDir
 
-/*
-let backedUpdata = fs.readFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),{encoding:'utf8', flag:'r'});
-if (backedUpdata != "{}"){
-        backedUpdata = JSON.parse(backedUpdata)
-}
-fs.writeFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),"{}");
 
-*/
 
 let getTime = () => {
     today = new Date()
@@ -169,7 +166,7 @@ function insertToStocks( stkId ,purId , accId , firmId , dbYear , Time , userNam
     
 }
 
-function purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientResponse , n , max, accId,ip ,firmId)
+function purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientResponse , n , max, accId,form_id ,firmId)
 {
     if (n >= max)
       {
@@ -198,9 +195,9 @@ function purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientR
                             
 
                             
-                              usersLogged[ip].purchases.products = stockDiff
-                              usersLogged[ip].purchases['insertTime'] = insertTime
-                              usersLogged[ip].purchases['insertId'] = insertId
+                              usersLogged[form_id].purchases.products = stockDiff
+                              usersLogged[form_id].purchases['insertTime'] = insertTime
+                              usersLogged[form_id].purchases['insertId'] = insertId
                             
                             return 0
 
@@ -246,7 +243,7 @@ function purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientR
                   
                   n+=1
                   if (n<=max)
-                    purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientResponse , n , max,accId,ip , firmId)
+                    purchaseEdit(prodId , balDiff  , stockDiff , prodQty , stocks , clientResponse , n , max,accId,form_id , firmId)
               })
           
 
@@ -394,75 +391,67 @@ function checkStockAvailable  (products , dbYear){
 io.on('connection', function (socket) {
     //connection event starts 
     //adds data to usersLogged when login is approved
-    
-    clientIp = socket.handshake.address
-    
-    if (clientIp == '::1')
-        clientIp = '::ffff:127.0.0.1'
     //all the params passed pushed to usersLogged
     socketData = socket.handshake.headers
-
+    clientId = socketData['form_id']
+    
     //take all available old data
     let backedUpdata = fs.readFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),{encoding:'utf8', flag:'r'});
-    if (backedUpdata != "{}"){
+    if (backedUpdata != "{}")
       backedUpdata = JSON.parse(backedUpdata)
-    }
+    
 
-    if (socketData['user-agent'] ==  "node-XMLHttpRequest" )
-        servers.push({"id" : socket.id })
-    else
+    if (socketData['user-agent'] !=  "node-XMLHttpRequest" )
       {
-        
         newUser = {"id" : socket.id , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime() , "purchases" : {} , "sales" : {}}
-        
-
-        
         if (backedUpdata != "{}")
         {
-          backedupuser = backedUpdata[clientIp]
+          backedupuser = backedUpdata[clientId]
           newUser.sales = backedupuser.sales
           newUser.purchases = backedupuser.purchases
-          delete backedUpdata[clientIp]
+          delete backedUpdata[clientId]
           fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backedUpdata));
         }
-            
-        
-
-        usersLogged[clientIp] = newUser
-        console.log(usersLogged);
-        
+        usersLogged[clientId] = newUser
       }
-    
     
 
     //connection event ends 
 
     //root window disconnect event
-          socket.on('disconnect' , (data)=> {
-                clientIp = socket.handshake.address
-                if (clientIp == '::1')
-                    clientIp = '::ffff:127.0.0.1';
-                console.log(usersLogged); 
-
-                if (usersLogged[clientIp].sales.length != 0 || usersLogged[clientIp].purchases.length != 0)
-                  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-                delete usersLogged[clientIp]
-                console.log('\n',usersLogged);
-                console.log('---------dis----------'); 
+          socket.on('disconnect' , ()=> {
+            
+            clientId = socket.handshake.headers.form_id
+            if(socket.handshake.headers['user-agent'] != 'node-XMLHttpRequest')
+            {
+              if(Object.keys(usersLogged[clientId].sales).length != 0 || Object.keys(usersLogged[clientId].purchases).length != 0)
+                fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+              delete usersLogged[clientId]
+            }
           });   
   
-
+            
     //server refreshes
           socket.on('refresh' , ()=> {
                 socket.broadcast.emit("refreshProductServer")
+          })
+
+          socket.on('reportFinished' , (report , fileName)=>{
+            if (fileName != '')
+              socket.broadcast.emit("reportReady" ,report ,fileName)
           })
 
 
 
     //stayconnected 
           socket.on('keepAlive' , () => {
-              console.log("I am Alive",new Date());
-          }) 
+              i = 1;
+              
+          })
+          
+        socket.on('refreshProductServer1' , () => {
+          socket.broadcast.emit("refreshProductServer")
+        })
 
       //error
           socket.on('sendError' , (data) =>{
@@ -471,17 +460,16 @@ io.on('connection', function (socket) {
 
 
 
+
+
 })
 
 app.get('/login' , (req,res) => {                                                                                                          //for user login authentication
   sql = "select user_type from somanath.users where user_name = '"+ req.query.user_name + "' and user_pass = '"+req.query.user_pass+"'"
     responseSent = false
-    console.log(req.socket.remoteAddress);
-    console.log( usersLogged , usersLogged[req.socket.remoteAddress],'uuuu' );
-    ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
-    user = usersLogged[ip]
+   
+    form_id = req.query.form_id
+    user = usersLogged[form_id]
     if (user == undefined)
         {
             con.query(sql, (err , userType)=>{
@@ -503,18 +491,15 @@ app.get('/login' , (req,res) => {                                               
 //purchase entry routes
 app.get('/purchases/addEditPurDetails' , (req , res) => {
 
-    ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+  form_id = req.query.form_id
   purDetails = req.query
-  
   
   sql = "select pur_id from somanath20" + purDetails.year + ".purchases where pur_acc = (select acc_id from somanath.accounts where acc_name = '"+ purDetails.sup_name +"') and pur_inv = '" + purDetails.inv_no + "'"
   
   con.query(sql , (err , result) =>{
 
       found = false
-      found_ip = ""
+      found_id = ""
       
       if (result.length != 0)
           res.sendStatus(202)
@@ -526,12 +511,12 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
                         if (usersLogged[element].purchases.supName == purDetails.sup_name && usersLogged[element].purchases.invNo ==  purDetails.inv_no)
                         {
                            found = true
-                           found_ip = usersLogged[element].ip
+                           found_id = element
                         }
             });
 
       
-            if (found && found_ip != ip)
+            if (found && found_id != form_id)
             {
                 res.sendStatus(201) 
             }
@@ -539,25 +524,24 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
               {
 
                               
-                              usersLogged[ip].purchases.purDate = purDetails.date
-                              usersLogged[ip].purchases.invNo =  purDetails.inv_no
-                              usersLogged[ip].purchases.taxMethod =  purDetails.tax_method
-                              usersLogged[ip].purchases.firmName = purDetails.firm_name 
-                              usersLogged[ip].purchases.supName = purDetails.sup_name
+                              usersLogged[form_id].purchases.purDate = purDetails.date
+                              usersLogged[form_id].purchases.invNo =  purDetails.inv_no
+                              usersLogged[form_id].purchases.taxMethod =  purDetails.tax_method
+                              usersLogged[form_id].purchases.firmName = purDetails.firm_name 
+                              usersLogged[form_id].purchases.supName = purDetails.sup_name
                              
                               if (purDetails.editState == 'False') 
                                 {
-                                    usersLogged[ip].purchases.purId = "new"
+                                    usersLogged[form_id].purchases.purId = "new"
                                    
                                   if (purDetails.productsAdded == 'False')  
-                                    usersLogged[ip].purchases.products = {}
+                                    usersLogged[form_id].purchases.products = {}
                 
                                 }
                              
                      
                   
                   res.sendStatus(200)
-                  console.log(usersLogged);
               }
         }
   })
@@ -566,13 +550,10 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
 
 app.get('/purchases/cancelPurchase' , (req , res) => {
 
-    ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
-
-    usersLogged[ip].purchases = {}
+    form_id= req.query.form_id
+    
+    usersLogged[form_id].purchases = {}
      
-        console.log(usersLogged);
     res.sendStatus(200)
 
 
@@ -622,32 +603,25 @@ app.get('/getOldStocks' ,  (req , res )=>{
 })
 
 app.get('/purchases/addPurchaseProduct' , (req , res) =>{
-    ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+  form_id = req.query.form_id
   productData = req.query.value
-
           prodId = String(productData[24])
           
           newArray = productData.slice(1,24)
           newArray.push(productData[25])
           newArray.push(productData[26])
           
-          usersLogged[ip].purchases.products[prodId] = newArray
+          usersLogged[form_id].purchases.products[prodId] = newArray
         
-  console.log(usersLogged , usersLogged[ip].purchases.products);
   res.sendStatus(200)
 
  
 })
 
 app.get('/purchases/removePurchaseProduct' , (req , res) =>{
-    ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+  form_id = req.query.form_id
   prodId = req.query.prod_id
-
-    delete usersLogged[ip].purchases.products[prodId]
+    delete usersLogged[form_id].purchases.products[prodId]
 
 
   res.sendStatus(200)
@@ -662,13 +636,10 @@ app.get('/purchases/save'  , (req , res) =>{
     else
       {
         purchaseSaving = true
-        ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+        form_id = req.query.form_id
         editState = false
         if (req.query.edit_state == 'True')
             editState = true
-
 
         dbYear = req.query.db_year
         purInv = req.query.pur_inv
@@ -687,8 +658,8 @@ app.get('/purchases/save'  , (req , res) =>{
 
 
         
-        purDetails = usersLogged[ip].purchases  
-        usersLogged[ip].purchases = {}
+        purDetails = usersLogged[form_id].purchases  
+        usersLogged[form_id].purchases = {}
           
         
         sql = "select firm_id from somanath.firms where firm_name = '"+purDetails.firmName+"'"
@@ -779,10 +750,7 @@ app.get('/purchases/edit' , (req , res) =>{
               accId = purDetails['pur_acc']
               purId = purDetails['pur_id']
               dbYear = parseInt(purDetails['pur_id'].split("_")[0])
-              ip = req.socket.remoteAddress
-                if (ip == '::1')
-                    ip = '::ffff:127.0.0.1'
-              
+              form_id = req.query.form_id
               //con.query("SELECT acc_cls_bal FROM somanath20"+dbYear+".acc_bal where acc_id = "+accId , (err1 , result1) =>{
                             
 
@@ -816,26 +784,26 @@ app.get('/purchases/edit' , (req , res) =>{
                                               
 
                                              
-                                                        usersLogged[ip].purchases.purId =  purId
-                                                        usersLogged[ip].purchases.purDate = purDetails.pur_date
-                                                        usersLogged[ip].purchases.invNo =  purDetails.pur_inv
+                                                        usersLogged[form_id].purchases.purId =  purId
+                                                        usersLogged[form_id].purchases.purDate = purDetails.pur_date
+                                                        usersLogged[form_id].purchases.invNo =  purDetails.pur_inv
 
                                                         if (purDetails.tax_method == "OUT")
                                                             taxMethod = "Out-Of-State"
                                                         else  
                                                             taxMethod = "In-State"
 
-                                                        usersLogged[ip].purchases.taxMethod =  taxMethod
-                                                        usersLogged[ip].purchases.firmName = purDetails.pur_firm_name
-                                                        usersLogged[ip].purchases.supName = purDetails.pur_acc_name   
-                                                        usersLogged[ip].purchases.products = {}
+                                                        usersLogged[form_id].purchases.taxMethod =  taxMethod
+                                                        usersLogged[form_id].purchases.firmName = purDetails.pur_firm_name
+                                                        usersLogged[form_id].purchases.supName = purDetails.pur_acc_name   
+                                                        usersLogged[form_id].purchases.products = {}
                                                     
                                                      
                                                   
                                               
 
                                               
-                                              purchaseEdit( Object.keys(stockDiff) , balDiff , stockDiff , prodQty , result3 , res , 0 , Object.keys(stockDiff).length, accId , ip , firmId)
+                                              purchaseEdit( Object.keys(stockDiff) , balDiff , stockDiff , prodQty , result3 , res , 0 , Object.keys(stockDiff).length, accId , form_id , firmId)
 
 
                                               //res.sendStatus(200)
@@ -856,14 +824,10 @@ app.get('/purchases/edit' , (req , res) =>{
 
 app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
  
-    ip = req.socket.remoteAddress
-    console.log(ip);
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+    form_id = req.query.form_id
     salesDetails = req.query
 
-    
-    sales = usersLogged[ip].sales[salesDetails.sale_id]
+    sales = usersLogged[form_id].sales[salesDetails.sale_id]
     
     
 
@@ -885,13 +849,12 @@ app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
             'products' : {}
         }
 
-    usersLogged[ip].sales[saleId] = newSaleObject
+    usersLogged[form_id].sales[saleId] = newSaleObject
 
 
 
 res.send({'saleId' : saleId})
 
-console.log( "added ---------" , usersLogged[ip] , ip);
 
 
 
@@ -916,14 +879,11 @@ app.get('/sales/getSalesStocks' , (req , res) =>{
 })
 
 app.get('/sales/addSalesProduct' , (req , res) =>{
-    ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+  form_id = req.query.form_id
   saleId = req.query.sale_id
   productData = req.query.product
   
 
-        
             prodId = productData[13]
             stkId = productData[12]
             
@@ -959,33 +919,31 @@ app.get('/sales/addSalesProduct' , (req , res) =>{
             if (stkId != '')
             {
               
-                if(usersLogged[ip].sales[saleId].products.hasOwnProperty(prodId))
+                if(usersLogged[form_id].sales[saleId].products.hasOwnProperty(prodId))
                 {
-                    usersLogged[ip].sales[saleId].products[prodId][stkId] = newArray
+                    usersLogged[form_id].sales[saleId].products[prodId][stkId] = newArray
                 }
                 else
                 {
-                    usersLogged[ip].sales[saleId].products[prodId] = {}
-                    usersLogged[ip].sales[saleId].products[prodId][stkId] = newArray
+                    usersLogged[form_id].sales[saleId].products[prodId] = {}
+                    usersLogged[form_id].sales[saleId].products[prodId][stkId] = newArray
                 }
           
             }
             else
             {
-                usersLogged[ip].sales[saleId].products[prodId] = {}
-                usersLogged[ip].sales[saleId].products[prodId]['stkId'] = newArray
+                usersLogged[form_id].sales[saleId].products[prodId] = {}
+                usersLogged[form_id].sales[saleId].products[prodId]['stkId'] = newArray
             }
             
-        console.log(usersLogged[ip].sales[saleId]);
+
   res.sendStatus(200)
   
 })
 
 app.get('/sales/removeSalesProduct' , (req , res) =>{
   
-    ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+        form_id = req.query.form_id
           saleId = req.query.sale_id
           dbYear = req.query.db_year
           newProduct = req.query.newBill
@@ -997,10 +955,9 @@ app.get('/sales/removeSalesProduct' , (req , res) =>{
             }
 
 
-                    //console.log(usersLogged,ip);
-                    delete usersLogged[ip].sales[saleId].products[prodId][stkId]
-                    if(Object.keys(usersLogged[ip].sales[saleId].products[prodId]).length === 0)
-                          delete usersLogged[ip].sales[saleId].products[prodId]
+                    delete usersLogged[form_id].sales[saleId].products[prodId][stkId]
+                    if(Object.keys(usersLogged[form_id].sales[saleId].products[prodId]).length === 0)
+                          delete usersLogged[form_id].sales[saleId].products[prodId]
 
                     if (newProduct == 'True')
                     {
@@ -1032,7 +989,6 @@ app.get('/sales/removeSalesProduct' , (req , res) =>{
                   
 
                     
-                      //console.log(usersLogged[ip].sales[saleId].products);
     
           res.sendStatus(200)
 })
@@ -1048,19 +1004,15 @@ app.get('/getGlobalStocks' , (req , res) =>{
 
 app.get('/sales/cancelSales' , (req , res) => {
 
-    ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+  form_id = req.query.form_id
   saleId = req.query.sale_id
  
-
          
-              delete usersLogged[ip].sales[saleId]
+              delete usersLogged[form_id].sales[saleId]
     
        
         
 
-    console.log( "removed ---------" , usersLogged[ip]);
   
   res.sendStatus(200)
 
@@ -1080,14 +1032,10 @@ app.get('/sales/save' , (req , res) =>{
             userName = req.query.user_name
             saleDate1 = req.query.sale_date
 
-            ip = req.socket.remoteAddress
-            if (ip == '::1')
-                ip = '::ffff:127.0.0.1'
+            form_id = req.query.form_id
 
-            
-            salesDetails = usersLogged[ip].sales[saleId] 
+            salesDetails = usersLogged[form_id].sales[saleId] 
 
-         //console.log(salesDetails , '----here');
           toCheckStockAvailable = salesDetails.products
           editDirectSave = {}
           if(saleId.length<15)
@@ -1412,11 +1360,8 @@ app.get('/sales/save' , (req , res) =>{
 
 app.get('/sales/edit',(req,res)=>{
   responseSent = false
-  ip = req.socket.remoteAddress
-    if (ip == '::1')
-        ip = '::ffff:127.0.0.1'
+  form_id = req.query.form_id
   BillNumber = req.query.billNo
-
   Object.keys(usersLogged).forEach(element =>{
 
       if(usersLogged[element].sales.hasOwnProperty(BillNumber))
@@ -1458,7 +1403,7 @@ app.get('/sales/edit',(req,res)=>{
                                    'sales_ids' : saleIds,
                                   'products' : {}
                                 }
-                                usersLogged[ip].sales[BillNumber] = newSaleObject
+                                usersLogged[form_id].sales[BillNumber] = newSaleObject
                     
                   let values = []
                   //let products = {}
@@ -1497,7 +1442,7 @@ app.get('/sales/edit',(req,res)=>{
                       
                       spList.forEach(sp => backEndSpList += "'" + sp + "'" + "," )
                       backEndSpList = backEndSpList.slice(0 , -1) + "]"
-
+                      
                       values.push([slNO,result3[0]['prod_name'],qty[i],sp[i],(prodTotal).toFixed(2),(prodTotalHsn).toFixed(2),units,spList,prodCp[[i]],qty[i],prodGst[i],prodCess[i],result3[0]['stk_id'],prodId[i]])
                       sale_ref = result[k]['sales_ref'].split('_').slice(0,-1)
                       let firmId = 1
@@ -1507,9 +1452,9 @@ app.get('/sales/edit',(req,res)=>{
                       //@ added E
                       backEndValues= ['E', result3[0]['prod_name'] ,  String(qty[i]), String(sp[i]), String((prodTotal).toFixed(2)), String((prodTotalHsn).toFixed(2)) , backEndUnits , backEndSpList,String(prodCp[[i]]), String(qty[i]), String(prodGst[i]), String(prodCess[i]),0,0,purchaseId,firmId,parseFloat(prodCp[i])]
                       slNO++
-                      if(! usersLogged[ip].sales[BillNumber].products.hasOwnProperty(prodId[i]))
-                          usersLogged[ip].sales[BillNumber].products[prodId[i]] = {}
-                      usersLogged[ip].sales[BillNumber].products[prodId[i]][result3[0]['stk_id']] = backEndValues
+                      if(! usersLogged[form_id].sales[BillNumber].products.hasOwnProperty(prodId[i]))
+                          usersLogged[form_id].sales[BillNumber].products[prodId[i]] = {}
+                      usersLogged[form_id].sales[BillNumber].products[prodId[i]][result3[0]['stk_id']] = backEndValues
                       i++
                     })
 
@@ -1519,7 +1464,7 @@ app.get('/sales/edit',(req,res)=>{
 
                     
 
-                    data = {'values':values,'slNO':slNO,'total':Total.toFixed(2),'total_hsn':TotalHsn.toFixed(2),'insert_time':result[0]['insert_time'],'insert_id':result[0]['insert_id']}
+                    data = {'values':values,'slNO':slNO-1,'total':Total.toFixed(2),'total_hsn':TotalHsn.toFixed(2),'insert_time':result[0]['insert_time'],'insert_id':result[0]['insert_id']}
                     res.send(data)
 
 
@@ -1550,7 +1495,11 @@ app.get('/sales/voucher',(req,res)=>{
     }
   if(editState === 'True')
   {
-    result = connection.query("SELECT date_format(insert_time,'%Y-%m-%d %H:%i:%S') as insert_time,insert_id FROM somanath20"+dbYear+".cashflow_sales where trans_sales ='"+billNo+"'")
+    if(billNo == 'NULL')
+      result = connection.query("SELECT date_format(insert_time,'%Y-%m-%d %H:%i:%S') as insert_time,insert_id FROM somanath20"+dbYear+".cashflow_sales where trans_sales = NULL")
+    else
+      result = connection.query("SELECT date_format(insert_time,'%Y-%m-%d %H:%i:%S') as insert_time,insert_id FROM somanath20"+dbYear+".cashflow_sales where trans_sales ='"+billNo+"'")
+
     insertTime = result[0]['insert_time']
     insertId = result[0]['insert_id']
   } 
@@ -1803,11 +1752,19 @@ app.get('/sales/voucher',(req,res)=>{
         bankName = 1
         if(editState === 'True')
         {
-          sql3 = `UPDATE somanath20${dbYear}.cashflow_sales SET  trans_acc =${result[0]['acc_id']}  , trans_amt_firm1 = ${firm1_frontend}, amt_paid_firm1_cash =${firm1_cash} , amt_paid_firm1_bank =${firm1_bank} , trans_amt_firm2 =${firm2_frontend} , amt_paid_firm2_cash =${firm2_cash} , amt_paid_firm2_bank =${firm2_bank} , trans_amt_firm3=${firm3_frontend} , amt_paid_firm3_cash=${firm3_cash} , amt_paid_firm3_bank=${firm3_bank}, bank_firm = ${bankName} , trans_date = '${date}', insert_time ='${insertTime}' , insert_id =${insertId} , update_time = '${Time}', update_id =(select user_id from somanath.users where user_name = '${req.query.user_name}') where trans_sales='${billNo}';`
+          if (billNo == 'NULL')
+            sql3 = `UPDATE somanath20${dbYear}.cashflow_sales SET  trans_acc =${result[0]['acc_id']}  , trans_amt_firm1 = ${firm1_frontend}, amt_paid_firm1_cash =${firm1_cash} , amt_paid_firm1_bank =${firm1_bank} , trans_amt_firm2 =${firm2_frontend} , amt_paid_firm2_cash =${firm2_cash} , amt_paid_firm2_bank =${firm2_bank} , trans_amt_firm3=${firm3_frontend} , amt_paid_firm3_cash=${firm3_cash} , amt_paid_firm3_bank=${firm3_bank}, bank_firm = ${bankName} , trans_date = '${date}', insert_time ='${insertTime}' , insert_id =${insertId} , update_time = '${Time}', update_id =(select user_id from somanath.users where user_name = '${req.query.user_name}') where trans_sales= NULL;`
+          else
+            sql3 = `UPDATE somanath20${dbYear}.cashflow_sales SET  trans_acc =${result[0]['acc_id']}  , trans_amt_firm1 = ${firm1_frontend}, amt_paid_firm1_cash =${firm1_cash} , amt_paid_firm1_bank =${firm1_bank} , trans_amt_firm2 =${firm2_frontend} , amt_paid_firm2_cash =${firm2_cash} , amt_paid_firm2_bank =${firm2_bank} , trans_amt_firm3=${firm3_frontend} , amt_paid_firm3_cash=${firm3_cash} , amt_paid_firm3_bank=${firm3_bank}, bank_firm = ${bankName} , trans_date = '${date}', insert_time ='${insertTime}' , insert_id =${insertId} , update_time = '${Time}', update_id =(select user_id from somanath.users where user_name = '${req.query.user_name}') where trans_sales='${billNo}';`
+
         }
         else
         {
-          sql3 = `insert into somanath20${dbYear}.cashflow_sales values ('${dbYear}_${result2[0]['trans_id']}',${result[0]['acc_id']},'${billNo}',${firm1_frontend},${firm1_cash},${firm1_bank},${firm2_frontend},${firm2_cash},${firm2_bank},${firm3_frontend},${firm3_cash},${firm3_bank},${bankName},'${date}','${Time}',(select user_id from somanath.users where user_name = '${req.query.user_name}'),NULL,NULL);`
+          if (billNo == 'NULL')
+            sql3 = `insert into somanath20${dbYear}.cashflow_sales values ('${dbYear}_${result2[0]['trans_id']}',${result[0]['acc_id']},NULL,${firm1_frontend},${firm1_cash},${firm1_bank},${firm2_frontend},${firm2_cash},${firm2_bank},${firm3_frontend},${firm3_cash},${firm3_bank},${bankName},'${date}','${Time}',(select user_id from somanath.users where user_name = '${req.query.user_name}'),NULL,NULL);`
+          else
+            sql3 = `insert into somanath20${dbYear}.cashflow_sales values ('${dbYear}_${result2[0]['trans_id']}',${result[0]['acc_id']},'${billNo}',${firm1_frontend},${firm1_cash},${firm1_bank},${firm2_frontend},${firm2_cash},${firm2_bank},${firm3_frontend},${firm3_cash},${firm3_bank},${bankName},'${date}','${Time}',(select user_id from somanath.users where user_name = '${req.query.user_name}'),NULL,NULL);`
+
           sql5 = `UPDATE somanath20${dbYear}.max_id set cashflow_sales =${result2[0]['trans_id']}`
           con.query(sql5)
         }
@@ -1826,27 +1783,21 @@ app.get('/sales/voucher',(req,res)=>{
 
 
 
-process.on('uncaughtException', (error) => {
-
-  
+process.on('uncaughtException', (error) => { 
   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-
   io.sockets.emit('error' ,"\n"+String(error.stack))
   console.log(error.stack);
   process.exit(1)  
 });
 
 process.on('unhandledRejection', (error, promise)  => {
-  
   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
   io.sockets.emit('error' , error)
-  console.log(error);
   process.exit(1); // Exit your app 
 })
 
 
 function myCustomErrorHandler(err, req, res, next) {
-  
   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
   io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
   process.exit(1);

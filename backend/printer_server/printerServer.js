@@ -109,7 +109,7 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
           .fontSize(9)
           .text('GST : 29ATBPS7012G1ZN',10,35 )
           .text('Mob  : 9902664717',10,45)
-          .text(`Bill No: ${stores[prodName[0]][6]}`,175,35)
+          .text(`Bill No: ${stores[prodName[prodName.length - 1]][6]}`,175,35)
           .text(`${Date}`,190,45)
           .fontSize(10)
           .text(`To    : ${customerName}`,10,55)

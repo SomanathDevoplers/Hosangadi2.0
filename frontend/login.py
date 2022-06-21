@@ -2,12 +2,18 @@ import os
 import requests
 import style
 from datetime import datetime as date
+
 from tkinter import Tk , PhotoImage
 from tkinter import constants as con
 from tkinter import messagebox as msg
 from tkinter import ttk
 from subprocess import check_output
 ip = "192.168.0.100"
+
+
+
+f = open("C:\\Program Files\\Hosangadi2.0\\formId.txt", "r")
+form_id = f.read() 
 
 
 
@@ -56,7 +62,7 @@ def submit(e):
         if server != 'server':
             ip = "localhost"
             #ip = "192.168.0.103" 
-        resp = requests.get("http://"+ip+":5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year , "server" : server })  
+        resp = requests.get("http://"+ip+":5000/login",params = {"user_name":user_name , "user_pass":user_pass , "year" : year , "server" : server , "form_id" : form_id })  
              
     except:
         msg.showinfo("Info","Server Not Available")
@@ -82,8 +88,8 @@ def submit(e):
         return
     #@ set exe file location
 
-    #root = os.path.expanduser('~')+"\\Desktop\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip
-    root = 'C:\\Program Files\\Hosangadi2.0\\root\\root.exe '+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip 
+    #root = os.path.expanduser('~')+"\\Hosangadi2.0\\frontend\\root.py "+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip + " " +form_id
+    root = 'C:\\Program Files\\Hosangadi2.0\\root\\root.exe '+str(user_name)+" "+str(user_type)+" "+str(year)+" "+str(server)+" "+ip + " " + form_id
     login.destroy()
     
     #os.system(root)

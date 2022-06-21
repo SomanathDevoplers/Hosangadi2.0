@@ -1,8 +1,7 @@
 {
   "name": "product_server",
   "version": "1.0.0",
-  "description": "",
-  "main": "prodcutServer.js",
+  "main": "productServer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +11,7 @@
   "dependencies": {
     "express": "^4.18.1",
     "mysql": "^2.18.1",
-    "socket.io-client": "^4.5.0"
-  }
+    "socket.io-client": "^4.5.1"
+  },
+  "description": ""
 }
