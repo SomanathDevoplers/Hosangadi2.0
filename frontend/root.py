@@ -553,24 +553,24 @@ frm_status.grid(row = 3 , column = 0 ,columnspan = 3)
 
 
 
+try:
+    lbl_user_name.config(text = sys.argv[1])    
+    lbl_user_type.config(text = sys.argv[2])
+    year = sys.argv[3][2:4]
 
-lbl_user_name.config(text = sys.argv[1])    
-lbl_user_type.config(text = sys.argv[2])
-year = sys.argv[3][2:4]
+    if(sys.argv[2]) == "TAXI":
+        userType = "ADMIN"
+        tax_check = True
+    else:
+        userType = sys.argv[2]
 
-if(sys.argv[2]) == "TAXI":
-    userType = "ADMIN"
-    tax_check = True
-else:
-    userType = sys.argv[2]
+    lbl_user_type.config(text = userType)
+    lbl_fin_year.config(text = sys.argv[3])
+    lbl_server_name.config(text = sys.argv[4])
+    ip = sys.argv[5]  
+    form_id = sys.argv[6]
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" :  sys.argv[1] , "user_type" : userType, "form_type" : "root" , "fin_year": sys.argv[3] , "form_id" : form_id})
 
-lbl_user_type.config(text = userType)
-lbl_fin_year.config(text = sys.argv[3])
-lbl_server_name.config(text = sys.argv[4])
-ip = sys.argv[5]  
-form_id = sys.argv[6]
-sio.connect("http://"+ip+":5000/", headers = {"user_name" :  sys.argv[1] , "user_type" : userType, "form_type" : "root" , "fin_year": sys.argv[3] , "form_id" : form_id})
-"""
   #@ remove try excpet block
 except:
     #ip = "192.168.0.100"
@@ -582,7 +582,7 @@ except:
     form_id = '1'
     sio.connect("http://"+ip+":5000/", headers = {"user_name" : "VIJAY" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023" , "form_id" : form_id })
     year = "22"
-"""
+
 user =lbl_user_name.cget("text")
 Thread(target=socketKeepAlive , daemon = True).start()
 

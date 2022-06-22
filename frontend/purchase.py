@@ -803,11 +803,6 @@ class purchase(base_window):
         self.frm_row5.grid(row = 4 , column = 0 , pady = int(self.main_wdt*0.004) )
         self.btn_frame.grid(row = 5 ,column = 0 , sticky = con.E , pady = int(self.main_wdt*0.004))
 
-
-        
-
-     
-    
     """--------------------------Purchase detail functions-----------------------------------------------"""
     def enable_pur_details(self) :
         self.combo_supplier.config(state = con.NORMAL)
@@ -2561,7 +2556,7 @@ class purchase(base_window):
         update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
         
     def upd_prod(self , e):
-        arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Products" , [ self.args[5][0]  , self.args[5][9] , self.args[5][2] , self.args[5][3] , self.args[5][4]  , self.args[5][2] ,  self.args[5][6] ] , [  self.args[6][4] , self.args[6][0] , self.args[6][2] ] ,  self.args[9]]
+        arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Products" , [ self.args[5][0]  , self.args[5][9] , self.args[5][2] , self.args[5][3] , self.args[5][4]  , self.args[5][2] ,  self.args[5][6] ] , [  self.args[6][4] , self.args[6][0] ,self.args[6][2] , self.args[6][3] , self.args[8] ] ,  self.args[9]]
         prods(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id )
                
     def upd_mrp(self , e):

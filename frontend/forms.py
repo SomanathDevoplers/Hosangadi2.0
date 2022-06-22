@@ -4246,7 +4246,7 @@ class prods(base_window):
 
     def hide_products(self , e):
         if msg.askokcancel("Info" , "DO YOU WANT TO HIDE ALL PRODUCTS HAVING NO STOCK?"):
-            sql = "update somanath.products ,  somanath20"+self.year+".stocks set prod_hide = 'True' where somanath20"+self.year+".stocks.stk_prod_id = somanath.products.prod_id and somanath20"+self.year+".stocks.stk_tot_qty <= 0"
+            sql = "update somanath.products ,  somanath20"+self.year+".stocks set prod_hide = 'True' where somanath20"+self.year+".stocks.stk_prod_id = somanath.products.prod_id and somanath20"+self.year+".stocks.stk_tot_qty <= 0;  update somanath.products set prod_hide = 'True' where prod_id not in (select stk_prod_id from  somanath20"+self.year+".stocks);"#second sql is for products which are not in stocks entry
             get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
             self.product_list(None)
             self.sio.emit('refreshProductServer1')

@@ -63,7 +63,7 @@ app.use( '/images' , express.static(serveDirectory))
 
 
 app.get('/onlySql' , (req , res)=>{
-
+  
       sql = req.query.sql
       con.query(sql , (err , result)=>{
 
