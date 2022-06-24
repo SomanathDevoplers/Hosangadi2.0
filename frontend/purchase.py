@@ -1618,8 +1618,7 @@ class purchase(base_window):
         if prod == []:
             msg.showinfo("Info" , "Product Not found! Add Product")
             self.root.bell()
-            arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Products" , [ self.args[5][0]  , self.args[5][9] , self.args[5][2] , self.args[5][3] , self.args[5][4]  , self.args[5][2] ,  self.args[5][6] ] , [  self.args[6][4] , self.args[6][0] , self.args[6][2] ] ,  self.args[9]]
-            prods(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] )
+            self.upd_prod(None)
             return
         prod = prod[0]
 
