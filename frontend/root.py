@@ -77,7 +77,7 @@ def show_error(*args):
     notification(traceback.format_tb(args[3]))
     #root.bell()
 
-Tk.report_callback_exception = show_error
+#Tk.report_callback_exception = show_error
 
 def socketKeepAlive():
     
@@ -133,6 +133,7 @@ return_report_form = [0 , 1 , "Already GST RETURN Form is open"]
 update_sp_form = [0 , 3 , "Already 3 Update SP Forms are open"]
 order_list_form = [0 , 1 , "Already Order List Form is open"]
 purchase_cashflow_form = [0 , 1 , "Already Purchase Cashflow Form is open"]
+customer_balance_report_form = [0 , 1 , "Already Customer Balance Form Form is open"]
 barcode_form = [0 , 1 , "Already Barcode Form is open"]
 db_form = [0 , 1 , "Already Backup Form is open"]
 
@@ -372,6 +373,14 @@ def purchase_cashflow(e = None):
         return
     reports.purchase_cashflow(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Cashflow" , [ name  , date, pos_integer] , [ip ,tax_check, user , year] , purchase_cashflow_form )
 
+
+def customer_balance(e = None):
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    reports.customer_balance(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Customer Balance"  , [ip ,tax_check, user , year] , customer_balance_report_form )
+
 def print_barcode(e = None):
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
@@ -465,6 +474,8 @@ menu_reports.add_command(label = "GST REPORTS" , command = return_report)
 menu_reports.add_command(label = "STOCK REPORTS" )
 menu_reports.add_command(label = "ORDER LIST" ,  command = orderList)
 menu_reports.add_command(label = "PURCHASE CASHFLOW" ,  command = purchase_cashflow)
+menu_reports.add_command(label = "CUSTOMER BALANCE" ,  command = customer_balance)
+
 menu_reports_head.config(menu = menu_reports)
 
 

@@ -3145,6 +3145,9 @@ class sales(base_window):
         data = req.json()
         if len(data) > 0:
             dByear = str(data.pop())
+
+
+
             acc_id = data.pop()
             data.reverse()
             max_date = data[0]['transdate']
@@ -3162,6 +3165,9 @@ class sales(base_window):
                 bal_diff = 0
             
             sql = "SELECT acc_opn_bal_firm1+acc_opn_bal_firm2+acc_opn_bal_firm3 as open_bal FROM somanath20"+dByear+".acc_bal where acc_id ="+ str(acc_id)
+
+           
+
 
             opn_bal1 = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql }).json()[0]['open_bal']
             if opn_bal1 == "" or opn_bal1 == None:

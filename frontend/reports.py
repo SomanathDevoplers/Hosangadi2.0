@@ -364,7 +364,7 @@ class return_reports(base_window):
         get("http://"+self.ip+":7000/gstr04" , params = {'dbYear' : year[2:4]})
         msg.showinfo("Sucess","GSTR4 Excel will be ready in few minutes")
         
-        
+      
 
 class purchase_cashflow(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , return_report_form):
@@ -642,3 +642,91 @@ class purchase_cashflow(base_window):
 
             self.tree_cashflow.insert('','end',tags=(tags ), values = [each['transdate'], pur_id, trans_amt ,  "{:.2f}".format(round(float(each['amt_paid']),2))  , each['trans_mode']])
             i +=1
+
+
+
+
+class customer_balance(base_window):
+    def __init__(self , root ,frames , dmsn , lbls ,title,others , customer_balance_report_form):
+        base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , customer_balance_report_form)
+        
+        if base == None:
+            return
+        self.year = others[3]
+        self.main_frame.grid_propagate(False)
+        self.main_hgt = self.main_frame.winfo_reqheight()
+        self.main_wdt = self.main_frame.winfo_reqwidth()
+        self.ip = others[0]
+        self.year = others[3]
+        self.screen_height = root.winfo_screenheight()
+
+        self.lbl_total_bal_text = ttk.Label(self.main_frame , text = "Total Balance : " , style = "window_text_medium.TLabel")
+        self.lbl_total_bal = ttk.Label(self.main_frame   , width = 18 , style = "window_lbl_ent.TLabel" ,   justify = con.RIGHT)
+
+
+
+        self.frm_tree_cashflow = ttk.Frame(self.main_frame , width = self.main_wdt*0.7 , height = int(self.main_hgt*0.774))
+        self.frm_tree_cashflow.pack_propagate(False)
+        self.tree_cashflow = ttk.Treeview(self.frm_tree_cashflow ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 6)
+        self.tree_cashflow.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
+        self.tree_cashflow.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
+        self.scroll_y_cashflow = ttk.Scrollbar(self.frm_tree_cashflow , orient = con.VERTICAL , command = self.tree_cashflow.yview)
+        self.scroll_x_cashflow = ttk.Scrollbar(self.frm_tree_cashflow , orient = con.HORIZONTAL , command = self.tree_cashflow.xview)
+        self.tree_cashflow.config(yscrollcommand = self.scroll_y_cashflow.set , xscrollcommand = self.scroll_x_cashflow.set)
+
+        self.tree_cashflow['columns'] = ( 'name','bal' , 'last_trans')
+
+        self.tree_cashflow.heading('name' , text = 'Name')
+        self.tree_cashflow.heading('bal' , text = 'Balance')
+        self.tree_cashflow.heading('last_trans' , text = 'Last Transaction')
+
+
+        self.tree_cashflow_wdt = self.tree_cashflow.winfo_reqwidth()-self.scroll_y_cashflow.winfo_reqwidth()
+        if self.screen_height>1000:
+            self.tree_cashflow.column('name' , width = int(self.tree_cashflow_wdt)  , anchor = "w")
+            self.tree_cashflow.column('bal' , width = int(self.tree_cashflow_wdt*0.5)  , anchor = "e")
+            self.tree_cashflow.column('last_trans' , width = int(self.tree_cashflow_wdt*0.7)  , anchor = "center")
+        else:
+            self.tree_cashflow.column('name' , width = int(self.tree_cashflow_wdt*0.75)  , anchor = "w")
+            self.tree_cashflow.column('bal' , width = int(self.tree_cashflow_wdt*0.3)  , anchor = "e")
+            self.tree_cashflow.column('last_trans' , width = int(self.tree_cashflow_wdt*0.5)  , anchor = "center")
+
+
+    
+
+        self.scroll_y_cashflow.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
+        self.scroll_x_cashflow.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
+        self.tree_cashflow.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
+
+        self.frm_tree_cashflow.grid( row = 0 , column= 0 , columnspan = 2 , padx = int(self.main_wdt *0.1) , pady = int(self.main_wdt * 0.01))
+        self.lbl_total_bal_text.grid(row = 1 , column = 0 , sticky= con.E)
+        self.lbl_total_bal.grid(row = 1 , column = 1 , sticky=con.W)
+
+
+
+
+        sql = "SELECT acc_cls_bal_firm1+acc_cls_bal_firm2+acc_cls_bal_firm3 as balance , acc_name , somanath.accounts.acc_id as acc_id  FROM somanath20"+self.year+".acc_bal , somanath.accounts where somanath20"+self.year+".acc_bal.acc_id = somanath.accounts.acc_id and somanath.accounts.acc_type = 'CUST'  order by  acc_cls_bal_firm1+acc_cls_bal_firm2+acc_cls_bal_firm3 desc"
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        data = req.json()
+
+        sum = 0
+        i = 0
+        for each in data:
+            tags = 'b'
+            if i%2 == 0:
+                tags = 'a'
+
+            sql = "SELECT date_format(max(trans_date),'%d-%b-%y') as last_date from somanath20"+str(self.year)+".cashflow_sales where trans_acc = " + str(each["acc_id"])
+            res = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql}).json()[0]['last_date']
+
+            if res == None:
+                last_date = "-"
+            else:
+                last_date = res
+
+            sum += each["balance"]
+
+            self.tree_cashflow.insert('','end',tags=(tags ), values = [each['acc_name'] , "{:.2f}".format(each["balance"]) , last_date])
+            i +=1
+
+        self.lbl_total_bal.config(text = "{:.2f}".format(sum))
