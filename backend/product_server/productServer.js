@@ -25,7 +25,7 @@ con.connect()
 
 
 socket.on("refreshProductServer" , ()=>{
-  
+
   prod_list_show = []
   con.query("select  prod_id, prod_bar , prod_name from somanath.products where prod_hide = 'False' order by prod_name" , (err , result) =>{
       result.forEach(element => {

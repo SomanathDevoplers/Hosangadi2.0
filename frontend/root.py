@@ -133,7 +133,8 @@ return_report_form = [0 , 1 , "Already GST RETURN Form is open"]
 update_sp_form = [0 , 3 , "Already 3 Update SP Forms are open"]
 order_list_form = [0 , 1 , "Already Order List Form is open"]
 purchase_cashflow_form = [0 , 1 , "Already Purchase Cashflow Form is open"]
-customer_balance_report_form = [0 , 1 , "Already Customer Balance Form Form is open"]
+customer_balance_report_form = [0 , 1 , "Already Customer Balance Form is open"]
+profit_report_form = [0 , 1 , "Already Profit Report Form is open"]
 barcode_form = [0 , 1 , "Already Barcode Form is open"]
 db_form = [0 , 1 , "Already Backup Form is open"]
 
@@ -381,6 +382,13 @@ def customer_balance(e = None):
         return
     reports.customer_balance(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Customer Balance"  , [ip ,tax_check, user , year] , customer_balance_report_form )
 
+def profit_report(e = None):
+    user_type = lbl_user_type.cget("text")
+    if user_type == "EMPLOY" :
+        msg.showerror("Error" , "You do not have the access to open this file")
+        return
+    reports.profit_report(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Profit Report"  , [date] ,  [ip ,tax_check, user , year] , profit_report_form )
+
 def print_barcode(e = None):
     user_type = lbl_user_type.cget("text")
     if user_type == "EMPLOY" :
@@ -475,6 +483,7 @@ menu_reports.add_command(label = "STOCK REPORTS" )
 menu_reports.add_command(label = "ORDER LIST" ,  command = orderList)
 menu_reports.add_command(label = "PURCHASE CASHFLOW" ,  command = purchase_cashflow)
 menu_reports.add_command(label = "CUSTOMER BALANCE" ,  command = customer_balance)
+menu_reports.add_command(label = "PROFIT REPORT" ,  command = profit_report)
 
 menu_reports_head.config(menu = menu_reports)
 
@@ -582,6 +591,8 @@ try:
     form_id = sys.argv[6]
     sio.connect("http://"+ip+":5000/", headers = {"user_name" :  sys.argv[1] , "user_type" : userType, "form_type" : "root" , "fin_year": sys.argv[3] , "form_id" : form_id})
 
+
+
   #@ remove try excpet block
 except:
     #ip = "192.168.0.100"
@@ -596,6 +607,7 @@ except:
 
 user =lbl_user_name.cget("text")
 Thread(target=socketKeepAlive , daemon = True).start()
+
 
 
 root.mainloop()

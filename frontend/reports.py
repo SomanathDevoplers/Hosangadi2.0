@@ -665,40 +665,40 @@ class customer_balance(base_window):
 
 
 
-        self.frm_tree_cashflow = ttk.Frame(self.main_frame , width = self.main_wdt*0.7 , height = int(self.main_hgt*0.774))
-        self.frm_tree_cashflow.pack_propagate(False)
-        self.tree_cashflow = ttk.Treeview(self.frm_tree_cashflow ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 6)
-        self.tree_cashflow.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
-        self.tree_cashflow.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
-        self.scroll_y_cashflow = ttk.Scrollbar(self.frm_tree_cashflow , orient = con.VERTICAL , command = self.tree_cashflow.yview)
-        self.scroll_x_cashflow = ttk.Scrollbar(self.frm_tree_cashflow , orient = con.HORIZONTAL , command = self.tree_cashflow.xview)
-        self.tree_cashflow.config(yscrollcommand = self.scroll_y_cashflow.set , xscrollcommand = self.scroll_x_cashflow.set)
+        self.frm_tree_custbal = ttk.Frame(self.main_frame , width = self.main_wdt*0.7 , height = int(self.main_hgt*0.774))
+        self.frm_tree_custbal.pack_propagate(False)
+        self.tree_custbal = ttk.Treeview(self.frm_tree_custbal ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 6)
+        self.tree_custbal.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
+        self.tree_custbal.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
+        self.scroll_y_custbal = ttk.Scrollbar(self.frm_tree_custbal , orient = con.VERTICAL , command = self.tree_custbal.yview)
+        self.scroll_x_custbal = ttk.Scrollbar(self.frm_tree_custbal , orient = con.HORIZONTAL , command = self.tree_custbal.xview)
+        self.tree_custbal.config(yscrollcommand = self.scroll_y_custbal.set , xscrollcommand = self.scroll_x_custbal.set)
 
-        self.tree_cashflow['columns'] = ( 'name','bal' , 'last_trans')
+        self.tree_custbal['columns'] = ( 'name','bal' , 'last_trans')
 
-        self.tree_cashflow.heading('name' , text = 'Name')
-        self.tree_cashflow.heading('bal' , text = 'Balance')
-        self.tree_cashflow.heading('last_trans' , text = 'Last Transaction')
+        self.tree_custbal.heading('name' , text = 'Name')
+        self.tree_custbal.heading('bal' , text = 'Balance')
+        self.tree_custbal.heading('last_trans' , text = 'Last Transaction')
 
 
-        self.tree_cashflow_wdt = self.tree_cashflow.winfo_reqwidth()-self.scroll_y_cashflow.winfo_reqwidth()
+        self.tree_custbal_wdt = self.tree_custbal.winfo_reqwidth()-self.scroll_y_custbal.winfo_reqwidth()
         if self.screen_height>1000:
-            self.tree_cashflow.column('name' , width = int(self.tree_cashflow_wdt)  , anchor = "w")
-            self.tree_cashflow.column('bal' , width = int(self.tree_cashflow_wdt*0.5)  , anchor = "e")
-            self.tree_cashflow.column('last_trans' , width = int(self.tree_cashflow_wdt*0.7)  , anchor = "center")
+            self.tree_custbal.column('name' , width = int(self.tree_custbal_wdt)  , anchor = "w")
+            self.tree_custbal.column('bal' , width = int(self.tree_custbal_wdt*0.5)  , anchor = "e")
+            self.tree_custbal.column('last_trans' , width = int(self.tree_custbal_wdt*0.7)  , anchor = "center")
         else:
-            self.tree_cashflow.column('name' , width = int(self.tree_cashflow_wdt*0.75)  , anchor = "w")
-            self.tree_cashflow.column('bal' , width = int(self.tree_cashflow_wdt*0.3)  , anchor = "e")
-            self.tree_cashflow.column('last_trans' , width = int(self.tree_cashflow_wdt*0.5)  , anchor = "center")
+            self.tree_custbal.column('name' , width = int(self.tree_custbal_wdt*0.75)  , anchor = "w")
+            self.tree_custbal.column('bal' , width = int(self.tree_custbal_wdt*0.3)  , anchor = "e")
+            self.tree_custbal.column('last_trans' , width = int(self.tree_custbal_wdt*0.5)  , anchor = "center")
 
 
     
 
-        self.scroll_y_cashflow.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
-        self.scroll_x_cashflow.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
-        self.tree_cashflow.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
+        self.scroll_y_custbal.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
+        self.scroll_x_custbal.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
+        self.tree_custbal.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
 
-        self.frm_tree_cashflow.grid( row = 0 , column= 0 , columnspan = 2 , padx = int(self.main_wdt *0.1) , pady = int(self.main_wdt * 0.01))
+        self.frm_tree_custbal.grid( row = 0 , column= 0 , columnspan = 2 , padx = int(self.main_wdt *0.1) , pady = int(self.main_wdt * 0.01))
         self.lbl_total_bal_text.grid(row = 1 , column = 0 , sticky= con.E)
         self.lbl_total_bal.grid(row = 1 , column = 1 , sticky=con.W)
 
@@ -726,7 +726,283 @@ class customer_balance(base_window):
 
             sum += each["balance"]
 
-            self.tree_cashflow.insert('','end',tags=(tags ), values = [each['acc_name'] , "{:.2f}".format(each["balance"]) , last_date])
+            self.tree_custbal.insert('','end',tags=(tags ), values = [each['acc_name'] , "{:.2f}".format(each["balance"]) , last_date])
             i +=1
 
         self.lbl_total_bal.config(text = "{:.2f}".format(sum))
+
+
+
+class profit_report(base_window):
+    def __init__(self , root ,frames , dmsn , lbls ,title , validations ,others , profit_report_form):
+        base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , profit_report_form)
+        
+        if base == None:
+            return
+        self.year = others[3]
+        self.main_frame.grid_propagate(False)
+        self.main_hgt = self.main_frame.winfo_reqheight()
+        self.main_wdt = self.main_frame.winfo_reqwidth()
+        self.ip = others[0]
+        self.year = others[3]
+        self.screen_height = root.winfo_screenheight()
+
+        self.frm_date = ttk.Frame(self.main_frame , style = "root_main.TFrame")
+        self.lbl_from_profit = ttk.Label(self.frm_date , text = " From :" , style = "window_text_medium.TLabel")
+        self.ent_from_profit = ttk.Entry(self.frm_date  , width = 10 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_from_profit.bind("<FocusOut>" , self.combo_entry_out)
+
+        self.lbl_to_profit = ttk.Label(self.frm_date , text = " To   :" , style = "window_text_medium.TLabel")
+        self.ent_to_profit = ttk.Entry(self.frm_date  , width = 10,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[0], '%P'))
+        self.ent_to_profit.bind("<FocusOut>" , self.combo_entry_out)
+
+        self.lbl_spacer = ttk.Label(self.frm_date   , width = 1 , style = "window_text_medium.TLabel" ,   justify = con.RIGHT)
+
+
+        self.btn_get_profit = ttk.Button(self.frm_date , text = "Get Profits" , width = 12 , style = "window_btn_medium.TButton" ,command = lambda : self.get_profit(None) )
+        self.btn_get_profit.bind("<Return>" , self.get_profit)
+
+
+        self.frm_tree_cashflow = ttk.Frame(self.main_frame , width = self.main_wdt*0.7 , height = int(self.main_hgt*0.774))
+        self.frm_tree_cashflow.pack_propagate(False)
+        self.tree_cashflow = ttk.Treeview(self.frm_tree_cashflow ,selectmode = "browse", takefocus = True , show = "headings" , style = "window.Treeview" , height = 6)
+        self.tree_cashflow.tag_configure('a' , background = "#333333" , foreground = "#D9CC9C")
+        self.tree_cashflow.tag_configure('b' , background = "#282828" , foreground = "#D9CC9C")
+        self.scroll_y_cashflow = ttk.Scrollbar(self.frm_tree_cashflow , orient = con.VERTICAL , command = self.tree_cashflow.yview)
+        self.scroll_x_cashflow = ttk.Scrollbar(self.frm_tree_cashflow , orient = con.HORIZONTAL , command = self.tree_cashflow.xview)
+        self.tree_cashflow.config(yscrollcommand = self.scroll_y_cashflow.set , xscrollcommand = self.scroll_x_cashflow.set)
+
+        self.tree_cashflow['columns'] = ( 'inv_no','total' , 'ssm' , 'scm' , 'sem')
+
+        self.tree_cashflow.heading('inv_no' , text = 'Invoice No')
+        self.tree_cashflow.heading('total' , text = 'Total Profit')
+        self.tree_cashflow.heading('ssm' , text = 'SSM Profit')
+        self.tree_cashflow.heading('scm' , text = 'SCM Profit')
+        self.tree_cashflow.heading('sem' , text = 'SEM Profit')
+
+
+        self.tree_cashflow_wdt = self.tree_cashflow.winfo_reqwidth()-self.scroll_y_cashflow.winfo_reqwidth()
+        if self.screen_height>1000:
+            self.tree_cashflow.column('inv_no' , width = int(self.tree_cashflow_wdt*0.23)  , anchor = "w")
+            self.tree_cashflow.column('total' , width = int(self.tree_cashflow_wdt*0.27)  , anchor = "e")
+            self.tree_cashflow.column('ssm' , width = int(self.tree_cashflow_wdt*0.27)  , anchor = "e")
+            self.tree_cashflow.column('scm' , width = int(self.tree_cashflow_wdt*0.27)  , anchor = "e")
+            self.tree_cashflow.column('sem' , width = int(self.tree_cashflow_wdt*0.27)  , anchor = "e")
+
+        else:
+            self.tree_cashflow.column('inv_no' , width = int(self.tree_cashflow_wdt*0.17)  , anchor = "w")
+            self.tree_cashflow.column('total' , width = int(self.tree_cashflow_wdt*0.19)  , anchor = "e")
+            self.tree_cashflow.column('ssm' , width = int(self.tree_cashflow_wdt*0.19)  , anchor = "e")
+            self.tree_cashflow.column('scm' , width = int(self.tree_cashflow_wdt*0.19)  , anchor = "e")
+            self.tree_cashflow.column('sem' , width = int(self.tree_cashflow_wdt*0.19)  , anchor = "e")
+
+
+        self.frm_total = ttk.Frame(self.main_frame , style = "root_main.TFrame")
+        self.lbl_total_profit = ttk.Label(self.frm_total   , width = 18 , style = "window_lbl_ent.TLabel" ,   justify = con.RIGHT)
+        self.lbl_spacer1 = ttk.Label(self.frm_total   , width = 1 , style = "window_text_medium.TLabel" ,   justify = con.RIGHT)
+        self.lbl_ssm_profit = ttk.Label(self.frm_total   , width = 18 , style = "window_lbl_ent.TLabel" ,   justify = con.RIGHT)
+        self.lbl_spacer2 = ttk.Label(self.frm_total   , width = 1 , style = "window_text_medium.TLabel" ,   justify = con.RIGHT)
+        self.lbl_scm_profit = ttk.Label(self.frm_total   , width = 18 , style = "window_lbl_ent.TLabel" ,   justify = con.RIGHT)
+        self.lbl_spacer3 = ttk.Label(self.frm_total   , width = 1 , style = "window_text_medium.TLabel" ,   justify = con.RIGHT)
+        self.lbl_sem_profit = ttk.Label(self.frm_total   , width = 18 , style = "window_lbl_ent.TLabel" ,   justify = con.RIGHT)
+        self.lbl_spacer4 = ttk.Label(self.frm_total   , width = 1 , style = "window_text_medium.TLabel" ,   justify = con.RIGHT)
+    
+
+
+
+
+        self.scroll_y_cashflow.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
+        self.scroll_x_cashflow.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
+        self.tree_cashflow.pack(anchor = con.N , side = con.LEFT , fill = con.BOTH)
+
+
+        self.lbl_from_profit.grid(row = 0 , column = 0)
+        self.ent_from_profit.grid(row = 0 , column = 1)
+        self.lbl_to_profit.grid(row = 0 , column = 2)
+        self.ent_to_profit.grid(row = 0 , column = 3)
+        self.lbl_spacer.grid(row = 0 , column = 4)
+        self.btn_get_profit.grid(row = 0 , column = 5)
+
+
+        self.lbl_total_profit.grid(row = 0 , column = 0)
+        self.lbl_spacer1.grid(row = 0 , column = 1)
+        self.lbl_ssm_profit.grid(row = 0 , column = 2)
+        self.lbl_spacer2.grid(row = 0 , column = 3)
+        self.lbl_scm_profit.grid(row = 0 , column = 4)
+        self.lbl_spacer3.grid(row = 0 , column = 5)
+        self.lbl_sem_profit.grid(row = 0 , column = 6)
+        self.lbl_spacer4.grid(row = 0 , column = 7)
+
+
+        
+
+
+        self.frm_date.grid(row = 0 , column = 0)
+        self.frm_tree_cashflow.grid( row = 1 , column= 0  , padx = int(self.main_wdt *0.1) , pady = int(self.main_wdt * 0.01))
+        self.frm_total.grid(row = 2 , column= 0 ,  padx = int(self.main_wdt *0.1) , sticky=con.E)
+
+    def get_profit(self , e):
+        date = self.ent_from_profit.get().upper()
+
+        date1 = date.split("/")
+        if len(date1)!=3:
+            date1 = date.split("-")
+            if len(date1) != 3:
+                msg.showinfo("Info" , "Enter date in following format \n 'dd-mm-yy' or 'dd/mm/yy ")
+                self.ent_from_profit.focus_set()
+                self.ent_from_profit.select_range(0,con.END)
+                return 
+
+        try:
+            datetime.datetime(int(date1[2]), int(date1[1]), int(date1[0]))
+        except ValueError:
+            msg.showinfo("Info" , "Enter correct date")
+            self.ent_from_profit.focus_set()
+            self.ent_from_profit.select_range(0,con.END)
+            return 
+
+        
+        if len(date1[2])%2 !=0 :
+            msg.showinfo("Info" , "Enter correct date")
+            self.ent_from_profit.focus_set()
+            self.ent_from_profit.select_range(0,con.END)
+            return 
+
+        if len(date1[0]) == 1:
+            date1[0] = '0' + date1[0]
+
+        if len(date1[1]) == 1:
+            date1[1] = '0' + date1[1]    
+
+        if len(date1[2]) == 2:
+            date1[2] = '20' + date1[2]    
+
+        
+        self.ent_from_profit.delete(0,con.END)
+        self.ent_from_profit.insert(0,date1[0] + "-" + date1[1] + "-" + date1[2])        
+        self.ent_from_profit.select_clear()
+
+        from_date = date1[2] + "-" + date1[1] + "-" + date1[0]
+        
+        date = self.ent_to_profit.get().upper()
+
+        date1 = date.split("/")
+        if len(date1)!=3:
+            date1 = date.split("-")
+            if len(date1) != 3:
+                msg.showinfo("Info" , "Enter date in following format \n 'dd-mm-yy' or 'dd/mm/yy ")
+                self.ent_to_profit.focus_set()
+                self.ent_to_profit.select_range(0,con.END)
+                return 
+
+        try:
+            datetime.datetime(int(date1[2]), int(date1[1]), int(date1[0]))
+        except ValueError:
+            msg.showinfo("Info" , "Enter correct date")
+            self.ent_to_profit.focus_set()
+            self.ent_to_profit.select_range(0,con.END)
+            return 
+
+        
+        if len(date1[2])%2 !=0 :
+            msg.showinfo("Info" , "Enter correct date")
+            self.ent_to_profit.focus_set()
+            self.ent_to_profit.select_range(0,con.END)
+            return 
+
+        if len(date1[0]) == 1:
+            date1[0] = '0' + date1[0]
+
+        if len(date1[1]) == 1:
+            date1[1] = '0' + date1[1]    
+
+        if len(date1[2]) == 2:
+            date1[2] = '20' + date1[2]
+
+        self.ent_to_profit.delete(0,con.END)
+        self.ent_to_profit.insert(0,date1[0] + "-" + date1[1] + "-" + date1[2])        
+        self.ent_to_profit.select_clear()
+
+
+        to_date =  date1[2] + "-" + date1[1] + "-" + date1[0]
+
+        sql = "SELECT  sales_id , sales_ref , sales_profit   FROM somanath20"+self.year+".sales_sp where sales_id in (SELECT distinct(sales_id) FROM somanath20"+self.year+".sales where sale_date>='"+from_date+"' and sale_date<='"+to_date+"') order by sales_id , sales_ref"
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        data = req.json()
+
+        child = self.tree_cashflow.get_children()
+        for each in child:
+            self.tree_cashflow.delete(each)
+
+        if len(data) == 0:
+            self.lbl_total_profit.config(text = "")
+            self.lbl_ssm_profit.config(text = "")
+            self.lbl_scm_profit.config(text = "")
+            self.lbl_sem_profit.config(text = "")
+            return
+
+        
+
+        sum = [0 , 0 , 0 , 0]
+        prev_sale_id = data[0]["sales_id"]
+        i = 0
+
+        total_sum = [0 , 0 , 0 , 0]
+    
+        for each in data:
+            sale_id = each["sales_id"]
+            ref_id = each["sales_ref"]
+
+            if(sale_id != prev_sale_id):
+                tags = 'b'
+                if i%2 == 0:
+                    tags = 'a'
+                total_sum[0]+= sum[0]
+                self.tree_cashflow.insert('','end',tags=(tags ), values = [prev_sale_id[3:] , "{:.2f}".format(sum[0]) , "{:.2f}".format(sum[1])  , "{:.2f}".format(sum[2])  , "{:.2f}".format(sum[3]) ])
+                i +=1
+
+                prev_sale_id = sale_id
+                sum = [0 , 0, 0 , 0]
+
+
+
+            sum[0]+= each["sales_profit"]
+
+            if(ref_id[0:3] == "SSM"):
+                sum[1]+=each["sales_profit"]
+                total_sum[1]+= sum[1]
+
+            elif(ref_id[0:3] == "SCM"):
+                sum[2]+=each["sales_profit"]
+                total_sum[2]+= sum[2]
+
+            else:
+                sum[3]+=each["sales_profit"]
+                total_sum[3]+= sum[3]
+
+
+
+            
+            
+            
+
+
+        tags = 'b'
+        if i%2 == 0:
+            tags = 'a'
+
+        self.tree_cashflow.insert('','end',tags=(tags ), values = [prev_sale_id[3:] , "{:.2f}".format(sum[0]) , "{:.2f}".format(sum[1])  , "{:.2f}".format(sum[2])  , "{:.2f}".format(sum[3]) ])
+            
+
+        self.lbl_total_profit.config(text = "{:.2f}".format(total_sum[0] + sum[0]))
+        self.lbl_ssm_profit.config(text = "{:.2f}".format(total_sum[1]))
+        self.lbl_scm_profit.config(text = "{:.2f}".format(total_sum[2]))
+        self.lbl_sem_profit.config(text = "{:.2f}".format(total_sum[3]))
+
+
+
+
+
+    def combo_entry_out(self , e):
+        e.widget.select_clear()
+

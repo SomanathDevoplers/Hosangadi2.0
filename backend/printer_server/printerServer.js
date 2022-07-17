@@ -1624,7 +1624,7 @@ app.get('/cmp08',(req,res)=>{
         });
       });
       reportFileName = writeFileSync(path.join(homeDir , 'angadiImages' , 'cmp08.txt'),`Somanath Enterprices\nQuarter     : ${req.query.quarter}\nTotal Sales : ${totalSales.toFixed(2)}` );
-      socket.emit("reportFinished" , "Sales CMP" , reportFileName)
+      socket.emit("reportFinished" , "Sales CMP" , 'cmp08.txt')
     }
     
   })

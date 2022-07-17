@@ -63,10 +63,8 @@ app.use( '/images' , express.static(serveDirectory))
 
 
 app.get('/onlySql' , (req , res)=>{
-  
       sql = req.query.sql
       con.query(sql , (err , result)=>{
-
         res.send(result)
       })
 })
@@ -1524,7 +1522,6 @@ app.get('/reports/getCashflowPurchase' ,  (req,res) => {
 
 process.on('uncaughtException', (error) => {
   socket.emit('sendError' ,"\n"+String(error.stack))
-
   process.exit(1)
 });
 

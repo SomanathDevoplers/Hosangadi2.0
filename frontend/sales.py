@@ -787,7 +787,7 @@ class sales(base_window):
 
         self.tree_sales.bind('<Delete>' , self.delete_from_treeview)
         self.tree_sales.bind('<Double-Button-1>' , self.select_from_treeview)
-        self.tree_sales.bind('<Return>' , self.delete_from_treeview)
+        self.tree_sales.bind('<Return>' , self.select_from_treeview)
 
         self.tree_sales['columns'] = ( 'slNo', 'prodName'  , 'qty' , 'sp' , 'total' ,'hsn')
         self.tree_sales.heading('slNo' , text = 'NO')
@@ -1553,7 +1553,7 @@ class sales(base_window):
         self.ent_prod_total.insert(0 , values[4])
         self.ent_prod_total.config(state = con.DISABLED)
         self.ent_prod_hsn.insert(0 , values[5])
-        self.ent_prod_qty.focus_set()
+        #self.ent_prod_qty.focus_set()
 
         self.tree_sales.detach(curItemNo)
 
@@ -1578,9 +1578,14 @@ class sales(base_window):
             self.get_prod_by_name(None)
             #self.ent_prod_qty.delete(0,con.END)
             #self.ent_prod_qty.insert(0 , values[2])
-            self.ent_prod_qty.select_range(0,con.END)
-            self.ent_prod_qty.focus_set()
+            #self.ent_prod_qty.select_range(0,con.END)
+
+
+        self.ent_prod_qty.select_range(0 , con.END)
+        self.ent_prod_qty.focus_set()
             
+
+
 
     def delete_from_treeview(self,e):
         if self.after_save:
@@ -2191,12 +2196,18 @@ class sales(base_window):
             self.combo_cust_vch.insert(0,self.ent_cust_name.get())
             self.lbl_old_bal.config(text = self.lbl_cust_bal.cget('text'))
             self.lbl_bill_amt.config(text = grand_total)
+
+            
             if not self.edit_state:
-                self.ent_bank_paid.insert(0,bank)
-                self.ent_cash_paid.insert(0,cash)
+                #self.ent_bank_paid.insert(0,bank)
+                #self.ent_cash_paid.insert(0,cash)
+                pass
             else:
                 self.ent_bank_paid.insert(0,bank)
                 self.ent_cash_paid.insert(0,cash)
+            
+
+
             self.lbl_tot_paid.config(text = "{:.2f}".format(round(bank + cash,2)) )    
             self.lbl_fin_bal.config(text =  "{:.2f}".format(round(float(grand_total) + float(self.lbl_cust_bal.cget('text')) - bank - cash,2)) )
             
@@ -2657,6 +2668,10 @@ class sales(base_window):
         name = self.combo_cust_vch.get().upper()  
         date = self.ent_bill_date.get()   
 
+        if cash == "" and bank == "":
+            msg.showerror("ERROR" , "Enter Amount Paid")
+            return
+        
         try:
             cash = float(cash)
         except ValueError:

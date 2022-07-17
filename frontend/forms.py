@@ -5044,11 +5044,13 @@ class update_sp(base_window):
             self.ent_nml1.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if nrm1 < cp:
+
+
+        """if nrm1 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(nrm1)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_nml1.delete(0,con.END)
-                return False
+                return False"""
         
         nrm1 ="{:.3f}".format(nrm1)
         self.ent_nml1.delete(0,con.END)
@@ -5064,11 +5066,11 @@ class update_sp(base_window):
             self.ent_nml2.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if nrm2 < cp:
+        """if nrm2 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(nrm2)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_nml2.delete(0,con.END)
-                return False
+                return False"""
             
 
         
@@ -5082,11 +5084,11 @@ class update_sp(base_window):
             self.ent_nml3.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if nrm3 < cp:
+        """if nrm3 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(nrm3)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_nml3.delete(0,con.END)
-                return False
+                return False"""
         
         
         nrm4 = self.ent_nml4.get()
@@ -5098,11 +5100,11 @@ class update_sp(base_window):
             self.ent_nml4.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if nrm4 < cp:
+        """if nrm4 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(nrm4)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_nml4.delete(0,con.END)
-                return False
+                return False"""
         
 
         htl1 = self.ent_htl1.get()
@@ -5138,44 +5140,44 @@ class update_sp(base_window):
             self.ent_htl1.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if htl1 < cp:
+        """if htl1 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(htl1)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_htl1.delete(0,con.END)
-                return False
+                return False"""
         
         htl2 = float(htl2)
         if htl2 < 0.001:
             self.ent_htl2.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if htl2 < cp:
+        """if htl2 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(htl2)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_htl2.delete(0,con.END)
-                return False
+                return False"""
         
         htl3 = float(htl3)
         if htl3 < 0.001:
             self.ent_htl2.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if htl3 < cp:
+        """if htl3 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(htl3)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_htl3.delete(0,con.END)
-                return False
+                return False"""
         
         htl4 = float(htl4)
         if htl4 < 0.001:
             self.ent_htl4.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if htl4 < cp:
+        """if htl4 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(htl4)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_htl4.delete(0,con.END)
-                return False
+                return False"""
         
         spl1 = self.ent_spl1.get()
         spl2 = self.ent_spl2.get()
@@ -5209,44 +5211,44 @@ class update_sp(base_window):
             self.ent_spl1.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if spl1 < cp:
+        """if spl1 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(spl1)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_spl1.delete(0,con.END)
-                return False
+                return False"""
         
         spl2 = float(spl2)
         if spl2 < 0.001:
             self.ent_spl2.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if spl2 < cp:
+        """if spl2 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(spl2)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_spl2.delete(0,con.END)
-                return False
+                return False"""
         
         spl3 = float(spl3)
         if spl3 < 0.001:
             self.ent_spl3.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if spl3 < cp:
+        """if spl3 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(spl3)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_spl3.delete(0,con.END)
-                return False
+                return False"""
         
         spl4 = float(spl4)
         if spl4 < 0.001:
             self.ent_spl4.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if spl4 < cp:
+        """if spl4 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(spl4)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_spl4.delete(0,con.END)
-                return False
+                return False"""
         
         ang1 = self.ent_ang1.get()
         ang2 = self.ent_ang2.get()
@@ -5280,11 +5282,11 @@ class update_sp(base_window):
             self.ent_ang1.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if ang1 < cp:
+        """if ang1 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(ang1)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_ang1.delete(0,con.END)
-                return False
+                return False"""
         
         
         ang2 = float(ang2)
@@ -5292,33 +5294,47 @@ class update_sp(base_window):
             self.ent_ang2.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if ang2 < cp:
+        """if ang2 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(ang2)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_ang2.delete(0,con.END)
                 return False
-        
+        """
         ang3 = float(ang3)
         if ang3 < 0.001:
             self.ent_ang3.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if ang3 < cp:
+        """if ang3 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(ang3)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_ang3.delete(0,con.END)
                 return False
-        
+        """
         ang4 = float(ang4)
         if ang4 < 0.001:
             self.ent_ang4.delete(0,con.END)
             msg.showinfo("Selling Price","ಮಾರು ರೇಟ್ ಸರಿ ಹಾಕಿ ")
             return False
-        if ang4 < cp:
+        """if ang4 < cp:
             ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(ang4)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
             if ans:
                 self.ent_ang4.delete(0,con.END)
-                return False
+                return False"""
+
+        
+        sp = [nrm1 , nrm2 , nrm3 , nrm4 , htl1, htl2, htl3, htl4 , spl1 , spl2, spl3, spl4 , ang1 , ang2 , ang3 , ang4]
+
+        for i in sp:
+            if(float(i)<cp):
+                ans = msg.askyesno("Selling Price ಡೇಟ್ಸ್","ನಮಗೆ ಬಂದ್ CP: Rs."+str(cp)+" SP ಜಾಸ್ತಿ ಇರ್ಕ ಅಲ್ಲಾ\n SP:"+str(ang3)+" ಇದೆ ಇರ್ಕ ಆರೆ NOವೊತ್ತಿ")
+                if ans:
+                    return False
+                break
+
+
+        
+
         
         self.ent_ang4.focus_set()
         return True
