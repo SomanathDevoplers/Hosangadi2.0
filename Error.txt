@@ -10,3 +10,4 @@
 
 14/05/2022 18:27:22
 ['  File "C:\\Users\\vijay\\AppData\\Local\\Programs\\Python\\Python38\\lib\\tkinter\\__init__.py", line 1883, in __call__\n    return self.func(*args)\n', '  File "c:\\Users\\vijay\\Hosangadi2.0\\frontend\\forms.py", line 6656, in <lambda>\n    self.btn_backup = ttk.Button(self.main_frame , text = "BACKUP" , width = 10 , style = "window_btn_medium.TButton" ,command = lambda : self.backup(None))\n']
+ ok,o
