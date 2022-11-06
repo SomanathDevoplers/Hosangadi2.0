@@ -40,7 +40,7 @@ class purchase(base_window):
         self.selected_tax_meth = None
         self.check_state = False
         self.max_pro_per_warning =  get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select max_pro_per_warning from somanath.data"}).json()[0]['max_pro_per_warning']
-        
+        self.pro_per_warning = False
 
         self.form_id = others[5]
         #----------------------------------------prod_name toplevel------------------------------------------------------------------------------#
@@ -1049,6 +1049,9 @@ class purchase(base_window):
             return
 
         qty = float(qty)
+        if  qty <= 0.001:
+            msg.showerror("Error" ,  "Enter qty > 0.001")
+            return
         
     
         if cp != "" and cp != ".":
@@ -2120,7 +2123,8 @@ class purchase(base_window):
         if pro_per == "":
             pro_per = (float(nml1) - float(cp)) / float(cp) * 100
 
-        if float(pro_per) >= self.max_pro_per_warning:       
+        if float(pro_per) >= self.max_pro_per_warning and not self.pro_per_warning:
+            self.pro_per_warning = True       
             Thread(target = self.pro_per_warning_sound).start()
             self.ent_cost.select_range(0,con.END)
             self.ent_cost.focus_set()
@@ -2210,6 +2214,7 @@ class purchase(base_window):
         get("http://"+self.ip+":5000/purchases/addPurchaseProduct" , params = {"value" : values , 'form_id'   : self.form_id} )
 
         self.ent_bar.focus_set()
+        self.pro_per_warning = False
 
     def select_from_treeview(self , e):
         if self.prod_id != -1:
