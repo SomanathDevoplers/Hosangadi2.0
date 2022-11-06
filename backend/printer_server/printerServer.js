@@ -50,7 +50,7 @@ let con = mysql.createConnection({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "mysqlpassword5",
+  password: "#mysqlpassword5",
   multipleStatements : true
 });
 
@@ -58,7 +58,7 @@ var connection = new MySql({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "mysqlpassword5",
+  password: "#mysqlpassword5",
   multipleStatements : true
 });
 
