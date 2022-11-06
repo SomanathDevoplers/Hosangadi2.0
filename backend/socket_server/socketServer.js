@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require('uuid');
 const http = require('http');
 const express = require('express');
 const app = express();
@@ -7,17 +8,8 @@ const io = require('socket.io')(server , {
   pingInterval:5000 , 
 })
 
-
 const homeDir = require('os').homedir()
-const clientIo = require('socket.io-client')
-
-
-
 const mysql = require('mysql'); 
-const { time } = require('console');
-const { exit } = require('process');
-const { nanoid } = require('nanoid');
-const { connect } = require('http2');
 var MySql = require('sync-mysql');
 const fs = require('fs');
 const path = require('path');
@@ -26,7 +18,7 @@ var connection = new MySql({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "mysqlpassword5",
+  password: "#mysqlpassword5",
   multipleStatements : true
 });
 
@@ -36,7 +28,7 @@ let con = mysql.createConnection({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "mysqlpassword5",
+  password: "#mysqlpassword5",
   multipleStatements : true
 });
 
@@ -71,7 +63,7 @@ let getTime = () => {
         time+= ":0"+m
     else  
         time =time + ":"+ m
-    delete today
+    
     return time
 }
 
@@ -124,7 +116,7 @@ function insertToStocks( stkId ,purId , accId , firmId , dbYear , Time , userNam
         con.query(sqlStock , (err , res) => {
             purchaseSaving = false})
         con.commit()
-        
+        refreshProducts()
         return 0
       }
     else
@@ -458,7 +450,10 @@ io.on('connection', function (socket) {
               socket.broadcast.emit('error' , data)
           })
 
-
+      //refresh product hide when spurchase bill saved
+      global.refreshProducts = ()=>{
+        socket.broadcast.emit("refreshProductServer")
+      } 
 
 
 
@@ -835,7 +830,7 @@ app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
 
     saleId = salesDetails.sale_id
     if (saleId == '')
-        saleId = String(nanoid())
+        saleId = String(uuidv4())
     if (sales != undefined)
             {
                 newSaleObject = sales
@@ -1782,7 +1777,7 @@ app.get('/sales/voucher',(req,res)=>{
 //sales entry routes done
 
 
-
+/*
 process.on('uncaughtException', (error) => { 
   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
   io.sockets.emit('error' ,"\n"+String(error.stack))
@@ -1804,7 +1799,7 @@ function myCustomErrorHandler(err, req, res, next) {
 }
 app.use(myCustomErrorHandler);
 
-
+*/
 
 server.listen(5000);                                                                                                                           
 

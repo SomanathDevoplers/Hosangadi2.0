@@ -2660,6 +2660,8 @@ class sales(base_window):
         self.combo_cust_vch.config(state = con.NORMAL)
         self.combo_cust_vch.delete(0,con.END)
         self.ent_pdf_bill_no.config(state = con.NORMAL)
+        self.rad_vch_bill.focus_set()
+        self.btn_bill_only.config(state = con.DISABLED)
 
     def save_vch(self ,e):
         billNo = self.ent_pdf_bill_no.get()

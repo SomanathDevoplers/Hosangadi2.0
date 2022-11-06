@@ -16,7 +16,7 @@ con = mysql.createConnection({
     host: "localhost",
     port: "3306",
     user: "root",
-    password: "mysqlpassword5"
+    password: "#mysqlpassword5"
 });
 
 con.connect()
@@ -58,6 +58,7 @@ con.query("select  prod_name from somanath.products where prod_hide = 'False' or
 })
 
 con.query("select  prod_name from somanath.products order by prod_name" , (err , result) =>{
+  
   result.forEach(element => {
       prod_list_all.push(element['prod_name'])
   })
@@ -126,7 +127,7 @@ app.get('/getCustName' , (req , res) => {
   res.send(matched_products)
 })
 
-
+/*
 
 process.on('uncaughtException', (error) => {
   socket.emit('sendError' ,"\n"+String(error.stack))
@@ -144,9 +145,10 @@ function myCustomErrorHandler(err, req, res, next) {
 
 }
 
+
 app.use(myCustomErrorHandler);
 
-
+*/
 
 
 app.listen(4000)

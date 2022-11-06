@@ -3,6 +3,8 @@ from requests import get
 from other_classes import base_window
 from forms import prods,update_sp
 import datetime
+from playsound import playsound
+from threading import Thread
 
 
 
@@ -37,6 +39,8 @@ class purchase(base_window):
         self.added_products = []
         self.selected_tax_meth = None
         self.check_state = False
+        self.max_pro_per_warning =  get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select max_pro_per_warning from somanath.data"}).json()[0]['max_pro_per_warning']
+        self.pro_per_warning = False
 
         self.form_id = others[5]
         #----------------------------------------prod_name toplevel------------------------------------------------------------------------------#
@@ -1045,6 +1049,9 @@ class purchase(base_window):
             return
 
         qty = float(qty)
+        if  qty <= 0.001:
+            msg.showerror("Error" ,  "Enter qty > 0.001")
+            return
         
     
         if cp != "" and cp != ".":
@@ -1288,6 +1295,11 @@ class purchase(base_window):
             return
 
         qty = float(qty)
+        if qty <= 0.001:
+            msg.showinfo("Info" , "Enter QTY > 0.001")
+            self.ent_qty.select_range(0 , con.END)
+            self.ent_qty.focus_set()
+            return
         cp = float(tot_cost)/qty
 
         taxbl = cp/(1+ttp/100)
@@ -1339,6 +1351,8 @@ class purchase(base_window):
         gst_per = float(self.ent_gst.get())
         cess_per = float(self.ent_cess.get())
 
+        
+
         if qty == "" or tot_taxbl == "" or qty == "." or tot_taxbl == ".":
             self.ent_gst_ttl.config(state = con.NORMAL)
             self.ent_cess_ttl.config(state = con.NORMAL)
@@ -1352,6 +1366,12 @@ class purchase(base_window):
             return
 
         qty = float(qty)
+        if qty <= 0.001:
+            msg.showinfo("Info" , "Enter QTY > 0.001")
+            self.ent_qty.select_range(0 , con.END)
+            self.ent_qty.focus_set()
+            return
+
         taxbl = float(tot_taxbl)/qty
 
         cp = taxbl + (gst_per/100 * taxbl) + (cess_per/100 * taxbl)
@@ -2097,7 +2117,19 @@ class purchase(base_window):
             msg.showerror("Error" , "Enter ANG rates in correct order")
             self.ent_ang2.focus_set()
             return
+
+        pro_per = self.ent_pro_per.get()
         
+        if pro_per == "":
+            pro_per = (float(nml1) - float(cp)) / float(cp) * 100
+
+        if float(pro_per) >= self.max_pro_per_warning and not self.pro_per_warning:
+            self.pro_per_warning = True       
+            Thread(target = self.pro_per_warning_sound).start()
+            self.ent_cost.select_range(0,con.END)
+            self.ent_cost.focus_set()
+            return
+
         self.added_products.append(self.prod_id)
         
         values = [self.sl_no , self.ent_name.get().upper() , self.prod_gst , "{:.3f}".format(float(self.ent_cost.get())) , "{:.3f}".format(float(qty)) , "{:.3f}".format(float(self.ent_txb_ttl.get())) , "{:.3f}".format(float(self.ent_cost_ttl.get()))]
@@ -2131,6 +2163,7 @@ class purchase(base_window):
             
                 if prev_stk_sp != cur_stk_sp:
                     msg.showinfo("Info" , " SET SELLING PRICE")
+                    self.btn_clear_sp.focus_set()
                     arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
                     update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
 
@@ -2181,6 +2214,7 @@ class purchase(base_window):
         get("http://"+self.ip+":5000/purchases/addPurchaseProduct" , params = {"value" : values , 'form_id'   : self.form_id} )
 
         self.ent_bar.focus_set()
+        self.pro_per_warning = False
 
     def select_from_treeview(self , e):
         if self.prod_id != -1:
@@ -2541,6 +2575,12 @@ class purchase(base_window):
         
     def combo_entry_out(self , e):
         e.widget.select_clear()
+
+    def pro_per_warning_sound(self):
+        playsound("C:\\Program Files\\Hosangadi2.0\\purchaseQtyError.mp3")
+
+
+
     """-------------------------------------Utilities Ends here------------------------------------------"""
 
     """-------------------------------------socket event handlers----------------------------------------"""
@@ -2551,10 +2591,12 @@ class purchase(base_window):
     """-------------------------------------socket event handlers ends here------------------------------"""
 
     def upd_price(self , e):
+        self.btn_clear_sp.focus_set()
         arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
         update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
         
     def upd_prod(self , e):
+        self.btn_clear_sp.focus_set()
         arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Products" , [ self.args[5][0]  , self.args[5][9] , self.args[5][2] , self.args[5][3] , self.args[5][4]  , self.args[5][2] ,  self.args[5][6] ] , [  self.args[6][4] , self.args[6][0] ,self.args[6][2] , self.args[6][3] , self.args[8] ] ,  self.args[9]]
         prods(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id )
                

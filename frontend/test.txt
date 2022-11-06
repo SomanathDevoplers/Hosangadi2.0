@@ -15,3 +15,4 @@ insert into somanath2021.acc_bal values (563 , 0.00 , 0.00 , 0.00 , 0.00 , 0.00 
 SELECT acc_cls_bal_firm1+acc_cls_bal_firm2+acc_cls_bal_firm3 as balance,acc_name FROM somanath2022.acc_bal JOIN somanath.accounts ON 
 somanath2022.acc_bal.acc_id = somanath.accounts.acc_id where somanath.accounts.acc_type = 'CUST' order by 
 acc_cls_bal_firm1+acc_cls_bal_firm2+acc_cls_bal_firm3 desc
+
