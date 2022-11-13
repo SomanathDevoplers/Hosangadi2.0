@@ -2277,6 +2277,7 @@ class prods(base_window):
         self.sup_state = StringVar()
         self.generated_bar = None   
         self.check_all = StringVar()
+        self.generatewhensaved = False
         
 
         req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : 'select tax_per from somanath.taxes where tax_type = 0'})
@@ -3049,9 +3050,9 @@ class prods(base_window):
         else:
             pass
 
-
-        if barGenerated:
-            req = post("http://"+self.ip+":6000/barcodes" , params = {'type' : 'update' , 'barcode' : self.generated_bar})
+        
+        #if barGenerated:
+        #    req = post("http://"+self.ip+":6000/barcodes" , params = {'type' : 'update' , 'barcode' : self.generated_bar})
 
         
 
@@ -3059,15 +3060,14 @@ class prods(base_window):
         self.btn_add_cat.focus_set()
 
     def generate(self,e):
+        """
         req = post("http://"+self.ip+":6000/barcodes" , params = {'type' : 'get'})
         max_bar = req.json()
         self.generated_bar = int(max_bar)
         barcode = "S"+str("{:05d}".format(int(max_bar)))
-            
+        """   
         
-        if self.ent_bar1.get() == "":
-            self.ent_bar1.insert(0 , barcode)
-        else:
+        if self.ent_bar1.get() != "":
             msg.showinfo("Info" , "Clear Barcode 1 to generate")
             self.ent_bar1.select_range(0,con.END)
             self.ent_bar1.focus_set()
@@ -3076,6 +3076,10 @@ class prods(base_window):
 
 
         self.btn_gen_bar.config(state = con.DISABLED)
+        msg.showinfo("Info" , "BARCODE GENERATE ಆಗಿದೆ")
+        self.destroy_top_bar(None)
+        self.generatewhensaved = True
+
     """Barcode entry ends here"""
 
 
@@ -3501,6 +3505,7 @@ class prods(base_window):
         self.btn_new.config(state = con.DISABLED)
         self.btn_edit.config(state = con.DISABLED)
         self.btn_save.config(state = con.NORMAL)
+        self.generatewhensaved = False
 
         self.enable_all()
         if self.check_all.get() == "False":
@@ -3532,6 +3537,7 @@ class prods(base_window):
         self.btn_new.config(state = con.DISABLED)
         self.btn_edit.config(state = con.DISABLED)
         self.btn_save.config(state = con.NORMAL)
+        self.generatewhensaved = False
 
         self.new_state = False
         self.edit_state = True
@@ -3614,7 +3620,7 @@ class prods(base_window):
 
         desc = self.ent_desc.get(0.0 , con.END)
     
-        if bar1 == "" and bar2 == "" and bar3 =="" and bar4 == "":
+        if (bar1 == "" and bar2 == "" and bar3 =="" and bar4 == "") and not self.generatewhensaved:
             msg.showerror("Info" , "Enter barcode")
             self.show_top_bar(None)
             return
@@ -3797,12 +3803,46 @@ class prods(base_window):
         if sup2 != "" : suppliers.append(sup2)
         if sup3 != "" : suppliers.append(sup3)
 
+        name = self.ent_name.get().upper()
+        temp = name.split()
+        name = ""
+
+        i = 0
+        for each in temp:
+            if i == 0:
+                name += each
+            else:
+                name += " "+each
+            i+=1
+
+        
+        sql = "select prod_name from somanath.products where prod_name = '"+ name +"'"
+        
+        if not self.new_state:
+            sql += " and prod_id != "+ str(self.selected_prod)
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        if req.status_code == 200:
+            if len(req.json())>0:
+                msg.showinfo("Info" , "This product name exists")
+                self.ent_name.select_range(0 , con.END)
+                self.ent_name.focus_set()
+                return
+        self.ent_name.delete(0,con.END)
+        self.ent_name.insert(0,name)
+
+
+
+        if self.generatewhensaved:
+            sql = "select max_prod_bar from somanath.data;update somanath.data set max_prod_bar = max_prod_bar+1"
+            req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+            bargen = "S"+"{:05d}".format(int(req.json()[0][0]['max_prod_bar'])+1)
+
         prod_bar = ":"
+        if bargen != "": prod_bar += bargen +":"
         if bar1 != "": prod_bar += bar1 +":"
         if bar2 != "": prod_bar += bar2 +":"
         if bar3 != "": prod_bar += bar3 +":"
-        if bar4 != "": prod_bar += bar4 +":"
-        
+        if bargen=="" and bar4 != "": prod_bar += bar4 +":"
         
         temp = categories
         categories = ":"
@@ -3837,7 +3877,6 @@ class prods(base_window):
         units_ang = ":"
         for each in temp:
             units_ang += "{:.3f}".format(each) + ":"
-
 
 
         #prod_id, prod_bar, prod_name, prod_cat, prod_hsn, kan_name, prod_name_eng, prod_min_qty, prod_expiry, prod_mrp, prod_mrp_old, prod_sup, prod_gst, prod_cess, prod_unit_type, nml_unit, htl_unit, spl_unit, ang_unit, high_img, low_img, insert_time, insert_id, update_time, update_id
@@ -3927,9 +3966,10 @@ class prods(base_window):
         if req.status_code == 201:
             msg.showerror("This products has been added")
             return
-
-        if self.generated_bar != None:
-            req = post("http://"+self.ip+":6000/barcodes" , params = {'type' : 'save' , 'barcode' : self.generated_bar})
+        
+        self.generatewhensaved = False 
+        #if self.generated_bar != None:
+        #    req = post("http://"+self.ip+":6000/barcodes" , params = {'type' : 'save' , 'barcode' : self.generated_bar})
 
         
 
@@ -6214,7 +6254,7 @@ class barcodes(base_window):
         self.ent_name = ttk.Entry(self.frm_barcode  , state = con.DISABLED, width = 30 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)), validate="key", validatecommand=(validations[0], '%P'))
         self.ent_name.bind('<Return>' , self.enter_barcode)
 
-        self.lbl_sp = ttk.Label(self.frm_barcode , text = "SP    :" , style = "window_text_medium.TLabel")
+        self.lbl_sp = ttk.Label(self.frm_barcode , text = "(Sticker ಮೇಲೆ ಇದೆ ಬಪ್ಪುದ್) SP    :" , style = "window_text_medium.TLabel")
         self.ent_sp = ttk.Entry(self.frm_barcode  , state = con.DISABLED, width = 8 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)), validate="key", validatecommand=(validations[1], '%P'))
         self.ent_sp.bind('<Return>' , self.enter_barcode)
 
@@ -6226,13 +6266,13 @@ class barcodes(base_window):
         self.ent_qty = ttk.Entry(self.frm_barcode  , state = con.DISABLED, width = 8 ,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)), validate="key", validatecommand=(validations[1], '%P'))
         self.ent_qty.bind('<Return>' , self.enter_barcode)
 
-        self.lbl_name.grid(row = 0, column = 0)
+        self.lbl_name.grid(row = 0, column = 0 , sticky = con.E)
         self.ent_name.grid(row = 0, column = 1)
-        self.lbl_sp.grid(row = 1, column = 0)
+        self.lbl_sp.grid(row = 1, column = 0 , sticky = con.E)
         self.ent_sp.grid(row = 1, column = 1 , sticky = con.W)
-        self.lbl_mrp.grid(row = 2, column = 0)
+        self.lbl_mrp.grid(row = 2, column = 0 , sticky = con.E)
         self.ent_mrp.grid(row = 2, column = 1, sticky = con.W)
-        self.lbl_qty.grid(row = 3, column = 0)
+        self.lbl_qty.grid(row = 3, column = 0 , sticky = con.E)
         self.ent_qty.grid(row = 3, column = 1, sticky = con.W)
 
 
@@ -6521,6 +6561,18 @@ class barcodes(base_window):
         mrp = self.ent_mrp.get()
         qty = self.ent_qty.get()
 
+        try:
+            float(sp)
+            float(qty)
+        except ValueError:
+            msg.showerror("ERROR" , "QTY ಮತ್ತು SP ಸರಿ ಹಾಕಿ")
+            return
+
+        if float(qty)==0:
+            msg.showerror("ERROR" , "QTY 0 ಕಿಂತ ಜಾಸ್ತಿ ಹಾಕಿ")
+            return 
+
+
         i = len(self.tree_barcodes.get_children())
 
         if i %2 == 0:
@@ -6528,11 +6580,27 @@ class barcodes(base_window):
         else:
             tag = 'b'
 
-        
+        barcodes = str(self.selected_product[1]).split(":")
+        printable_barcode = barcodes[0]
+        #if only one barcode then add it to print else check each barcode of form "S+(int)". If not exists then select first one
+        if len(barcodes) == 1:
+            printable_barcode = barcodes[0]
+        else:
+            contains_our_barcode = False
+            for each in barcodes:
+                index_of_s = each.find("S")
+                if index_of_s == 0:
+                    try:
+                        int(each[1:])
+                        printable_barcode = each
+                        contains_our_barcode = True
+                        break
+                    except ValueError:
+                        pass
+            if(not contains_our_barcode):
+                printable_barcode = barcodes[0]
 
-        self.tree_barcodes.insert( '', 'end', tags = tag , values = [  name , qty , "{:.2f}".format(round(float(self.cp),2)) , mrp , sp , self.selected_product[1]])
-
-
+        self.tree_barcodes.insert( '', 'end', tags = tag , values = [  name , qty , "{:.2f}".format(round(float(self.cp),2)) , mrp , sp , printable_barcode])
         self.clear_bar(None)
         self.disable_bar(None)
 
