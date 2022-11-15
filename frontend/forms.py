@@ -3831,7 +3831,7 @@ class prods(base_window):
         self.ent_name.insert(0,name)
 
 
-
+        bargen = ""
         if self.generatewhensaved:
             sql = "select max_prod_bar from somanath.data;update somanath.data set max_prod_bar = max_prod_bar+1"
             req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})

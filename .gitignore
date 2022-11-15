@@ -870,16 +870,7 @@ node_modules/wrappy/LICENSE
 node_modules/wrappy/package.json
 node_modules/wrappy/README.md
 node_modules/wrappy/wrappy.js
-backend/report_server/package-lock.json
-backend/report_server/package.json
-backend/report_server/package-lock.json
-backend/report_server/package.json
-backend/report_server/package-lock.json
 package-lock.json
-backend/report_server/package.json
-backend/report_server/package-lock.json
-backend/report_server/package-lock.json
-backend/report_server/package.json
 frontend/__pycache__/accounts.cpython-38.pyc
 frontend/__pycache__/base_window.cpython-38.pyc
 frontend/__pycache__/base_window.cpython-39.pyc
