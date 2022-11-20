@@ -8,6 +8,7 @@ import time
 import json
 from  tkdocviewer import DocViewer
 import os
+from shutil import copyfile
 
 
 
@@ -2183,7 +2184,10 @@ class sales(base_window):
             self.pdf.display_file(self.displayed_pdf)
             self.change_page_count = True
             self.rad_even_odd.set(-1)
-
+            try:
+                copyfile(self.location+"\\Desktop\\Invoices\\invoice.pdf",self.location+"\\Desktop\\Invoices\\oldinvoices\\"+str(saved_bill_no)+".pdf")
+            except:
+                pass
 
             #enable bill_print right frame
             self.enable_vch_details()
