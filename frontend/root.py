@@ -73,10 +73,16 @@ tax_check = False
 
 
 def show_error(*args):
+    for each in str(traceback.format_tb(args[3])).split(":"):
+        if each == " Packets out of order. Got":
+            f = open("C:\\Program Files\\Hosangadi2.0\\Error.txt", "a")
+            f.write('\n'+datetime.now().strftime("%d/%m/%Y %H:%M:%S")+'\n'+"Packets of the Order"+'\n')
+            f.close()
+            return
     notification(traceback.format_tb(args[3]))
     #root.bell()
 
-#Tk.report_callback_exception = show_error
+Tk.report_callback_exception = show_error
 
 def socketKeepAlive():
     
@@ -594,14 +600,14 @@ try:
 
   #@ remove try excpet block
 except:
-    #ip = "192.168.0.100"
+    # ip = "192.168.0.103"
     ip = "127.0.0.1"
-    lbl_user_name.config(text = "VIJAY")    
+    lbl_user_name.config(text = "HEMA")    
     lbl_user_type.config(text = "OWNER")
     lbl_fin_year.config(text = "2022-2023")
     lbl_server_name.config(text = ip)
     form_id = '1'
-    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "VIJAY" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023" , "form_id" : form_id })
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "HEMA" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023" , "form_id" : form_id })
     year = "22"
 
 user =lbl_user_name.cget("text")

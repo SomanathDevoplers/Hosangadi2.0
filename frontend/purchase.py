@@ -2163,7 +2163,7 @@ class purchase(base_window):
             
                 if prev_stk_sp != cur_stk_sp:
                     msg.showinfo("Info" , " SET SELLING PRICE")
-                    self.btn_clear_sp.focus_set()
+                    self.ent_bar.focus_set()
                     arglist = [ self.args[0] , self.args[1] ,self.args[2] , self.args[3] , "Update SP" , [self.args[5][4]  , self.args[5][1]] , self.args[6][:-1] , self.args[10]  ]
                     update_sp(arglist[0] , arglist[1] , arglist[2] , arglist[3] , arglist[4] , arglist[5] , arglist[6] , arglist[7] , self.prod_id ,self.ent_name.get())
 

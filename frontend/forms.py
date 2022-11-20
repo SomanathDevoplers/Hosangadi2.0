@@ -2496,13 +2496,13 @@ class prods(base_window):
         self.btn_frame = ttk.Frame(self.main_frame , style = "root_main.TFrame")
         self.btn_new = ttk.Button(self.btn_frame , text = "New" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.new(None))
         self.btn_new.bind("<Return>" , self.new) 
-        self.btn_edit = ttk.Button(self.btn_frame , text = "Edit" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.edit(None))
+        self.btn_edit = ttk.Button(self.btn_frame , text = "Edit" ,state= con.DISABLED , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.edit(None))
         self.btn_edit.bind("<Return>" , self.edit)
-        self.btn_save = ttk.Button(self.btn_frame , text = "Save" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.save(None))
+        self.btn_save = ttk.Button(self.btn_frame , text = "Save" ,state= con.DISABLED , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.save(None))
         self.btn_save.bind("<Return>" , self.save)
         self.btn_refresh = ttk.Button(self.btn_frame , text = "Refresh" , width = 7 , style = "window_btn_medium.TButton" ,command = lambda : self.refresh(None))
         self.btn_refresh.bind("<Return>" , self.refresh)
-
+        
 
         self.lbl_bar.grid(row = 0 , column = 0  , pady = int(self.main_hgt*0.01))
         self.lbl_name.grid(row = 1 , column = 0 , pady = int(self.main_hgt*0.01))
@@ -6833,7 +6833,7 @@ class db(base_window):
             try:
                 dir_folder = drive+":\\backup\\"+db_file
                 copyfile(src,dir_folder)
-            except FileNotFoundError:
+            except:
                 msg.showerror("ERROR" , "Enter Correct Usb Drive Letter \n Goto This Pc and find usb drive letter")         
         os.remove(src)
         msg.showinfo("Success!","Backup Complete")
