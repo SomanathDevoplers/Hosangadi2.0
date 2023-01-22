@@ -2539,6 +2539,10 @@ class sales(base_window):
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = True
         self.rad_even_odd.set(-1)
+        try:
+            copyfile(self.location+"\\Desktop\\Invoices\\invoice.pdf",self.location+"\\Desktop\\Invoices\\oldinvoices\\"+self.ent_bill_no.get()+".pdf")
+        except:
+            pass 
 
     def print_only_vch(self , e):
         self.enable_print_details()
@@ -2549,6 +2553,10 @@ class sales(base_window):
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = False
         self.rad_even_odd.set(-1)
+        try:
+            copyfile(self.location+"\\Desktop\\Invoices\\voucher.pdf",self.location+"\\Desktop\\Invoices\\oldinvoices\\voucher\\"+"V_"+self.combo_cust_vch.get()+str(datetime.datetime.today().strftime('%Y-%m-%d_%H_%M_%S'))+".pdf")
+        except:
+            pass 
 
     def print_only_bill(self , e):
         self.enable_print_details()
@@ -2575,6 +2583,10 @@ class sales(base_window):
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = True
         self.rad_even_odd.set(-1)
+        try:
+            copyfile(self.location+"\\Desktop\\Invoices\\invoice.pdf",self.location+"\\Desktop\\Invoices\\oldinvoices\\"+str(bill_no)+".pdf")
+        except:
+            pass
 
     def print(self , e):
         #After Print function
@@ -3005,6 +3017,10 @@ class sales(base_window):
         self.btn_vch.config(state = con.DISABLED)
         self.btn_vch_bill.config(state = con.DISABLED)
         self.rad_even_odd.set(-1)
+        try:
+            copyfile(self.location+"\\Desktop\\Invoices\\invoice.pdf",self.location+"\\Desktop\\Invoices\\oldinvoices\\"+self.ent_pdf_bill_no.get()+".pdf")
+        except:
+            pass 
          
     def show_even_pages(self):
         i = self.rendered_page_count

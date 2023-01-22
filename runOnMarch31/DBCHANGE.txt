@@ -19,7 +19,7 @@ if (not Found){
 4)copying data to acc_bal
 
 insert into somanath20xy.acc_bal (acc_id, acc_opn_bal_firm1, acc_opn_bal_firm2, acc_opn_bal_firm3, acc_cls_bal_firm1, acc_cls_bal_firm2, acc_cls_bal_firm3) 
-select somanath20xx.acc_bal.acc_id ,  somanath20xx.acc_bal.acc_cls_bal_firm1 , somanath20xx.acc_bal.acc_cls_bal_firm2 , somanath20xx.acc_bal.acc_cls_bal_firm3 , 0 , 0  , 0 
+select somanath20xx.acc_bal.acc_id ,  somanath20xx.acc_bal.acc_cls_bal_firm1 , somanath20xx.acc_bal.acc_cls_bal_firm2 , somanath20xx.acc_bal.acc_cls_bal_firm3 ,  somanath20xx.acc_bal.acc_cls_bal_firm1 , somanath20xx.acc_bal.acc_cls_bal_firm2 , somanath20xx.acc_bal.acc_cls_bal_firm3
 from somanath20xx.acc_bal
 
 
