@@ -1511,6 +1511,10 @@ app.get('/sales/checkKannada', (req,res) =>{
     doc 
       .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Medium.ttf'))
       .text(req.query.kannada,10,10)
+    doc
+      .fontSize(8.5)
+      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
+      .text(req.query.kannada.slice(0,23),5, 10)
       doc.end()
       res.sendStatus(200)
     }catch(err){
