@@ -1855,7 +1855,7 @@ app.post('/PrintInvoice' , files.single('file') ,(req,res) =>{
     res.sendStatus(200)
 }) 
 
-/*
+
 process.on('uncaughtException', (error) => {
   socket.emit('sendError' ,"\n"+String(error.stack))
   process.exit(1)
@@ -1872,7 +1872,7 @@ function myCustomErrorHandler(err, req, res, next) {
   process.exit(1);
 
 }
-app.use(myCustomErrorHandler);*/
+app.use(myCustomErrorHandler);
 
 
 app.listen(7000);
