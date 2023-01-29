@@ -659,13 +659,27 @@ app.get('/purchases/save'  , (req , res) =>{
         
         sql = "select firm_id from somanath.firms where firm_name = '"+purDetails.firmName+"'"
         con.query(sql , (err , result) =>{
+
+                  if (err) {
+                    console.log(err);
+                    throw err; 
+                  }
+
                   firmId = result[0]['firm_id']
                   sql1 = "select acc_id from somanath.accounts where acc_name = '"+purDetails.supName+"'"
                   con.query(sql1 , (err1 , result1)=>{
+                            if (err1) {
+                              console.log(err1);
+                              throw err1; 
+                            }
 
                             accId = result1[0]['acc_id']
                             sql2 = "select purchases , cashflow_purchase as cashflow , stocks , acc_cls_bal_firm"+firmId+" as acc_cls_bal from somanath20"+dbYear+".max_id , somanath20"+dbYear+".acc_bal where acc_bal.acc_id = " + accId
                             con.query(sql2 , (err2 , result2) => {
+                                      if (err2) {
+                                        console.log(err2);
+                                        throw err2; 
+                                      }
 
                                       maxPurId = parseInt(result2[0]['purchases'])+1
                                     //correct +1
@@ -719,7 +733,13 @@ app.get('/purchases/save'  , (req , res) =>{
                                       
                                       sqlStock =  "insert into somanath20"+dbYear+".stocks values "
                                       con.query(sql3 + sql4 + sql5 + sql6 + sqlProdHideUpdate , (err3, result3) =>{
-                                        insertToStocks(maxStockId , dbYear+"_"+ maxPurId , accId , firmId , dbYear , Time , userName, purDetails.products , Object.keys(purDetails.products) , 0 , Object.keys(purDetails.products).length , res , sqlStock , editState , purDetails.insertTime , purDetails.insertId) 
+                                          if (err3) {
+                                            console.log(err3);
+                                            throw err3; 
+                                          }
+                                          else{
+                                            insertToStocks(maxStockId , dbYear+"_"+ maxPurId , accId , firmId , dbYear , Time , userName, purDetails.products , Object.keys(purDetails.products) , 0 , Object.keys(purDetails.products).length , res , sqlStock , editState , purDetails.insertTime , purDetails.insertId) 
+                                          }
                                       })
                                       
                                 })
@@ -1777,7 +1797,7 @@ app.get('/sales/voucher',(req,res)=>{
 //sales entry routes done
 
 
-/*
+
 process.on('uncaughtException', (error) => { 
   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
   io.sockets.emit('error' ,"\n"+String(error.stack))
@@ -1799,7 +1819,6 @@ function myCustomErrorHandler(err, req, res, next) {
 }
 app.use(myCustomErrorHandler);
 
-*/
 
 server.listen(5000);                                                                                                                           
 

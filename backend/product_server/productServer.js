@@ -127,7 +127,7 @@ app.get('/getCustName' , (req , res) => {
   res.send(matched_products)
 })
 
-/*
+
 
 process.on('uncaughtException', (error) => {
   socket.emit('sendError' ,"\n"+String(error.stack))
@@ -148,7 +148,7 @@ function myCustomErrorHandler(err, req, res, next) {
 
 app.use(myCustomErrorHandler);
 
-*/
+
 
 
 app.listen(4000)

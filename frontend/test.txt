@@ -16,3 +16,7 @@ SELECT acc_cls_bal_firm1+acc_cls_bal_firm2+acc_cls_bal_firm3 as balance,acc_name
 somanath2022.acc_bal.acc_id = somanath.accounts.acc_id where somanath.accounts.acc_type = 'CUST' order by 
 acc_cls_bal_firm1+acc_cls_bal_firm2+acc_cls_bal_firm3 desc
 
+Text to speech
+https://www.narakeet.com
+https://cloudconvert.com/m4a-to-mp3
+

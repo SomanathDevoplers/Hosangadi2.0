@@ -18,6 +18,8 @@ from math import floor
 from shutil import copyfile
 from webbrowser import open as edge
 import datetime
+from playsound import playsound
+from threading import Thread
 
 class firm(base_window):
     def __init__(self , root ,frames , dmsn , lbls ,title,validations,others , firm_form):
@@ -6587,6 +6589,19 @@ class barcodes(base_window):
         #if only one barcode then add it to print else check each barcode of form "S+(int)". If not exists then select first one
         if len(barcodes) == 1:
             printable_barcode = barcodes[0]
+            index_of_s = printable_barcode.find("S")
+            contains_our_barcode = False
+            if index_of_s == 0:
+                try:
+                    int(printable_barcode[1:])
+                    contains_our_barcode = True
+                except ValueError:
+                    pass
+            if(not contains_our_barcode):
+                Thread(target = self.other_barcode_only_warning_sound).start()
+                ans = msg.askokcancel("ERROR" , "COMPANY BARCODE ಇದೆ STICKER ಮೇಲೆ RATE ಬರುದಿಲ್ಲ")
+                if(not ans):
+                    return          
         else:
             contains_our_barcode = False
             for each in barcodes:
@@ -6601,6 +6616,10 @@ class barcodes(base_window):
                         pass
             if(not contains_our_barcode):
                 printable_barcode = barcodes[0]
+                Thread(target = self.other_barcode_only_warning_sound).start()
+                ans = msg.askokcancel("ERROR" , "COMPANY BARCODE ಇದೆ STICKER ಮೇಲೆ RATE ಬರುದಿಲ್ಲ")
+                if(not ans):
+                    return 
 
         self.tree_barcodes.insert( '', 'end', tags = tag , values = [  name , qty , "{:.2f}".format(round(float(self.cp),2)) , mrp , sp , printable_barcode])
         self.clear_bar(None)
@@ -6775,6 +6794,8 @@ class barcodes(base_window):
             if val == value:
                 return key
 
+    def other_barcode_only_warning_sound(self):
+        playsound("C:\\Program Files\\Hosangadi2.0\\otherbarcodeerror.mp3")
 
 
 
