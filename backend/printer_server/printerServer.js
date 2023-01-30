@@ -62,6 +62,8 @@ var connection = new MySql({
   multipleStatements : true
 });
 
+con.connect()
+
 function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal,oldBalData,page, res,gst){
   if(page == 0)
   {
