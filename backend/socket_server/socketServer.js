@@ -564,28 +564,25 @@ app.get('/getOldStocks' ,  (req , res )=>{
   nStocks = 0
   totalQty = 0
   n = 1
-  con.query("select prod_mrp , prod_mrp_old ,  date_format(insert_time, ('%y')) as minDate from somanath.products where prod_id = " + prodId , (err , result) =>{
+  con.query("select prod_mrp , prod_mrp_old ,  date_format(insert_time, ('%y')) as insertYear, date_format(insert_time, ('%m')) as insertMonth from somanath.products where prod_id = " + prodId , (err , result) =>{
 
     stocks['prodMrp1'] = result[0]['prod_mrp']
     stocks['prodMrp2'] = result[0]['prod_mrp_old']
     stocks['totQty'] = 0
     stocks['stocks'] = []
-    minYear = result[0]['minDate']
+    minYear = result[0]['insertYear']
+    if(result[0]['insertMonth']<4)
+      minYear--;
     sql2 = "SELECT count(stk_prod_id) as max FROM somanath20"+dbYear+".stocks where stk_prod_qty >0 and stk_prod_id = " + prodId
     con.query(sql2 , (err2 , result2) =>{
-
             newMax = result2[0].max
-
-
             if(newMax > max)
                 max = newMax
-
             if(dbYear >= minYear)
             {
-                
               n =  getOldStocks(prodId , dbYear ,dbYear , minYear , stocks , nStocks , max , res);
             }
-          if(n)
+            if(n)
               res.send(stocks)
 
     })
