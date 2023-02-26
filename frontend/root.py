@@ -121,8 +121,10 @@ def reportReady(data,fileName):
     msg.showinfo("Info" , " Report is Ready")
 
 
-
-        
+@sio.on('hasOwnbackup')
+def backupOwnLostData(sales , purchase):
+    print("yes" , sales , purchase)
+   
 
 
 #-------form open counts----------#
@@ -267,7 +269,7 @@ def val_mobile(char):
 def val_date(char):
     flag = True
     for each in char:
-        if not (each.isdigit() or each != "-" or each != "/"):
+        if not (each.isdigit() or each == "-"):
             flag = False
     return flag
 

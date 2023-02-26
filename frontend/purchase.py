@@ -240,6 +240,8 @@ class purchase(base_window):
         self.ent_inv_no.bind("<Escape>" , self.destroy_pur_details)
         self.ent_inv_no.bind("<Return>" ,self.edit_invoice)
 
+        self.btn_new_cash_bill = ttk.Button(self.frm_pur_details_2 ,text = " New Cash Bill "  , style = "window_btn_medium.TButton" , command = lambda : self.add_new_cash_bill(None))
+        self.btn_new_cash_bill.bind("<Return>" , self.add_new_cash_bill)
         self.btn_cancel_pur = ttk.Button(self.frm_pur_details_2 , text = "Cancel" , width = 6 , style = "window_btn_medium.TButton" ,command = lambda : self.cancel(None))
         self.btn_cancel_pur.bind("<Return>" , self.cancel)
 
@@ -258,6 +260,7 @@ class purchase(base_window):
         self.lbl_firm_gst.grid(row = 4 , column = 1 , sticky = con.W)
         self.ent_pur_date.grid(row = 5 , column = 1, sticky = con.W)
         self.ent_inv_no.grid(row = 6 , column = 1, sticky = con.W)
+        self.btn_new_cash_bill.grid(row = 7 , column = 0 , sticky = con.W)
         self.btn_cancel_pur.grid(row = 7 , column = 1, sticky = con.W)
 
         self.frm_pur_details_2.pack(anchor = con.CENTER , pady = 4)
@@ -856,7 +859,7 @@ class purchase(base_window):
             return
 
         if sup_gst == 'CASH' and firm_gst != '':
-            msg.showinfo("Info" , "Select cash firsm for cash purchase")
+            msg.showinfo("Info" , "Select cash firm for cash purchase")
             self.combo_firms.focus_set()
             return
 
@@ -902,12 +905,6 @@ class purchase(base_window):
 
         self.ent_pur_date.delete(0,con.END)
         self.ent_pur_date.insert(0,date1[0] + "-" + date1[1] + "-" + date1[2])
-    
-        #self.sio.emit("hello")
-        
-        
-
-        
         params = {
                     "sup_name" : sup_name,
                     "tax_method" : self.selected_tax_meth,
@@ -931,14 +928,16 @@ class purchase(base_window):
         #treomove if 
         #remove
         #temporary
-        if res.status_code == 201:
-            msg.showerror("Error" , "This invoice is currently being added")
-            return
-        if res.status_code == 202:
-            msg.showerror("Error" , "This invoice has already been added")
-            self.ent_inv_no.select_range(0,con.END)
-            self.ent_inv_no.focus_set()
-            return
+        if firm_name != "SOMANATH CASH":
+            if res.status_code == 201:
+                msg.showerror("Error" , "This invoice is currently being added")
+                return
+            
+            if res.status_code == 202:
+                msg.showerror("Error" , "This invoice has already been added")
+                self.ent_inv_no.select_range(0,con.END)
+                self.ent_inv_no.focus_set()
+                return
         self.frm_pur_details.place_forget()
         self.enable_all()
         self.ent_bar.focus_set()
@@ -1017,6 +1016,17 @@ class purchase(base_window):
         self.ent_amt_paid.delete(0,con.END)
         if self.chk_full_paid.instate(['selected']) == True:
             self.ent_amt_paid.insert(0 , self.lbl_grd_tot.cget("text"))
+
+    def add_new_cash_bill(self , e):
+        self.combo_supplier.set("CASH")
+        self.lbl_sup_gst.config(text="CASH")
+        self.combo_tax_meth.set("In-State")
+        self.combo_firms.set("SOMANATH CASH")
+        self.lbl_firm_gst.config(text = "")
+        self.ent_pur_date.delete(0,con.END)
+        self.ent_pur_date.insert(0 ,  datetime.date.today().strftime("%d") + "-" +datetime.date.today().strftime("%m") + "-" + datetime.date.today().strftime("%Y"))
+        self.ent_inv_no.delete(0,con.END)
+        self.ent_inv_no.insert(0 , "CASH")
 
     """--------------------------Purchase detail functions-----------------------------------------------"""
 
@@ -2579,7 +2589,11 @@ class purchase(base_window):
     def pro_per_warning_sound(self):
         playsound("C:\\Program Files\\Hosangadi2.0\\purchaseQtyError.mp3")
 
+    def SSM_save_sound(self):
+        playsound("C:\\Program Files\\Hosangadi2.0\\SSM.mp3")
 
+    def SEM_save_sound(self):
+        playsound("C:\\Program Files\\Hosangadi2.0\\SEM.mp3")
 
     """-------------------------------------Utilities Ends here------------------------------------------"""
 
@@ -2901,8 +2915,14 @@ class purchase(base_window):
         if amt_paid == "" or amt_paid == ".":
             msg.showinfo("Info" , "Add Amount Paid")
             return
+        
+        firm_name = self.combo_firms.get()
+        if firm_name == "SOMANATH STORES":
+            Thread(target = self.SSM_save_sound).start()
+        elif firm_name == "SOMANATH ENTERPRICES":
+            Thread(target = self.SEM_save_sound).start()
 
-        msgstr = "Check the following details : \n\n Firm Name\t: "+self.combo_firms.get()+" \n Supplier Name\t: "+self.combo_supplier.get()+"\n Supplier GST\t: "+self.lbl_sup_gst.cget("text")+"\n Invoice No\t: "+self.ent_inv_no.get()+"\n Invoice Date\t: "+self.ent_pur_date.get()+"\n Total Taxbl\t: "+self.lbl_tot_txbl.cget("text")+"\n Total GST\t: "+"{:.2f}".format(float(self.lbl_tot_tax.cget("text")) - float(self.lbl_tot_cess.cget("text")))+"\n Grand Total\t: "+self.lbl_grd_tot.cget("text") + "\n Payment Mode\t: "+self.combo_pay_meth.get()
+        msgstr = "Check the following details : \n\n Firm Name\t: "+firm_name+" \n Supplier Name\t: "+self.combo_supplier.get()+"\n Supplier GST\t: "+self.lbl_sup_gst.cget("text")+"\n Invoice No\t: "+self.ent_inv_no.get()+"\n Invoice Date\t: "+self.ent_pur_date.get()+"\n Total Taxbl\t: "+self.lbl_tot_txbl.cget("text")+"\n Total GST\t: "+"{:.2f}".format(float(self.lbl_tot_tax.cget("text")) - float(self.lbl_tot_cess.cget("text")))+"\n Grand Total\t: "+self.lbl_grd_tot.cget("text") + "\n Payment Mode\t: "+self.combo_pay_meth.get()
         if not msg.askokcancel("Info" , msgstr):
             return
 

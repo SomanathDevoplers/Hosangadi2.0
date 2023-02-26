@@ -398,15 +398,17 @@ io.on('connection', function (socket) {
         newUser = {"id" : socket.id , "userName" : socketData['user_name'] , "userType": socketData['user_type'] , "loggedInAt":getTime() , "purchases" : {} , "sales" : {}}
         if (backedUpdata != "{}")
         {
-          backedupuser = backedUpdata[clientId]
-          newUser.sales = backedupuser.sales
-          newUser.purchases = backedupuser.purchases
-          delete backedUpdata[clientId]
-          fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backedUpdata));
+              backedupuser = backedUpdata[clientId]
+              newUser.sales = backedupuser.sales
+              newUser.purchases = backedupuser.purchases
+              delete backedUpdata[clientId]
+              fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backedUpdata));
+              socket.emit("hasOwnbackup" , newUser.sales , newUser.purchases)
         }
         usersLogged[clientId] = newUser
+        console.log("connected : ",usersLogged);
       }
-    
+      
 
     //connection event ends 
 
@@ -416,7 +418,7 @@ io.on('connection', function (socket) {
             clientId = socket.handshake.headers.form_id
             if(socket.handshake.headers['user-agent'] != 'node-XMLHttpRequest')
             {
-              if(Object.keys(usersLogged[clientId].sales).length != 0 || Object.keys(usersLogged[clientId].purchases).length != 0)
+              if(Object.keys(usersLogged[clientId].sales).length > 0 || Object.keys(usersLogged[clientId].purchases).length > 0)
                 fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
               delete usersLogged[clientId]
             }
@@ -841,7 +843,7 @@ app.get('/sales/addEditNewSalesDetails' , (req , res) =>{
 
     sales = usersLogged[form_id].sales[salesDetails.sale_id]
     
-    
+
 
     
 
