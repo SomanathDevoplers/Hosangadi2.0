@@ -1796,26 +1796,26 @@ app.get('/sales/voucher',(req,res)=>{
 
 
 
-// process.on('uncaughtException', (error) => { 
-//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-//   io.sockets.emit('error' ,"\n"+String(error.stack))
-//   console.log(error.stack);
-//   process.exit(1)  
-// });
+process.on('uncaughtException', (error) => { 
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  io.sockets.emit('error' ,"\n"+String(error.stack))
+  console.log(error.stack);
+  process.exit(1)  
+});
 
-// process.on('unhandledRejection', (error, promise)  => {
-//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-//   io.sockets.emit('error' , error)
-//   process.exit(1); // Exit your app 
-// })
+process.on('unhandledRejection', (error, promise)  => {
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  io.sockets.emit('error' , error)
+  process.exit(1); // Exit your app 
+})
 
 
-// function myCustomErrorHandler(err, req, res, next) {
-//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-//   io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
-//   process.exit(1);
-// }
-// app.use(myCustomErrorHandler);
+function myCustomErrorHandler(err, req, res, next) {
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
+  process.exit(1);
+}
+app.use(myCustomErrorHandler);
 
 
 server.listen(5000);                                                                                                                           
