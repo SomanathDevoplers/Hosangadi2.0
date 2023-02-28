@@ -928,16 +928,16 @@ class purchase(base_window):
         #treomove if 
         #remove
         #temporary
-        if firm_name != "SOMANATH CASH":
-            if res.status_code == 201:
-                msg.showerror("Error" , "This invoice is currently being added")
-                return
-            
-            if res.status_code == 202:
-                msg.showerror("Error" , "This invoice has already been added")
-                self.ent_inv_no.select_range(0,con.END)
-                self.ent_inv_no.focus_set()
-                return
+        
+        if res.status_code == 201:
+            msg.showerror("Error" , "This invoice is currently being added")
+            return
+        
+        if res.status_code == 202:
+            msg.showerror("Error" , "This invoice has already been added")
+            self.ent_inv_no.select_range(0,con.END)
+            self.ent_inv_no.focus_set()
+            return
         self.frm_pur_details.place_forget()
         self.enable_all()
         self.ent_bar.focus_set()
