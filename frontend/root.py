@@ -122,9 +122,9 @@ def reportReady(data,fileName):
 
 
 @sio.on('hasOwnbackup')
-def backupOwnLostData(sales , purchase):
-    print("yes" , sales , purchase)
-   
+def backupOwnLostData(sales , purchases):
+    user_type = lbl_user_type.cget("text")
+    purchase.purchase(root, [frm_main , frm_task_others , frm_task] , [int(0.865*root_hgt) , int(0.98*root_wdt)] ,[lbl_task_cnt] ,"Purchase Entry" , [num_alpha ,pos_decimal ,decimal , barcode , name  , decimal , pos_integer , mobile , date , email] , [ip , tax_check, user , year , homedir , form_id] , purchase_form , sio , prod_form , update_sp_form,purchases)
 
 
 #-------form open counts----------#
@@ -606,11 +606,11 @@ except:
     ip = "127.0.0.1"
     lbl_user_name.config(text = "HEMA")    
     lbl_user_type.config(text = "OWNER")
-    lbl_fin_year.config(text = "2023-2024")
+    lbl_fin_year.config(text = "2022-2023")
     lbl_server_name.config(text = ip)
     form_id = '1'
-    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "HEMA" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2023-2024" , "form_id" : form_id })
-    year = "23"
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "HEMA" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023" , "form_id" : form_id })
+    year = "22"
 
 user =lbl_user_name.cget("text")
 Thread(target=socketKeepAlive , daemon = True).start()

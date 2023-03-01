@@ -497,7 +497,7 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
       found = false
       found_id = ""
       
-      if (result.length != 0)
+      if (result.length != 0 && purDetails.firm_name!="SOMANATH CASH")
           res.sendStatus(202)
       
       else

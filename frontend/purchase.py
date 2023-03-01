@@ -10,7 +10,7 @@ from threading import Thread
 
 class purchase(base_window): 
     
-    def __init__(self , root ,frames , dmsn , lbls ,title,validations, others , pur_form , sio , prod_form , update_sp_form):
+    def __init__(self , root ,frames , dmsn , lbls ,title,validations, others , pur_form , sio , prod_form , update_sp_form , backedUp = None):
         base = base_window.__init__(self , root ,frames , dmsn , lbls ,title , pur_form)
         if base == None:
             return
@@ -810,6 +810,8 @@ class purchase(base_window):
         self.frm_row5.grid(row = 4 , column = 0 , pady = int(self.main_wdt*0.004) )
         self.btn_frame.grid(row = 5 ,column = 0 , sticky = con.E , pady = int(self.main_wdt*0.004))
 
+        if(backedUp != None):
+            self.load_backed_up(backedUp)
     """--------------------------Purchase detail functions-----------------------------------------------"""
     def enable_pur_details(self) :
         self.combo_supplier.config(state = con.NORMAL)
@@ -1027,6 +1029,7 @@ class purchase(base_window):
         self.ent_pur_date.insert(0 ,  datetime.date.today().strftime("%d") + "-" +datetime.date.today().strftime("%m") + "-" + datetime.date.today().strftime("%Y"))
         self.ent_inv_no.delete(0,con.END)
         self.ent_inv_no.insert(0 , "CASH")
+        self.ent_inv_no.focus_set()
 
     """--------------------------Purchase detail functions-----------------------------------------------"""
 
@@ -2784,7 +2787,7 @@ class purchase(base_window):
                         cess_tot[each['tax_per']] = 0
 
 
-                    
+
 
                     self.lbl_grd_tot.config(text = stocks['trans'][0])
                     self.ent_amt_paid.config(state = con.NORMAL)
@@ -2892,6 +2895,7 @@ class purchase(base_window):
 
             self.combo_firms.config(state = con.DISABLED)
             self.combo_tax_meth.config(state = con.DISABLED)
+            self.combo_supplier.config(state = con.DISABLED)
         
             return #if req.statu_code !=200
 
@@ -2900,7 +2904,157 @@ class purchase(base_window):
         else:
             self.frm_pur_details.place_forget()
             self.enable_all()
-             
+
+    def load_backed_up(self , backedUp):
+        self.clear_all()
+        self.new_tree()
+        sup_gst = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select acc_gstin from somanath.accounts where acc_name='"+ backedUp['supName']+"'"}).json()[0]['acc_gstin']
+        firm_gst = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select firm_gstin from somanath.firms where firm_name='"+ backedUp['firmName']+"'"}).json()[0]['firm_gstin']
+        tax_method = backedUp['taxMethod']
+        self.enable_pur_details()
+        self.clear_pur_details()
+        self.combo_supplier.insert(0 , backedUp['supName'])
+        self.lbl_sup_gst.config(text = sup_gst)
+        self.combo_tax_meth.config(state = con.NORMAL)
+        self.combo_tax_meth.insert(0 ,tax_method )
+        self.combo_tax_meth.config(state = "readonly")
+        self.combo_firms.config(state = con.NORMAL)
+        self.combo_firms.insert(0 , backedUp['firmName'])
+        self.combo_firms.config(state = "readonly")
+        self.lbl_firm_gst.config(text = firm_gst)
+        self.ent_pur_date.insert(0 , backedUp['purDate'])
+        self.ent_inv_no.insert(0 , backedUp['invNo'])
+        self.btn_add_dets.config(state = con.NORMAL)
+        
+
+        reqgst = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select tax_per from somanath.taxes where tax_type = '0'"}).json()
+        reqcess = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : "select tax_per from somanath.taxes where tax_type = '1'"}).json()
+
+        gst_tot= {}
+        cess_tot = {}
+        self.added_products = []
+        tot_taxbl_amt = 0
+        
+        for each in reqgst:
+            gst_tot[int(each['tax_per'])] = [0,0,0]
+
+        for each in reqcess:
+            cess_tot[int(each['tax_per'])] = 0
+
+        
+        sl_no = 1
+        stocks = backedUp['products']
+        for each in stocks:
+            tag = 'b'
+            if sl_no %2 == 0:
+                tag = 'a'
+
+            gst = float(stocks[each][4]) *  float(stocks[each][1])/100
+           
+            if tax_method == 'In-State':  
+                cgst = gst_tot[int(stocks[each][1])][0] + gst/2
+                sgst = cgst
+                igst = 0
+
+            else: 
+                cgst = 0
+                sgst = 0
+                igst = gst_tot[int(stocks[each][1])][2] + gst
+
+            gst_tot[int(stocks[each][1])] = [cgst , sgst , igst]
+                
+            cess_tot[int(stocks[each][23])] = (float(stocks[each][4]) *  float(stocks[each][23])/100) +    float( cess_tot[int(stocks[each][23])])
+            
+            tot_taxbl_amt += float(stocks[each][4])
+            self.added_products.append(int(each))
+
+            values = (sl_no , stocks[each][0] , stocks[each][1], stocks[each][2] , stocks[each][3], stocks[each][4], stocks[each][5], stocks[each][6] , stocks[each][7], stocks[each][8], stocks[each][9], stocks[each][10], stocks[each][11], stocks[each][12], stocks[each][13] , stocks[each][14] , stocks[each][15], stocks[each][16] , stocks[each][17] , stocks[each][18] , stocks[each][19] , stocks[each][20] , stocks[each][21] , stocks[each][22] , each , stocks[each][23] , stocks[each][24])
+            self.tree_pur.insert('','end',tags=(tag,), values = values)
+            sl_no +=1
+
+    
+        self.sl_no = sl_no
+        
+        for each in self.tree_gst.get_children():
+            self.tree_gst.delete(each)
+
+        tot_cgst = 0
+        tot_sgst = 0
+        tot_igst = 0
+        tot_cess = 0
+        i = 0
+        for each in gst_tot:
+            tag = 'b'
+            if i %2 == 0:
+                tag = 'a'
+            values = [ each , "{:.2f}".format(round( gst_tot[each][0] , 3)) , "{:.2f}".format(round( gst_tot[each][1] , 3)) ,"{:.2f}".format(round( gst_tot[each][2] , 3))   ]
+            self.tree_gst.insert('','end',tags=(tag,), values = values)
+            i+=1
+            tot_cgst+= float(values[1])
+            tot_sgst+= float(values[2])
+            tot_igst+= float(values[3])
+
+        for each in self.tree_cess.get_children():
+            self.tree_cess.delete(each)
+        i = 0
+        for each in cess_tot:
+            tag = 'b'
+            if i % 2 == 0:
+                tag = 'a'
+            values = [ each , "{:.2f}".format(round( cess_tot[each] , 3)) ]
+            self.tree_cess.insert('','end',tags=(tag,), values = values)
+            i+=1
+            tot_cess += float(values[1])
+
+        tot_tax = "{:.2f}".format(round(tot_cgst + tot_sgst + tot_igst + tot_cess,2))
+        tot_cgst = "{:.2f}".format(round(tot_cgst,2))
+        tot_sgst = "{:.2f}".format(round(tot_sgst,2))
+        tot_igst = "{:.2f}".format(round(tot_igst,2))
+        tot_cess = "{:.2f}".format(round(tot_cess,2))
+        tot_taxbl_amt = "{:.2f}".format(round(tot_taxbl_amt,2))
+        tot_amt = "{:.2f}".format(float(tot_taxbl_amt) + float(tot_tax))
+
+
+        self.lbl_tot_cgst.config(text = tot_cgst)
+        self.lbl_tot_sgst.config(text = tot_sgst)
+        self.lbl_tot_igst.config(text = tot_igst)
+        self.lbl_tot_cess.config(text = tot_cess)
+        self.lbl_tot_tax.config(text = tot_tax)
+        self.lbl_tot_txbl.config(text = tot_taxbl_amt)
+        self.lbl_tot_amt.config(text = tot_amt)
+
+
+        self.pur_id = backedUp['purId']
+
+        if self.pur_id == "new" : 
+            self.pur_id = -1
+            self.new_state = True
+            self.edit_state = False
+        else : 
+            self.new_state = False
+            self.edit_state = True
+
+
+        self.btn_edit.config(state = con.DISABLED)
+        self.btn_new.config(state = con.DISABLED)
+        self.btn_save.config(state = con.NORMAL)
+        self.btn_add_dets.config(state = con.NORMAL)
+        self.btn_cancel.config(state = con.NORMAL)
+        self.enable_all()
+
+        self.combo_pay_meth.config(state = con.NORMAL)
+        self.combo_pay_meth.delete(0,con.END)
+        self.combo_pay_meth.insert(0,'CASH')
+        self.combo_pay_meth.config(state = "readonly")
+
+        self.lbl_grd_tot.config(text = "{:.2f}".format(float(self.lbl_tot_amt.cget("text"))))
+
+
+        if(self.edit_state):
+            self.combo_firms.config(state = con.DISABLED)
+            self.combo_tax_meth.config(state = con.DISABLED)
+            self.combo_supplier.config(state = con.DISABLED)
+
     def save(self , e):
         if self.prod_id != -1:
             msg.showinfo("Info" , "Add selected product before saving")
