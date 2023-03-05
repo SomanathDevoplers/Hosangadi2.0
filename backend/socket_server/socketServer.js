@@ -399,11 +399,15 @@ io.on('connection', function (socket) {
         if (backedUpdata != "{}")
         {
               backedupuser = backedUpdata[clientId]
-              newUser.sales = backedupuser.sales
-              newUser.purchases = backedupuser.purchases
-              delete backedUpdata[clientId]
-              fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backedUpdata));
-              socket.emit("hasOwnbackup" , newUser.sales , newUser.purchases)
+              if(backedupuser){
+                newUser.sales = backedupuser.sales
+                newUser.purchases = backedupuser.purchases
+                delete backedUpdata[clientId]
+                fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(backedUpdata));
+                socket.emit("hasOwnbackup" , newUser.sales , newUser.purchases)
+              }else{
+              }
+              
         }
         usersLogged[clientId] = newUser
       }
@@ -1796,26 +1800,26 @@ app.get('/sales/voucher',(req,res)=>{
 
 
 
-process.on('uncaughtException', (error) => { 
-  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-  io.sockets.emit('error' ,"\n"+String(error.stack))
-  console.log(error.stack);
-  process.exit(1)  
-});
+// process.on('uncaughtException', (error) => { 
+//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+//   io.sockets.emit('error' ,"\n"+String(error.stack))
+//   console.log(error.stack);
+//   process.exit(1)  
+// });
 
-process.on('unhandledRejection', (error, promise)  => {
-  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-  io.sockets.emit('error' , error)
-  process.exit(1); // Exit your app 
-})
+// process.on('unhandledRejection', (error, promise)  => {
+//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+//   io.sockets.emit('error' , error)
+//   process.exit(1); // Exit your app 
+// })
 
 
-function myCustomErrorHandler(err, req, res, next) {
-  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-  io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
-  process.exit(1);
-}
-app.use(myCustomErrorHandler);
+// function myCustomErrorHandler(err, req, res, next) {
+//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+//   io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
+//   process.exit(1);
+// }
+// app.use(myCustomErrorHandler);
 
 
 server.listen(5000);                                                                                                                           
