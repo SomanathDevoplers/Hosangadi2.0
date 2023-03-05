@@ -421,8 +421,12 @@ io.on('connection', function (socket) {
             clientId = socket.handshake.headers.form_id
             if(socket.handshake.headers['user-agent'] != 'node-XMLHttpRequest')
             {
-              if(Object.keys(usersLogged[clientId].sales).length > 0 || Object.keys(usersLogged[clientId].purchases).length > 0)
-                fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+              
+              if(Object.keys(usersLogged[clientId].sales).length > 0 || Object.keys(usersLogged[clientId].purchases).length > 0){
+                temp = {}
+                temp[clientId] = usersLogged[clientId]
+                fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(temp));
+              }
               delete usersLogged[clientId]
             }
           });   
@@ -465,24 +469,31 @@ io.on('connection', function (socket) {
 })
 
 app.get('/login' , (req,res) => {                                                                                                          //for user login authentication
-  sql = "select user_type from somanath.users where user_name = '"+ req.query.user_name + "' and user_pass = '"+req.query.user_pass+"'"
-    responseSent = false
-   
+    sql = "select user_type from somanath.users where user_name = '"+ req.query.user_name + "' and user_pass = '"+req.query.user_pass+"'"
     form_id = req.query.form_id
     user = usersLogged[form_id]
     if (user == undefined)
         {
-            con.query(sql, (err , userType)=>{
-                res.send(userType)
-            });
+            userIdLogged = false
+            forms =  Object.keys(usersLogged)
+            for(i = 0 ; i<forms.length ; i++){
+              if(usersLogged[forms[i]].userName == req.query.user_name){
+                  userIdLogged = true;
+                  res.sendStatus(102)
+                  break;
+              }
+            }
+            if(!userIdLogged)
+              con.query(sql, (err , userType)=>{
+                  res.send(userType)
+              });
         } 
         
     else 
         {
-            responseSent = true
-            res.sendStatus(101)  
-            if(!responseSent && user.userName == req.query.user_name)
-                res.sendStatus(102)
+            //applicaion is already running
+            //an entry in usersLogged of that form id
+            res.sendStatus(101);
                
         }
       
@@ -1800,26 +1811,26 @@ app.get('/sales/voucher',(req,res)=>{
 
 
 
-// process.on('uncaughtException', (error) => { 
-//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-//   io.sockets.emit('error' ,"\n"+String(error.stack))
-//   console.log(error.stack);
-//   process.exit(1)  
-// });
+process.on('uncaughtException', (error) => { 
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  io.sockets.emit('error' ,"\n"+String(error.stack))
+  console.log(error.stack);
+  process.exit(1)  
+});
 
-// process.on('unhandledRejection', (error, promise)  => {
-//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-//   io.sockets.emit('error' , error)
-//   process.exit(1); // Exit your app 
-// })
+process.on('unhandledRejection', (error, promise)  => {
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  io.sockets.emit('error' , error)
+  process.exit(1); // Exit your app 
+})
 
 
-// function myCustomErrorHandler(err, req, res, next) {
-//   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
-//   io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
-//   process.exit(1);
-// }
-// app.use(myCustomErrorHandler);
+function myCustomErrorHandler(err, req, res, next) {
+  fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
+  process.exit(1);
+}
+app.use(myCustomErrorHandler);
 
 
 server.listen(5000);                                                                                                                           
