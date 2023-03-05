@@ -930,6 +930,7 @@ class purchase(base_window):
         #treomove if 
         #remove
         #temporary
+        
         if res.status_code == 201:
             msg.showerror("Error" , "This invoice is currently being added")
             return
