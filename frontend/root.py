@@ -462,7 +462,7 @@ lbl_task_cnt = ttk.Label(frm_menu , text = "0" , width = 2 , style = "root_task_
 frm_menubar = Frame(frm_menu)
 menu_entry_head = ttk.Menubutton(frm_menubar , text = "ENTRIES" , direction = 'below',style = "root_menu.TMenubutton" , takefocus = False)
 menu_entry = Menu(menu_entry_head , tearoff = 0 , font = ('Lucida Console' , -int(root_hgt*0.022))) 
-menu_entry.add_command(label = "SALES ENTRY" , command = sales_bill , accelerator = "Alt+S" , underline = 1)
+#menu_entry.add_command(label = "SALES ENTRY" , command = sales_bill , accelerator = "Alt+S" , underline = 1)
 menu_entry.add_command(label = "PURCHASE ENTRY" , command = purch , accelerator = "Alt+P" , underline = 1)
 menu_entry.add_command(label = "UPDATE SP" , command = updatesp , accelerator = "Alt+U" , underline = 1)
 menu_entry.add_command(label = "BARCODES" , command = print_barcode )

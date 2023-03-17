@@ -1,0 +1,1691 @@
+https://ghostscript.com/releases/gsdnld.html
+this is required for pip install tkDocViewer
+
+http://timgolden.me.uk/python/win32_how_do_i/print.html
+
+use mysql_native_password 
+SET GLOBAL validate_password.policy=LOW;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'mysqlpassword5'
+Client does not support authentication protocol requested by server;
+
+
+c:\\backup\\
+usb:\\backup\\
+
+14/06/2022 08:46:38
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2265, in delete_from_treeview\n']
+
+14/06/2022 17:01:59
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1592, in delete_from_treeview\n']
+
+14/06/2022 17:02:01
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1592, in delete_from_treeview\n']
+
+15/06/2022 17:49:07
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1656, in delete_from_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+15/06/2022 17:49:09
+/sales/removeSalesProduct
+TypeError: Cannot read properties of undefined (reading 'hasOwnProperty')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1024:50
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+18/06/2022 10:42:35
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5856, in add_search_sup\n', '  File "requests\\models.py", line 910, in json\n', '  File "json\\__init__.py", line 346, in loads\n', '  File "json\\decoder.py", line 337, in decode\n', '  File "json\\decoder.py", line 355, in raw_decode\n']
+
+18/06/2022 10:44:04
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5856, in add_search_sup\n', '  File "requests\\models.py", line 910, in json\n', '  File "json\\__init__.py", line 346, in loads\n', '  File "json\\decoder.py", line 337, in decode\n', '  File "json\\decoder.py", line 355, in raw_decode\n']
+
+18/06/2022 10:44:10
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5856, in add_search_sup\n', '  File "requests\\models.py", line 910, in json\n', '  File "json\\__init__.py", line 346, in loads\n', '  File "json\\decoder.py", line 337, in decode\n', '  File "json\\decoder.py", line 355, in raw_decode\n']
+
+18/06/2022 14:02:25
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5856, in add_search_sup\n', '  File "requests\\models.py", line 910, in json\n', '  File "json\\__init__.py", line 346, in loads\n', '  File "json\\decoder.py", line 337, in decode\n', '  File "json\\decoder.py", line 355, in raw_decode\n']
+
+19/06/2022 06:48:17
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2974, in bill_pdf_only\n']
+
+19/06/2022 06:48:37
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2974, in bill_pdf_only\n']
+
+19/06/2022 06:49:38
+['  File "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python39\\lib\\tkinter\\__init__.py", line 1892, in __call__\n    return self.func(*args)\n', '  File "d:\\Hosangadi2.0\\frontend\\sales.py", line 2974, in bill_pdf_only\n    f = open("C:\\\\Program Files\\\\Hosangadi2.0\\\\invoiceData.txt", "w")\n']
+
+19/06/2022 12:40:54
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 539, in <lambda>\n', '  File "sales.py", line 2531, in print_only_vch\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+19/06/2022 12:40:54
+/sales/voucherPrint
+TypeError: voucher is not a function
+    at C:\Users\admin\Hosangadi2.0\backend\printer_server\printerServer.js:1505:3
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\layer.js:95:5)
+
+19/06/2022 12:42:10
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 324, in <lambda>\n', '  File "sales.py", line 3183, in get_cashflow\n']
+
+19/06/2022 15:02:56
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 324, in <lambda>\n', '  File "sales.py", line 3183, in get_cashflow\n']
+
+19/06/2022 15:35:49
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2978, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+19/06/2022 15:35:49
+/sales/invoice
+TypeError: InvoiceData[totItems[i]][6].split is not a function
+    at Invoice (C:\Users\admin\Hosangadi2.0\backend\printer_server\printerServer.js:86:38)
+    at C:\Users\admin\Hosangadi2.0\backend\printer_server\printerServer.js:1500:3
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\express\lib\router\route.js:144:13)
+    at C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\multer\lib\make-middleware.js:53:37
+    at AsyncResource.runInAsyncScope (node:async_hooks:202:9)
+    at listener (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\on-finished\index.js:170:15)
+    at onFinish (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\on-finished\index.js:101:5)
+    at callback (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\ee-first\index.js:55:10)
+    at IncomingMessage.onevent (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\ee-first\index.js:93:5)
+
+19/06/2022 15:48:29
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 324, in <lambda>\n', '  File "sales.py", line 3183, in get_cashflow\n']
+
+20/06/2022 12:47:36
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2109, in enter_to_treeview\n']
+
+20/06/2022 12:51:09
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 93, in <lambda>\n', '  File "purchase.py", line 2565, in upd_prod\n', '  File "forms.py", line 2262, in __init__\n']
+
+20/06/2022 12:59:22
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 93, in <lambda>\n', '  File "purchase.py", line 2565, in upd_prod\n', '  File "forms.py", line 2262, in __init__\n']
+
+21/06/2022 11:41:46
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1627, in get_prod_by_bar\n', '  File "forms.py", line 2262, in __init__\n']
+
+21/06/2022 12:18:41
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1627, in get_prod_by_bar\n', '  File "forms.py", line 2262, in __init__\n']
+
+21/06/2022 13:43:46
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 93, in <lambda>\n', '  File "purchase.py", line 2565, in upd_prod\n', '  File "forms.py", line 2262, in __init__\n']
+
+22/06/2022 17:43:24
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1627, in get_prod_by_bar\n', '  File "forms.py", line 2262, in __init__\n']
+
+22/06/2022 20:19:14
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1627, in get_prod_by_bar\n', '  File "forms.py", line 2262, in __init__\n']
+
+23/06/2022 16:53:27
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1164, in get_prod_by_name\n', '  File "tkinter\\__init__.py", line 3187, in get\n']
+
+24/06/2022 12:08:54
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1622, in get_prod_by_bar\n', '  File "forms.py", line 2262, in __init__\n']
+
+24/06/2022 12:14:58
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1622, in get_prod_by_bar\n', '  File "forms.py", line 2262, in __init__\n']
+
+24/06/2022 12:18:38
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1622, in get_prod_by_bar\n', '  File "forms.py", line 2262, in __init__\n']
+
+24/06/2022 12:23:59
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1622, in get_prod_by_bar\n', '  File "forms.py", line 2262, in __init__\n']
+
+28/06/2022 09:36:15
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+28/06/2022 10:05:28
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2761, in get_invoice_details\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/06/2022 10:05:28
+
+TypeError: Cannot read properties of undefined (reading 'prod_name')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1446:51
+    at Array.forEach (<anonymous>)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1426:70)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+
+01/07/2022 20:29:51
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+02/07/2022 19:36:02
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 324, in <lambda>\n', '  File "sales.py", line 3166, in get_cashflow\n']
+
+02/07/2022 19:38:06
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 324, in <lambda>\n', '  File "sales.py", line 3166, in get_cashflow\n']
+
+02/07/2022 19:41:42
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 324, in <lambda>\n', '  File "sales.py", line 3166, in get_cashflow\n']
+
+02/07/2022 19:41:59
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 324, in <lambda>\n', '  File "sales.py", line 3166, in get_cashflow\n']
+
+05/07/2022 18:10:26
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1599, in delete_from_treeview\n']
+
+05/07/2022 18:11:06
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1599, in delete_from_treeview\n']
+
+09/07/2022 20:25:08
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+16/07/2022 17:03:52
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1602, in delete_from_treeview\n']
+
+16/07/2022 17:27:26
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1602, in delete_from_treeview\n']
+
+25/07/2022 18:41:14
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1164, in get_prod_by_name\n', '  File "tkinter\\__init__.py", line 3187, in get\n']
+
+28/07/2022 19:01:08
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+30/07/2022 17:34:58
+
+Error: Packets out of order. Got: 0 Expected: 224
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+06/08/2022 17:03:49
+
+Error: Packets out of order. Got: 0 Expected: 16
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+12/08/2022 19:40:36
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+16/08/2022 19:50:46
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+20/08/2022 12:25:31
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2260, in delete_from_treeview\n']
+
+20/08/2022 12:25:43
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2197, in select_from_treeview\n']
+
+22/08/2022 19:43:45
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5510, in select_rates\n']
+
+26/08/2022 18:06:31
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1678, in get_prod_by_name\n', '  File "tkinter\\__init__.py", line 3187, in get\n']
+
+26/08/2022 18:15:48
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+29/08/2022 16:37:49
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1164, in get_prod_by_name\n', '  File "tkinter\\__init__.py", line 3187, in get\n']
+
+29/08/2022 16:37:51
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1164, in get_prod_by_name\n', '  File "tkinter\\__init__.py", line 3187, in get\n']
+
+31/08/2022 18:55:18
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 6728, in <lambda>\n', '  File "forms.py", line 6767, in backup\n', '  File "shutil.py", line 264, in copyfile\n']
+
+03/09/2022 13:13:15
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1291, in cal_by_tcp\n']
+
+03/09/2022 13:13:16
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1291, in cal_by_tcp\n']
+
+03/09/2022 13:13:16
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1291, in cal_by_tcp\n']
+
+09/09/2022 18:25:05
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2181, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+09/09/2022 18:25:05
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '3673')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:614:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+25/09/2022 11:25:09
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 571, in <lambda>\n', '  File "sales.py", line 2553, in print_only_bill\n']
+
+25/09/2022 20:51:59
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+07/10/2022 18:42:12
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2023, in save\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+07/10/2022 18:42:12
+/sales/save
+TypeError: Cannot read properties of undefined (reading 'products')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1039:48
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+12/10/2022 16:15:58
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1355, in cal_by_tot_taxbl\n']
+
+17/10/2022 12:52:24
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+17/10/2022 12:52:28
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+17/10/2022 13:08:31
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+17/10/2022 13:09:05
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+17/10/2022 19:51:12
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+17/10/2022 19:54:46
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+17/10/2022 21:02:17
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+21/10/2022 12:11:52
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2181, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+21/10/2022 12:11:52
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '3646')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:614:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+25/10/2022 11:43:17
+{'code': 1, 'killed': False, 'signal': None, 'cmd': 'C:\\Users\\admin\\Hosangadi2.0\\backend\\printer_server\\node_modules\\pdf-to-printer\\dist\\SumatraPDF.exe -print-to-default -silent C:\\Users\\admin\\invoice.pdf', 'stdout': '', 'stderr': ''}
+
+27/10/2022 15:48:38
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 3064, in generate\n']
+
+27/10/2022 21:53:58
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+27/10/2022 21:53:58
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+27/10/2022 21:56:06
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+29/10/2022 15:30:20
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+29/10/2022 15:30:21
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+29/10/2022 15:33:01
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+29/10/2022 19:40:51
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+29/10/2022 19:43:15
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+30/10/2022 13:33:22
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1291, in cal_by_tcp\n']
+
+31/10/2022 20:23:09
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2587, in print\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+31/10/2022 20:23:13
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2587, in print\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 516, in send\n']
+
+31/10/2022 20:23:13
+/PrintInvoice
+Error: EBUSY: resource busy or locked, open 'C:\Users\admin\invoice.pdf'
+
+01/11/2022 20:02:06
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+01/11/2022 20:02:08
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+01/11/2022 20:06:57
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+01/11/2022 20:06:58
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+01/11/2022 20:08:20
+['  File "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python39\\lib\\tkinter\\__init__.py", line 1892, in __call__\n    return self.func(*args)\n', '  File "c:\\Program Files\\Hosangadi2.0\\frontend\\forms.py", line 2617, in <lambda>\n    self.btn_gen_bar = ttk.Button(self.frm_barcode , text = "Genarate Barcode" , state = con.DISABLED , style = "window_btn_medium.TButton" ,command = lambda : self.generate(None))\n', '  File "c:\\Program Files\\Hosangadi2.0\\frontend\\forms.py", line 3064, in generate\n    self.generated_bar = int(max_bar)\n']
+
+01/11/2022 20:17:33
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2617, in <lambda>\n', '  File "forms.py", line 3064, in generate\n']
+
+01/11/2022 20:19:20
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1291, in cal_by_tcp\n']
+
+01/11/2022 20:19:20
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1291, in cal_by_tcp\n']
+
+01/11/2022 20:19:20
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1291, in cal_by_tcp\n']
+
+01/11/2022 20:19:34
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 1291, in cal_by_tcp\n']
+
+03/11/2022 18:27:16
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+05/11/2022 12:37:43
+
+Error: ER_DUP_ENTRY: Duplicate entry '22_7311' for key 'cashflow_sales.PRIMARY'
+    at Query.Sequence._packetToError (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:47:14)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:79:18)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    --------------------
+    at Protocol._enqueue (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Connection.query (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:198:25)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1771:13)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+
+07/11/2022 06:08:10
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "root.py", line 343, in purch\n', '  File "purchase.py", line 42, in __init__\n', '  File "requests\\models.py", line 910, in json\n', '  File "json\\__init__.py", line 346, in loads\n', '  File "json\\decoder.py", line 337, in decode\n', '  File "json\\decoder.py", line 355, in raw_decode\n']
+
+07/11/2022 06:08:18
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 3021, in minimize\n', '  File "purchase.py", line 1766, in forget_prod_list\n']
+
+07/11/2022 06:08:35
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 3031, in close\n']
+
+07/11/2022 15:22:48
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 537, in <lambda>\n', '  File "sales.py", line 2723, in save_vch\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+07/11/2022 15:22:48
+
+TypeError: Cannot read properties of undefined (reading 'acc_id')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1515:133)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+
+07/11/2022 15:23:04
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 537, in <lambda>\n', '  File "sales.py", line 2723, in save_vch\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+07/11/2022 15:23:04
+
+TypeError: Cannot read properties of undefined (reading 'acc_id')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1515:133)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+
+07/11/2022 15:23:07
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 537, in <lambda>\n', '  File "sales.py", line 2723, in save_vch\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+07/11/2022 15:23:07
+
+TypeError: Cannot read properties of undefined (reading 'acc_id')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1515:133)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+
+07/11/2022 15:25:34
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 537, in <lambda>\n', '  File "sales.py", line 2723, in save_vch\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+07/11/2022 15:25:34
+
+TypeError: Cannot read properties of undefined (reading 'acc_id')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1515:133)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+
+07/11/2022 15:25:51
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 537, in <lambda>\n', '  File "sales.py", line 2723, in save_vch\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+07/11/2022 15:25:51
+
+TypeError: Cannot read properties of undefined (reading 'acc_id')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1515:133)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+
+07/11/2022 15:28:46
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 537, in <lambda>\n', '  File "sales.py", line 2723, in save_vch\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+07/11/2022 15:28:46
+
+TypeError: Cannot read properties of undefined (reading 'acc_id')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:1515:133)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+
+08/11/2022 19:36:20
+{'code': 1, 'killed': False, 'signal': None, 'cmd': 'C:\\Users\\admin\\Hosangadi2.0\\backend\\printer_server\\node_modules\\pdf-to-printer\\dist\\SumatraPDF.exe -print-to-default -silent -print-settings odd C:\\Users\\admin\\invoice.pdf', 'stdout': '', 'stderr': ''}
+
+08/11/2022 23:54:37
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 3064, in generate\n']
+
+13/11/2022 16:56:50
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+13/11/2022 16:57:11
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 11:00:36
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 11:00:57
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 11:01:14
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 11:04:25
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 11:34:05
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 12:01:25
+
+TypeError: Cannot read properties of undefined (reading 'sales')
+    at Namespace.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:411:40)
+    at Namespace.emit (node:events:527:28)
+    at Namespace.emitReserved (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\typed-events.js:56:22)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\namespace.js:141:26
+    at processTicksAndRejections (node:internal/process/task_queues:78:11)
+
+14/11/2022 17:18:35
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 17:18:55
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 17:22:37
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 17:28:12
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 17:34:38
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+14/11/2022 20:57:46
+
+TypeError: Cannot read properties of undefined (reading 'sales')
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:428:52)
+    at Socket.emit (node:events:527:28)
+    at Socket.emitReserved (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\typed-events.js:56:22)
+    at Socket._onclose (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\socket.js:357:14)
+    at Socket.ondisconnect (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\socket.js:324:14)
+    at Socket._onpacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\socket.js:253:22)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\client.js:214:24
+    at processTicksAndRejections (node:internal/process/task_queues:78:11)
+
+15/11/2022 06:37:59
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 2501, in <lambda>\n', '  File "forms.py", line 3841, in save\n']
+
+18/11/2022 06:46:12
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5550, in select_rates\n']
+
+18/11/2022 21:24:57
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 6796, in <lambda>\n', '  File "forms.py", line 6835, in backup\n', '  File "shutil.py", line 264, in copyfile\n']
+
+18/11/2022 21:25:31
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 6796, in <lambda>\n', '  File "forms.py", line 6835, in backup\n', '  File "shutil.py", line 264, in copyfile\n']
+
+18/11/2022 21:26:32
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 6796, in <lambda>\n', '  File "forms.py", line 6835, in backup\n', '  File "shutil.py", line 264, in copyfile\n']
+
+18/11/2022 21:32:18
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 6796, in <lambda>\n', '  File "forms.py", line 6835, in backup\n', '  File "shutil.py", line 264, in copyfile\n']
+
+19/11/2022 16:01:45
+
+TypeError: Cannot read properties of undefined (reading 'sales')
+    at Namespace.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:411:40)
+    at Namespace.emit (node:events:527:28)
+    at Namespace.emitReserved (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\typed-events.js:56:22)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\namespace.js:141:26
+    at processTicksAndRejections (node:internal/process/task_queues:78:11)
+
+19/11/2022 17:31:39
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+19/11/2022 21:50:46
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 6796, in <lambda>\n', '  File "forms.py", line 6835, in backup\n', '  File "shutil.py", line 264, in copyfile\n']
+
+22/11/2022 20:36:48
+
+TypeError: Cannot read properties of undefined (reading 'sales')
+    at Namespace.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:411:40)
+    at Namespace.emit (node:events:527:28)
+    at Namespace.emitReserved (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\typed-events.js:56:22)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\socket.io\dist\namespace.js:141:26
+    at processTicksAndRejections (node:internal/process/task_queues:78:11)
+
+01/01/2023 17:42:31
+
+Error: Packets out of order. Got: 0 Expected: 25
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+01/01/2023 19:14:11
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "reports.py", line 61, in <lambda>\n', '  File "reports.py", line 148, in sales\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+01/01/2023 19:14:11
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\printerServer.js:1119:14)
+    at Query.<anonymous> (C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:404:18
+    at Array.forEach (<anonymous>)
+    at C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:403:13
+    at processTicksAndRejections (node:internal/process/task_queues:78:11)
+
+01/01/2023 19:15:51
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "reports.py", line 61, in <lambda>\n', '  File "reports.py", line 148, in sales\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+01/01/2023 19:15:51
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\printerServer.js:1119:14)
+    at Query.<anonymous> (C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:404:18
+    at Array.forEach (<anonymous>)
+    at C:\Users\admin\Desktop\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:403:13
+    at processTicksAndRejections (node:internal/process/task_queues:78:11)
+
+01/01/2023 19:16:12
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "reports.py", line 61, in <lambda>\n', '  File "reports.py", line 148, in sales\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+01/01/2023 19:16:50
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "reports.py", line 61, in <lambda>\n', '  File "reports.py", line 148, in sales\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+01/01/2023 19:18:04
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "reports.py", line 61, in <lambda>\n', '  File "reports.py", line 148, in sales\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+05/01/2023 16:54:43
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1165, in get_prod_by_name\n', '  File "tkinter\\__init__.py", line 3187, in get\n']
+
+06/01/2023 21:25:12
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+06/01/2023 21:27:13
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+06/01/2023 21:37:37
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+06/01/2023 21:38:04
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+07/01/2023 08:45:02
+['  File "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python39\\lib\\tkinter\\__init__.py", line 1892, in __call__\n    return self.func(*args)\n', '  File "c:\\Users\\admin\\Desktop\\Hosangadi2.0\\frontend\\sales.py", line 1205, in get_prod_by_name\n    self.get_stk_sug(stk_id , loc)\n', '  File "c:\\Users\\admin\\Desktop\\Hosangadi2.0\\frontend\\sales.py", line 1252, in get_stk_sug\n    values = (  each[\'pur_date\']  , each[\'acc_name\'] , each[\'firm_suffix\'] , "{:.3f}".format(prod_qty) , "{:.2f}".format(round(each[\'stk_cost\'],2)) , sp[0] , sp , units  , each[\'stk_id\'])\n']
+
+08/01/2023 21:42:35
+
+Error: Packets out of order. Got: 0 Expected: 6
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+09/01/2023 16:52:48
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 888, in <lambda>\n', '  File "sales.py", line 2180, in save\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+09/01/2023 16:52:48
+/sales/invoice
+TypeError: Cannot read properties of null (reading 'xCoordinate')
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.getAnchor (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9991:24)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyAnchor (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9981:31)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyLookup (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9923:26)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyLookups (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:8031:36)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyFeatures (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:8016:14)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyFeatures (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10006:15)
+    at $6703eaa61400de19$export$2e2bcd8739ae039.process (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:7434:52)
+    at $2ec9b66dcab54746$export$2e2bcd8739ae039.position (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10070:43)
+    at $8fe7395fdc229fa3$export$2e2bcd8739ae039.position (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10164:75)
+    at $8fe7395fdc229fa3$export$2e2bcd8739ae039.layout (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10148:14)
+
+15/01/2023 18:14:18
+
+Error: Packets out of order. Got: 0 Expected: 90
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+16/01/2023 17:55:03
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 888, in <lambda>\n', '  File "sales.py", line 2180, in save\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+16/01/2023 17:55:03
+/sales/invoice
+TypeError: Cannot read properties of null (reading 'xCoordinate')
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.getAnchor (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9991:24)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyAnchor (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9981:31)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyLookup (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9923:26)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyLookups (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:8031:36)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyFeatures (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:8016:14)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyFeatures (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10006:15)
+    at $6703eaa61400de19$export$2e2bcd8739ae039.process (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:7434:52)
+    at $2ec9b66dcab54746$export$2e2bcd8739ae039.position (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10070:43)
+    at $8fe7395fdc229fa3$export$2e2bcd8739ae039.position (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10164:75)
+    at $8fe7395fdc229fa3$export$2e2bcd8739ae039.layout (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10148:14)
+
+17/01/2023 06:55:26
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+17/01/2023 06:55:26
+/sales/invoice
+TypeError: Cannot read properties of null (reading 'xCoordinate')
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.getAnchor (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9991:24)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyAnchor (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9981:31)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyLookup (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9923:26)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyLookups (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:8031:36)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyFeatures (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:8016:14)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyFeatures (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10006:15)
+    at $6703eaa61400de19$export$2e2bcd8739ae039.process (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:7434:52)
+    at $2ec9b66dcab54746$export$2e2bcd8739ae039.position (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10070:43)
+    at $8fe7395fdc229fa3$export$2e2bcd8739ae039.position (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10164:75)
+    at $8fe7395fdc229fa3$export$2e2bcd8739ae039.layout (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10148:14)
+
+17/01/2023 06:56:56
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+17/01/2023 06:56:56
+/sales/invoice
+TypeError: Cannot read properties of null (reading 'xCoordinate')
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.getAnchor (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9991:24)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyAnchor (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9981:31)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyLookup (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:9923:26)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyLookups (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:8031:36)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyFeatures (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:8016:14)
+    at $1ab772dcf2da50dd$export$2e2bcd8739ae039.applyFeatures (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10006:15)
+    at $6703eaa61400de19$export$2e2bcd8739ae039.process (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:7434:52)
+    at $2ec9b66dcab54746$export$2e2bcd8739ae039.position (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10070:43)
+    at $8fe7395fdc229fa3$export$2e2bcd8739ae039.position (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10164:75)
+    at $8fe7395fdc229fa3$export$2e2bcd8739ae039.layout (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\fontkit\dist\main.cjs:10148:14)
+
+17/01/2023 06:59:38
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2936, in bill_pdf_only\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 516, in send\n']
+
+17/01/2023 07:07:41
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:09:00
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:09:25
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2936, in bill_pdf_only\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 516, in send\n']
+
+17/01/2023 07:09:55
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2936, in bill_pdf_only\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 516, in send\n']
+
+17/01/2023 07:11:57
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:13:19
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:14:36
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:16:31
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:17:11
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:21:52
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 888, in <lambda>\n', '  File "sales.py", line 2180, in save\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:22:25
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+17/01/2023 07:24:13
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 3253, in check_kannada\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 516, in send\n']
+
+17/01/2023 07:24:28
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 3253, in check_kannada\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 516, in send\n']
+
+17/01/2023 07:26:22
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 2999, in bill_pdf_only\n', '  File "requests\\api.py", line 117, in post\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 697, in send\n', '  File "requests\\models.py", line 836, in content\n', '  File "requests\\models.py", line 761, in generate\n']
+
+19/01/2023 08:12:53
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+19/01/2023 08:13:02
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+19/01/2023 08:13:22
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+19/01/2023 08:14:48
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+19/01/2023 08:14:56
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+19/01/2023 20:44:02
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1205, in get_prod_by_name\n', '  File "sales.py", line 1252, in get_stk_sug\n']
+
+01/02/2023 14:38:56
+
+Error: Packets out of order. Got: 0 Expected: 3
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+02/02/2023 12:22:48
+
+Error: Packets out of order. Got: 0 Expected: 3
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+03/02/2023 12:38:33
+
+Error: Packets out of order. Got: 0 Expected: 3
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+03/02/2023 20:38:34
+
+Error: Packets out of order. Got: 0 Expected: 3
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+04/02/2023 09:50:18
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "reports.py", line 61, in <lambda>\n', '  File "reports.py", line 168, in sales\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+04/02/2023 17:56:22
+
+Error: Packets out of order. Got: 0 Expected: 9
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+05/02/2023 12:27:22
+
+Error: Packets out of order. Got: 0 Expected: 3
+    at Parser._tryReadPacketHeader (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:470:15)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Parser.js:33:29)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\printer_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    at readableAddChunk (node:internal/streams/readable:289:9)
+    at Socket.Readable.push (node:internal/streams/readable:228:10)
+    at TCP.onStreamRead (node:internal/stream_base_commons:190:23)
+
+05/02/2023 12:51:30
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "sales.py", line 1519, in select_from_treeview\n']
+
+08/02/2023 16:00:05
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 783, in <lambda>\n', '  File "purchase.py", line 2930, in save\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+08/02/2023 16:00:05
+
+Error: ER_TRUNCATED_WRONG_VALUE: Incorrect date value: 'undefined-undefined-06/02/2023' for column 'pur_date' at row 1
+    at Query.Sequence._packetToError (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:47:14)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:79:18)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    --------------------
+    at Protocol._enqueue (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Connection.query (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:198:25)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:735:43)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+
+08/02/2023 16:03:08
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 783, in <lambda>\n', '  File "purchase.py", line 2930, in save\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+08/02/2023 16:03:08
+
+Error: ER_TRUNCATED_WRONG_VALUE: Incorrect date value: 'undefined-undefined-06/02/2023' for column 'pur_date' at row 1
+    at Query.Sequence._packetToError (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:47:14)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:79:18)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    --------------------
+    at Protocol._enqueue (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Connection.query (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:198:25)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:735:43)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+
+12/02/2023 11:41:01
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2214, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+12/02/2023 11:41:02
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '5086')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:609:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+12/02/2023 11:42:07
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2269, in select_from_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+12/02/2023 11:42:07
+/purchases/removePurchaseProduct
+TypeError: Cannot convert undefined or null to object
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:619:52
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+16/02/2023 06:23:30
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2203, in enter_to_treeview\n', '  File "purchase.py", line 1436, in cal_final_totals\n']
+
+16/02/2023 06:26:20
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2203, in enter_to_treeview\n', '  File "purchase.py", line 1436, in cal_final_totals\n']
+
+18/02/2023 17:05:35
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5554, in select_rates\n']
+
+18/02/2023 17:07:35
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5554, in select_rates\n']
+
+18/02/2023 17:12:34
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5554, in select_rates\n']
+
+24/02/2023 06:20:51
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 783, in <lambda>\n', '  File "purchase.py", line 2930, in save\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+24/02/2023 06:20:51
+
+Error: ER_TRUNCATED_WRONG_VALUE: Incorrect date value: 'undefined-undefined-20/02/2023' for column 'pur_date' at row 1
+    at Query.Sequence._packetToError (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:47:14)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:79:18)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:527:28)
+    at addChunk (node:internal/streams/readable:315:12)
+    --------------------
+    at Protocol._enqueue (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Connection.query (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:198:25)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:735:43)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+
+24/02/2023 06:24:05
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 783, in <lambda>\n', '  File "purchase.py", line 2930, in save\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+24/02/2023 06:24:05
+
+TypeError: Cannot convert undefined or null to object
+    at Function.keys (<anonymous>)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:704:46)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+
+24/02/2023 06:24:51
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 783, in <lambda>\n', '  File "purchase.py", line 2930, in save\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+24/02/2023 06:24:51
+
+TypeError: Cannot read properties of undefined (reading 'firm_id')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:668:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+
+24/02/2023 06:25:46
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 783, in <lambda>\n', '  File "purchase.py", line 2930, in save\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+24/02/2023 06:25:46
+
+TypeError: Cannot convert undefined or null to object
+    at Function.keys (<anonymous>)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:704:46)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+
+24/02/2023 06:28:57
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2214, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+24/02/2023 06:28:58
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '256')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:609:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+24/02/2023 06:29:22
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2319, in delete_from_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+24/02/2023 06:29:22
+/purchases/removePurchaseProduct
+TypeError: Cannot convert undefined or null to object
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:619:52
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+24/02/2023 06:30:25
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2214, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+24/02/2023 06:30:25
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '256')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:609:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+27/02/2023 11:17:14
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 11:17:14
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 11:20:18
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 11:20:18
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 14:12:17
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 14:12:17
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 14:12:26
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 14:12:26
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 14:12:29
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 14:12:29
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 14:12:35
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 14:12:35
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 14:13:25
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 14:13:25
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 14:14:04
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 14:14:04
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 15:50:10
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 15:50:10
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 15:50:19
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 15:50:19
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 15:50:30
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 15:50:30
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 15:50:51
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 15:50:52
+
+TypeError: Cannot read properties of undefined (reading 'length')
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:91:37)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query.ErrorPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:92:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:88:28)
+
+27/02/2023 17:17:50
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "forms.py", line 5037, in get_stocks\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+27/02/2023 17:17:51
+
+ReferenceError: insertYear is not defined
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:575:38)
+    at Query.<anonymous> (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:526:10)
+    at Query._callback (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\Connection.js:488:16)
+    at Query.Sequence.end (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Sequence.js:83:24)
+    at Query._handleFinalResultPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:149:8)
+    at Query.EofPacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\sequences\Query.js:133:8)
+    at Protocol._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+
+28/02/2023 14:58:28
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2224, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 14:58:28
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '2066')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:607:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+28/02/2023 15:00:52
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2224, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 15:00:52
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '2066')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:607:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+28/02/2023 15:01:04
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2224, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 15:01:04
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '-1')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:607:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+28/02/2023 15:31:28
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2224, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 15:31:28
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '2066')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:607:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+28/02/2023 15:33:27
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2224, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 15:33:27
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '2066')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:607:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+28/02/2023 15:35:56
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2224, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 15:35:56
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '5182')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:607:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+28/02/2023 15:37:57
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2224, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 15:37:57
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '3777')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:607:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+28/02/2023 15:38:59
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2329, in delete_from_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 15:38:59
+/purchases/removePurchaseProduct
+TypeError: Cannot convert undefined or null to object
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:617:52
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+
+28/02/2023 18:06:56
+['  File "tkinter\\__init__.py", line 1892, in __call__\n', '  File "purchase.py", line 2224, in enter_to_treeview\n', '  File "requests\\api.py", line 75, in get\n', '  File "requests\\api.py", line 61, in request\n', '  File "requests\\sessions.py", line 542, in request\n', '  File "requests\\sessions.py", line 655, in send\n', '  File "requests\\adapters.py", line 498, in send\n']
+
+28/02/2023 18:06:56
+/purchases/addPurchaseProduct
+TypeError: Cannot set properties of undefined (setting '123')
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\socketServer.js:606:59
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:144:13)
+    at Route.dispatch (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\route.js:114:3)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:284:15
+    at Function.process_params (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\index.js:280:10)
+    at expressInit (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\middleware\init.js:40:5)
+    at Layer.handle [as handle_request] (C:\Users\admin\Hosangadi2.0\backend\socket_server\node_modules\express\lib\router\layer.js:95:5)

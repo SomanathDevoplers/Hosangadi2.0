@@ -8,7 +8,7 @@ from tkinter import constants as con
 from tkinter import messagebox as msg
 from tkinter import ttk
 from subprocess import check_output
-ip = "192.168.0.100"
+ip = "192.168.0.103"
 
 
 
@@ -175,7 +175,7 @@ rad_server.grid(row = 3 , column = 2 , padx = int(login_wdt*0.01))
 
 btn_submit.grid(row = 4 , column = 0 )
 
-rad_system.invoke()
+rad_server.invoke()
 
 ent_user_name.focus_set()
 
