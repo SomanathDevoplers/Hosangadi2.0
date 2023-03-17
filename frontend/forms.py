@@ -2617,7 +2617,7 @@ class prods(base_window):
 
 
         """===================pop up window to get set barcodes================================="""
-        self.frm_barcode = ttk.Frame( self.main_frame , height = self.main_hgt*0.3 , width = self.main_wdt*0.3  , style = "root_menu.TFrame")
+        self.frm_barcode = ttk.Frame( self.main_frame , height = self.main_hgt*0.6 , width = self.main_wdt*0.3  , style = "root_menu.TFrame")
         self.frm_barcode.pack_propagate(False)
         self.btn_gen_bar = ttk.Button(self.frm_barcode , text = "Genarate Barcode" , state = con.DISABLED , style = "window_btn_medium.TButton" ,command = lambda : self.generate(None))
         self.btn_gen_bar.bind("<Escape>" , self.destroy_top_bar)
@@ -2635,6 +2635,18 @@ class prods(base_window):
         self.ent_bar4 = ttk.Entry(self.frm_barcode   , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[3], '%P'))
         self.ent_bar4.bind("<FocusOut>" , self.combo_entry_out)
         self.ent_bar4.bind("<Escape>" , self.destroy_top_bar)
+        self.ent_bar5 = ttk.Entry(self.frm_barcode  , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[3], '%P'))
+        self.ent_bar5.bind("<FocusOut>" , self.combo_entry_out)
+        self.ent_bar5.bind("<Escape>" , self.destroy_top_bar)
+        self.ent_bar6 = ttk.Entry(self.frm_barcode   , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[3], '%P'))
+        self.ent_bar6.bind("<FocusOut>" , self.combo_entry_out)
+        self.ent_bar6.bind("<Escape>" , self.destroy_top_bar)
+        self.ent_bar7 = ttk.Entry(self.frm_barcode   , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[3], '%P'))
+        self.ent_bar7.bind("<FocusOut>" , self.combo_entry_out)
+        self.ent_bar7.bind("<Escape>" , self.destroy_top_bar)
+        self.ent_bar8 = ttk.Entry(self.frm_barcode   , state = con.DISABLED,   font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , validate="key", validatecommand=(validations[3], '%P'))
+        self.ent_bar8.bind("<FocusOut>" , self.combo_entry_out)
+        self.ent_bar8.bind("<Escape>" , self.destroy_top_bar)
 
 
         self.btn_gen_bar.pack()
@@ -2642,6 +2654,10 @@ class prods(base_window):
         self.ent_bar2.pack( fill = con.BOTH , padx = self.main_wdt*0.01 , pady = self.main_hgt*0.01)
         self.ent_bar3.pack( fill = con.BOTH , padx = self.main_wdt*0.01 , pady = self.main_hgt*0.01)
         self.ent_bar4.pack( fill = con.BOTH , padx = self.main_wdt*0.01 , pady = self.main_hgt*0.01)
+        self.ent_bar5.pack( fill = con.BOTH , padx = self.main_wdt*0.01 , pady = self.main_hgt*0.01)
+        self.ent_bar6.pack( fill = con.BOTH , padx = self.main_wdt*0.01 , pady = self.main_hgt*0.01)
+        self.ent_bar7.pack( fill = con.BOTH , padx = self.main_wdt*0.01 , pady = self.main_hgt*0.01)
+        self.ent_bar8.pack( fill = con.BOTH , padx = self.main_wdt*0.01 , pady = self.main_hgt*0.01)
         """===================pop up window to get set barcodes ends================================="""
 
 
@@ -2736,10 +2752,15 @@ class prods(base_window):
                 for each in barcodes:
                     if each == "":
                         barcodes.remove(each)
-                if len(barcodes) >= 1 : self.ent_bar1.insert(0 , barcodes[0])               
-                if len(barcodes) >= 2 : self.ent_bar2.insert(0 , barcodes[1])
-                if len(barcodes) >= 3 : self.ent_bar3.insert(0 , barcodes[2])
-                if len(barcodes) >= 4 : self.ent_bar4.insert(0 , barcodes[3])
+                totbar = len(barcodes)
+                if totbar >= 1 : self.ent_bar1.insert(0 , barcodes[0])               
+                if totbar >= 2 : self.ent_bar2.insert(0 , barcodes[1])
+                if totbar >= 3 : self.ent_bar3.insert(0 , barcodes[2])
+                if totbar >= 4 : self.ent_bar4.insert(0 , barcodes[3])
+                if totbar >= 5 : self.ent_bar5.insert(0 , barcodes[4])               
+                if totbar >= 6 : self.ent_bar6.insert(0 , barcodes[5])
+                if totbar >= 7 : self.ent_bar7.insert(0 , barcodes[6])
+                if totbar >= 8 : self.ent_bar8.insert(0 , barcodes[7])
                     
 
                 categories = resp['prod_cat'].split(":")
@@ -2865,7 +2886,7 @@ class prods(base_window):
 
     """Barcode entry functions"""
     def show_top_bar(self,e):
-        self.frm_barcode.place( x = self.main_wdt*0.4 , y = self.main_hgt*0.4)
+        self.frm_barcode.place( x = self.main_wdt*0.4 , y = self.main_hgt*0.2)
         #moveTo(self.main_wdt*0.4 + self.main_wdt*0.15 , self.main_hgt*0.4 + self.main_hgt*0.2)
         #self.ent_bar1.focus_set()
         self.btn_gen_bar.focus_set()
@@ -2897,7 +2918,10 @@ class prods(base_window):
         bar2 = self.ent_bar2.get().upper()
         bar3 = self.ent_bar3.get().upper()
         bar4 = self.ent_bar4.get().upper()
-
+        bar5 = self.ent_bar5.get().upper()
+        bar6 = self.ent_bar6.get().upper()
+        bar7 = self.ent_bar7.get().upper()
+        bar8 = self.ent_bar8.get().upper()
 
         #removes " "
         temp = ""
@@ -2912,17 +2936,49 @@ class prods(base_window):
             temp += each
         bar2 = temp
         
+
         temp = ""
         bar3 = bar3.split()
         for each in bar3:
             temp += each
         bar3 = temp
+        
 
         temp = ""
         bar4 = bar4.split()
         for each in bar4:
             temp += each
         bar4 = temp
+        
+
+        temp = ""
+        bar5 = bar5.split()
+        for each in bar5:
+            temp += each
+        bar5 = temp
+        
+
+        temp = ""
+        bar6 = bar6.split()
+        for each in bar6:
+            temp += each
+        bar6 = temp
+        
+
+        temp = ""
+        bar7 = bar7.split()
+        for each in bar7:
+            temp += each
+        bar7 = temp
+        
+
+        temp = ""
+        bar8 = bar8.split()
+        for each in bar8:
+            temp += each
+        bar8 = temp
+        
+        temp = ""
         #removal "" ends here
 
         #checks for s[0-9]
@@ -2966,6 +3022,65 @@ class prods(base_window):
                     msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
                     self.ent_bar4.select_range(0,con.END)
                     self.ent_bar4.focus_set()
+                    return
+                
+        if bar3 != "":
+            if bar3[0] == 'S':
+                try:
+                    int(bar3[1:])
+                except ValueError:
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    self.ent_bar3.select_range(0,con.END)
+                    self.ent_bar3.focus_set()
+                    return
+        if bar4 != "":
+            if bar4[0] == 'S':
+                try:
+                    int(bar4[1:])
+                except ValueError:
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    self.ent_bar4.select_range(0,con.END)
+                    self.ent_bar4.focus_set()
+                    return
+                
+        if bar5 != "":
+            if bar5[0] == 'S':
+                try:
+                    int(bar5[1:])
+                except ValueError:
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    self.ent_bar5.select_range(0,con.END)
+                    self.ent_bar5.focus_set()
+                    return
+                
+        if bar6 != "":
+            if bar6[0] == 'S':
+                try:
+                    int(bar6[1:])
+                except ValueError:
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    self.ent_bar6.select_range(0,con.END)
+                    self.ent_bar6.focus_set()
+                    return
+
+        if bar7 != "":
+            if bar7[0] == 'S':
+                try:
+                    int(bar7[1:])
+                except ValueError:
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    self.ent_bar7.select_range(0,con.END)
+                    self.ent_bar7.focus_set()
+                    return
+        
+        if bar8 != "":
+            if bar8[0] == 'S':
+                try:
+                    int(bar8[1:])
+                except ValueError:
+                    msg.showerror("Info","Barcode Contains Letter 'S'\nGenerate Barcode")
+                    self.ent_bar8.select_range(0,con.END)
+                    self.ent_bar8.focus_set()
                     return
         #pattern check ends here
 
@@ -3020,40 +3135,81 @@ class prods(base_window):
                 msg.showinfo("Existing barcode" , "Barcode '" + bar4 + "' exists @:"+resp[0]['prod_name'])        
                 return
 
+        sql = "select prod_id,prod_name from somanath.products where prod_bar regexp ':"+ bar5 + ":'"
+        if not self.new_state:
+            sql += " and prod_id != "+str(self.selected_prod)
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        if req.status_code == 200:
+            resp = req.json()
+            if len(resp)>0:
+                self.ent_bar5.focus_set()
+                self.ent_bar5.select_range(0,con.END)
+                msg.showinfo("Existing barcode" , "Barcode '" + bar5 + "' exists @:"+resp[0]['prod_name'])        
+                return
+        
+        sql = "select prod_id,prod_name from somanath.products where prod_bar regexp ':"+ bar6 + ":'"
+        if not self.new_state:
+            sql += " and prod_id != "+str(self.selected_prod)
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        if req.status_code == 200:
+            resp = req.json()
+            if len(resp)>0:
+                self.ent_bar6.focus_set()
+                self.ent_bar6.select_range(0,con.END)
+                msg.showinfo("Existing barcode" , "Barcode '" + bar6 + "' exists @:"+resp[0]['prod_name'])        
+                return
+            
+        sql = "select prod_id,prod_name from somanath.products where prod_bar regexp ':"+ bar7 + ":'"
+        if not self.new_state:
+            sql += " and prod_id != "+str(self.selected_prod)
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        if req.status_code == 200:
+            resp = req.json()
+            if len(resp)>0:
+                self.ent_bar7.focus_set()
+                self.ent_bar7.select_range(0,con.END)
+                msg.showinfo("Existing barcode" , "Barcode '" + bar7 + "' exists @:"+resp[0]['prod_name'])        
+                return
+
+        sql = "select prod_id,prod_name from somanath.products where prod_bar regexp ':"+ bar8 + ":'"
+        if not self.new_state:
+            sql += " and prod_id != "+str(self.selected_prod)
+        req = get("http://"+self.ip+":6000/onlySql" , params = {'sql' : sql})
+        if req.status_code == 200:
+            resp = req.json()
+            if len(resp)>0:
+                self.ent_bar8.focus_set()
+                self.ent_bar8.select_range(0,con.END)
+                msg.showinfo("Existing barcode" , "Barcode '" + bar8 + "' exists @:"+resp[0]['prod_name'])        
+                return
 
 
         barcodes = []
-        temp = [bar1 , bar2 , bar3 , bar4]
+        temp = [bar1 , bar2 , bar3 , bar4 , bar5 , bar6 , bar7 , bar8]
         for each in temp:
             if each not in barcodes:
                 if each != '':
                     barcodes.append(each)    
         
+        self.ent_bar8.delete(0 , con.END)
+        self.ent_bar7.delete(0 , con.END)
+        self.ent_bar6.delete(0 , con.END)
+        self.ent_bar5.delete(0 , con.END)
         self.ent_bar4.delete(0 , con.END)
         self.ent_bar3.delete(0 , con.END)
         self.ent_bar2.delete(0 , con.END)
         self.ent_bar1.delete(0 , con.END)
 
-        if len(barcodes) == 4:
-            self.ent_bar4.insert(0 , barcodes[3])
-            self.ent_bar3.insert(0 , barcodes[2])
-            self.ent_bar2.insert(0 , barcodes[1])
-            self.ent_bar1.insert(0 , barcodes[0])
-
-        elif len(barcodes) == 3:
-            self.ent_bar3.insert(0 , barcodes[2])
-            self.ent_bar2.insert(0 , barcodes[1])
-            self.ent_bar1.insert(0 , barcodes[0])
-
-        elif len(barcodes) == 2:
-            self.ent_bar2.insert(0 , barcodes[1])
-            self.ent_bar1.insert(0 , barcodes[0])
-
-        elif len(barcodes) == 1:
-            self.ent_bar1.insert(0 , barcodes[0])
-        else:
-            pass
-
+        totbar = len(barcodes)
+        if totbar >= 1 : self.ent_bar1.insert(0 , barcodes[0])               
+        if totbar >= 2 : self.ent_bar2.insert(0 , barcodes[1])
+        if totbar >= 3 : self.ent_bar3.insert(0 , barcodes[2])
+        if totbar >= 4 : self.ent_bar4.insert(0 , barcodes[3])
+        if totbar >= 5 : self.ent_bar5.insert(0 , barcodes[4])               
+        if totbar >= 6 : self.ent_bar6.insert(0 , barcodes[5])
+        if totbar >= 7 : self.ent_bar7.insert(0 , barcodes[6])
+        if totbar >= 8 : self.ent_bar8.insert(0 , barcodes[7])
+        
         
         #if barGenerated:
         #    req = post("http://"+self.ip+":6000/barcodes" , params = {'type' : 'update' , 'barcode' : self.generated_bar})
@@ -3346,6 +3502,10 @@ class prods(base_window):
         self.ent_bar2.config(state = con.NORMAL)
         self.ent_bar3.config(state = con.NORMAL)
         self.ent_bar4.config(state = con.NORMAL)
+        self.ent_bar5.config(state = con.NORMAL)
+        self.ent_bar6.config(state = con.NORMAL)
+        self.ent_bar7.config(state = con.NORMAL)
+        self.ent_bar8.config(state = con.NORMAL)
         self.combo_category.config(state = con.NORMAL)
         self.ent_cat1.config(state = con.NORMAL)
         self.ent_cat2.config(state = con.NORMAL)
@@ -3428,7 +3588,10 @@ class prods(base_window):
         self.ent_bar2.delete(0,con.END)
         self.ent_bar3.delete(0,con.END)
         self.ent_bar4.delete(0,con.END)
-
+        self.ent_bar5.delete(0,con.END)
+        self.ent_bar6.delete(0,con.END)
+        self.ent_bar7.delete(0,con.END)
+        self.ent_bar8.delete(0,con.END)
         self.combo_category.delete(0,con.END)
         self.ent_cat1.delete(0,con.END)
         self.ent_cat2.delete(0,con.END)
@@ -3492,6 +3655,10 @@ class prods(base_window):
         self.ent_bar2.config(state = con.DISABLED)
         self.ent_bar3.config(state = con.DISABLED)
         self.ent_bar4.config(state = con.DISABLED)
+        self.ent_bar5.config(state = con.DISABLED)
+        self.ent_bar6.config(state = con.DISABLED)
+        self.ent_bar7.config(state = con.DISABLED)
+        self.ent_bar8.config(state = con.DISABLED)
 
         self.combo_category.config(state = con.DISABLED)
         self.ent_cat1.config(state = con.DISABLED)
@@ -3528,6 +3695,10 @@ class prods(base_window):
             self.ent_bar2.delete(0,con.END)
             self.ent_bar3.delete(0,con.END)
             self.ent_bar4.delete(0,con.END)
+            self.ent_bar5.delete(0,con.END)
+            self.ent_bar6.delete(0,con.END)
+            self.ent_bar7.delete(0,con.END)
+            self.ent_bar8.delete(0,con.END)
 
         self.chk_hide.config(state = con.DISABLED)
 
@@ -3582,7 +3753,10 @@ class prods(base_window):
         bar2 = self.ent_bar2.get().upper()
         bar3 = self.ent_bar3.get().upper()
         bar4 = self.ent_bar4.get().upper()
-
+        bar5 = self.ent_bar5.get().upper()
+        bar6 = self.ent_bar6.get().upper()
+        bar7 = self.ent_bar7.get().upper()
+        bar8 = self.ent_bar8.get().upper()
 
         cat1 = self.ent_cat1.get().upper()
         cat2 = self.ent_cat2.get().upper()
@@ -3624,11 +3798,11 @@ class prods(base_window):
 
         desc = self.ent_desc.get(0.0 , con.END)
     
-        if (bar1 == "" and bar2 == "" and bar3 =="" and bar4 == "") and not self.generatewhensaved:
+        if (bar1 == "" and bar2 == "" and bar3 =="" and bar4 == "" and bar5 == "" and bar6 == "" and bar7 =="" and bar8 =="") and not self.generatewhensaved:
             msg.showerror("Info" , "Enter barcode")
             self.show_top_bar(None)
             return
-
+ 
         if cat1 == "" and cat2 == "" and cat3 =="":
             msg.showerror("Info" , "Enter category")
             self.show_top_cat(None)
@@ -3846,7 +4020,11 @@ class prods(base_window):
         if bar1 != "": prod_bar += bar1 +":"
         if bar2 != "": prod_bar += bar2 +":"
         if bar3 != "": prod_bar += bar3 +":"
-        if bargen=="" and bar4 != "": prod_bar += bar4 +":"
+        if bar4 != "": prod_bar += bar4 +":"
+        if bar5 != "": prod_bar += bar5 +":"
+        if bar6 != "": prod_bar += bar6 +":"
+        if bar7 != "": prod_bar += bar7 +":"
+        if bargen=="" and bar8 != "": prod_bar += bar8 +":"
         
         temp = categories
         categories = ":"
@@ -3993,6 +4171,10 @@ class prods(base_window):
             self.ent_bar2.delete(0,con.END)
             self.ent_bar3.delete(0,con.END)
             self.ent_bar4.delete(0,con.END)
+            self.ent_bar5.delete(0,con.END)
+            self.ent_bar6.delete(0,con.END)
+            self.ent_bar7.delete(0,con.END)
+            self.ent_bar8.delete(0,con.END)
 
         else:
             self.clear_all()
@@ -4113,10 +4295,15 @@ class prods(base_window):
                 for each in barcodes:
                     if each == "":
                         barcodes.remove(each)
-                if len(barcodes) >= 1 : self.ent_bar1.insert(0 , barcodes[0])               
-                if len(barcodes) >= 2 : self.ent_bar2.insert(0 , barcodes[1])
-                if len(barcodes) >= 3 : self.ent_bar3.insert(0 , barcodes[2])
-                if len(barcodes) >= 4 : self.ent_bar4.insert(0 , barcodes[3])
+                totbar = len(barcodes)
+                if totbar >= 1 : self.ent_bar1.insert(0 , barcodes[0])               
+                if totbar >= 2 : self.ent_bar2.insert(0 , barcodes[1])
+                if totbar >= 3 : self.ent_bar3.insert(0 , barcodes[2])
+                if totbar >= 4 : self.ent_bar4.insert(0 , barcodes[3])
+                if totbar >= 5 : self.ent_bar5.insert(0 , barcodes[4])               
+                if totbar >= 6 : self.ent_bar6.insert(0 , barcodes[5])
+                if totbar >= 7 : self.ent_bar7.insert(0 , barcodes[6])
+                if totbar >= 8 : self.ent_bar8.insert(0 , barcodes[7])
                     
 
                 categories = resp['prod_cat'].split(":")
