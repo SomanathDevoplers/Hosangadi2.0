@@ -163,9 +163,10 @@ class return_reports(base_window):
                 firstDay = '20'+str(year[2:4])+"-10-01"
                 lastDay = '20'+str(year[2:4])+"-12-31"
             else :
-                firstDay = '20'+str(year[2:4])+"-01-01"
-                lastDay = '20'+str(year[2:4])+"-03-31"
-            req = get("http://"+self.ip+":7000/cmp08",params= {'dbYear':year[2:4],'firstDay':firstDay,'lastDay':lastDay,'quarter':quarter} )
+                firstDay = '20'+str(int(year[2:4])+1)+"-01-01"
+                lastDay = '20'+str(int(year[2:4])+1)+"-03-31"
+            params = {'dbYear':year[2:4],'firstDay':firstDay,'lastDay':lastDay,'quarter':quarter} 
+            req = get("http://"+self.ip+":7000/cmp08",params= params)
             
             if req.status_code== 201:
                 msg.showinfo("No Data","No sales for selected data")

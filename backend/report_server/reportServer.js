@@ -7,14 +7,10 @@ const app = express()
 const mysql = require('mysql') 
 const multer = require('multer')
 const fs = require('fs')
-const mv = require('mv')
-const { Console, dir, log } = require('console')
-const { response } = require('express')
-const { execPath } = require('process')
 const homeDir = require('os').homedir()
-const { createWriteStream } = require ("fs");
-const PDFDocument = require("pdfkit"); 
 var MySql = require('sync-mysql');
+var html_to_pdf = require("html-pdf-node");
+const hbs = require("handlebars");
 
 let photos = []
 let barcodeInUse = []
@@ -50,6 +46,20 @@ const storage = multer.diskStorage({
   
 })
 
+const cashflowDataStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null , homeDir )  
+  },
+
+  filename: function (req, file, cb) {
+    originalName = file.originalname.split(".")
+    fileName1 = "cashflowData"+Math.floor(Math.random()*100) + "." + originalName.slice(-1)
+    cb(null, fileName1)
+  }
+  
+})
+
+const cashflowDataFiles = multer({storage : cashflowDataStorage})
 
 con.connect()
 
@@ -1117,43 +1127,52 @@ function getOldtrans(  dbYear , mindbYear  , bills , nBill , max ,sqlwhere, clie
 }
 
 app.get('/reports/getCashflowSales' ,  (req,res) => {
-  minYear = 21
+  dbMinYear = 21
   accName = req.query.acc_name
   sqlmin = "SELECT date_format(insert_time,'%y') as year,date_format(insert_time,'%m') as month , acc_id FROM somanath.accounts where acc_name = '"+accName+"'"
+  let result = connection.query(sqlmin)
+  accId = result[0].acc_id
+  accAddedYear = result[0].year
+  accAddedMonth = result[0].month 
   
-  con.query(sqlmin,(err,result)=>{
-    y = parseInt(result[0].year)
-    m = parseInt(result[0].month)
-    accId = result[0].acc_id
-    if (y < 23 & m < 4){
-      minYear = 21
-    }
-    else if (m < 4) minYear = y-1
-    else minYear = y
-    startDate = req.query.sdate
+  accAddedYear = accAddedMonth<4? accAddedYear-1 : accAddedYear
 
+  startDate = req.query.sdate
   endDate = req.query.edate
   noBills = req.query.limit
 
   
-  if ( startDate != '' | endDate != '') {
-    year = parseInt(startDate.slice(2,4))
-    month = parseInt(startDate.slice(3,5))
-      if (year < 23 & month < 4){
-        minYear = 21
-      }
-      else if (month < 4) minYear = year-1
-      else minYear = year
+  if ( startDate != '') {
+    y = parseInt(startDate.slice(2,4))
+    m = parseInt(startDate.slice(5,7))
+    if (m < 4) minYear = y-1
+    else minYear = y
+    if (y <= 22 && m < 4) minYear = 21
+
      if ( startDate == '') sqlwhere = "trans_acc = "+accId+" and trans_date <='"+endDate+"' order by insert_time DESC"
      else if (endDate == '') sqlwhere = "trans_acc = "+accId+" and trans_date >= '"+startDate+"' order by insert_time DESC"
      else sqlwhere = "trans_acc = "+accId+" and trans_date >= '"+startDate+"' and trans_date <='"+endDate+"' order by insert_time DESC"
+  }else{  
+    let res = connection.query("select date_format(trans_date,'%Y-%m-%d') as trans_date FROM somanath20"+req.query.db+".cashflow_sales where trans_acc = "+accId + " order by insert_time DESC limit " + noBills)
+    if(res.length == 0)
+      {
+        let date = new Date();
+	       startDate = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate();
+      }
+      else
+        startDate = res[(res.length-1)].trans_date
+
+    y = parseInt(startDate.slice(2,4))
+    m = parseInt(startDate.slice(5,7))
+    if (m < 4) minYear = y-1
+    else minYear = y
+    if (y <= 22  && m < 4) minYear = 21
+
+    sqlwhere = "trans_acc = "+accId+" and trans_date >= '"+startDate+"' order by insert_time DESC"
+    noBills = 10000000
   }
-  else { sqlwhere = 'trans_acc = '+accId+' order by insert_time DESC limit '+ noBills }
-    getOldtrans(  req.query.db , minYear  , [] , 0 , noBills , sqlwhere , res , accId )
-
-  })
-  
-
+  minYear = Math.max(dbMinYear , minYear , accAddedYear)
+  getOldtrans(  req.query.db ,minYear  , [] , 0 , noBills , sqlwhere , res , accId )
 
 })
 
@@ -1248,6 +1267,40 @@ function getOldBill(  dbYear , mindbYear , acc_id , bills , nBill , max ,sqlwher
       }
 
 }
+app.post('/reports/exportCashFlowSales' ,cashflowDataFiles.single('upload_file'), (req , res) =>{
+  fileLocation = path.join(homeDir , req.file.filename)
+  fs.unlink(fileLocation , (err)=>{})
+  const data = JSON.parse(fs.readFileSync(fileLocation,{encoding:'utf8', flag:'r'}))
+  var html = fs.readFileSync("./salesCashflow.hbs", "utf8");
+  (async function () {
+      const compile = async function (data) {
+        return hbs.compile(html)(data);
+      };
+      
+      const content = await compile(data);
+  
+      let options = {
+        format: "A4",
+        margin: {
+          top: "20px",
+          bottom: "50px",
+          right: "0px",
+          left: "0px",
+        },
+      };
+  
+      let file = [{ content: content }];
+  
+      html_to_pdf.generatePdfs(file, options).then((output) => {
+        const outputFilename = "cashflow.pdf";
+        fs.writeFileSync(outputFilename, output[0].buffer);
+      });
+    
+  })();
+  res.sendFile("./cashflow.pdf",{ root: __dirname } , (err)=>console.log(err))
+})
+
+
 
 app.get('/reports/getCustomersales' ,  (req,res) => {
   minYear = 21

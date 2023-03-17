@@ -1,0 +1,22 @@
+<p>{{customerName}}</p>
+<table style="border: 1px solid black;width:100%">
+    <thead style="text-align: center;">
+      <tr>
+        <th style="border-bottom: 1px solid;">Date</th>
+        <th style="border-bottom: 1px solid;">Bill Number</th>
+        <th style="border-bottom: 1px solid;">Amount</th>
+        <th style="border-bottom: 1px solid;">Paid</th>
+        <th style="border-bottom: 1px solid;">Balance</th>
+    </thead>
+    <tbody style="text-align: center;border-bottom: 1px solid black;">
+      {{#each data}}
+        <tr>
+        <td style="border-bottom: 1px solid;">{{date}}</td>
+        <td style="border-bottom: 1px solid;">{{billNumber}}</td>
+        <td style="border-bottom: 1px solid;">{{amount}}</td>
+        <td style="border-bottom: 1px solid;">{{paid}}</td>
+        <td style="border-bottom: 1px solid;">{{balance}}</td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>

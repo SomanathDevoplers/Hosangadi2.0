@@ -50,7 +50,9 @@ class notification:
         
     def sound(self):
         global play_sound
-        while(play_sound):
+        count = 0
+        while(play_sound and count<5):
+            count += 1
             playsound("C:\\Program Files\\Hosangadi2.0\\error.mp3")
         
 

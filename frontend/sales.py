@@ -362,7 +362,8 @@ class sales(base_window):
             self.tree_cashflow.column('amtpaid' , width = int(self.tree_cashflow_wdt*0.1) , anchor = "e")
             self.tree_cashflow.column('bal' , width = int(self.tree_cashflow_wdt*0.11)   , anchor = "e")
 
-
+        self.btn_export_cashflow = ttk.Button(self.frm_cashflow , text = " Export " , width = 12 , style = "window_btn_medium.TButton" ,command = lambda : self.export_cashflow(None) )
+        self.btn_export_cashflow.bind("<Return>" , self.export_cashflow)
 
         self.scroll_y_cashflow.pack(anchor = con.E , side = con.RIGHT , fill = con.Y)
         self.scroll_x_cashflow.pack(anchor = con.S , side = con.BOTTOM , fill = con.X)
@@ -385,6 +386,8 @@ class sales(base_window):
         self.btn_get_cashflow.grid(row = 3 , column = 2 , sticky = con.W , columnspan = 2)
 
         self.frm_tree_cashflow.grid(row = 4 , column = 0 , columnspan = 5 )
+
+        self.btn_export_cashflow.grid(row = 5 , column = 1 , columnspan = 2, pady=4 )
 
         self.frm_cashflow.pack(pady = 4)
 
@@ -3008,8 +3011,8 @@ class sales(base_window):
         f.write(self.billInfo)
         f.close()
         invoiceDataFile = {'upload_file': ("C:\\Program Files\\Hosangadi2.0\\invoiceData.txt", open('C:\\Program Files\\Hosangadi2.0\\invoiceData.txt','r'), 'text')}
-        pdf = post("http://"+self.ip+":7000/sales/invoice" , files = invoiceDataFile , params = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher),'page': self.rad_printer.get(), 'gst': self.check_gst.get()})
-        self.for_page_change = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] , 'billTotal': grandTotal , 'oldBal' : True , 'oldBalData':json.dumps(voucher)}
+        pdf = post("http://"+self.ip+":7000/sales/invoice" , files = invoiceDataFile , params = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] , 'billTotal': grandTotal , 'oldBal' : False , 'oldBalData':json.dumps(voucher),'page': self.rad_printer.get(), 'gst': self.check_gst.get()})
+        self.for_page_change = {'billNo' : self.ent_pdf_bill_no.get(), 'Date' : bill_data[0]['Date'], 'customerName': bill_data[0]['acc_name'] , 'billTotal': grandTotal , 'oldBal' : False , 'oldBalData':json.dumps(voucher)}
         self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
         open(self.displayed_pdf,"wb").write(pdf.content)  
         self.pdf.display_file(self.displayed_pdf)
@@ -3017,11 +3020,6 @@ class sales(base_window):
         self.btn_vch.config(state = con.DISABLED)
         self.btn_vch_bill.config(state = con.DISABLED)
         self.rad_even_odd.set(-1)
-        try:
-            copyfile(self.location+"\\Desktop\\Invoices\\invoice.pdf",self.location+"\\Desktop\\Invoices\\oldinvoices\\"+self.ent_pdf_bill_no.get()+".pdf")
-        except:
-            pass 
-         
     def show_even_pages(self):
         i = self.rendered_page_count
         even_page_string = ""
@@ -3174,9 +3172,15 @@ class sales(base_window):
         if limit != "":
             from_date = ''
             to_date = ''
+            self.ent_from_cashflow.delete(0,con.END)
+            self.ent_to_cashflow.delete(0,con.END)
         else:
             limit = 10000000
-        req = get("http://"+self.ip+":6000/reports/getCashflowSales" , params = { "acc_name" : cust_name , "limit" : limit ,'sdate' : from_date ,'edate' :to_date,'db' : self.year  }) 
+
+
+
+        params = { "acc_name" : cust_name , "limit" : limit ,'sdate' : from_date ,'edate' :to_date,'db' : self.year  }
+        req = get("http://"+self.ip+":6000/reports/getCashflowSales" , params = params) 
 
 
         data = req.json()
@@ -3394,4 +3398,29 @@ class sales(base_window):
                         self.tree_sales_rep.insert('','end',tags =(tags ,), values = [x[0] , qty , x[2] , x[3]])
                     i += 1
 
+    def export_cashflow(self , e):
+        cashFlowData = {
+            "customerName": self.combo_cust_cashflow.get() , 
+        }
+        data = []
+        for each in self.tree_cashflow.get_children():
+            values = self.tree_cashflow.item(each)['values']
+            entry = {
+                "date" : values[0],
+                "billNumber": values[1],
+                "amount": values[2],
+                "paid": values[3],
+                "balance": values[4]
+            }
+            data.append(entry)
+        cashFlowData['data'] = data
+        cashflowData = json.dumps(cashFlowData)
+        f = open("C:\\Program Files\\Hosangadi2.0\\cashflowdata.txt", "w")
+        f.write(cashflowData)
+        f.close()
+        cashflowDataFile = {'upload_file': ("C:\\Program Files\\Hosangadi2.0\\cashflowdata.txt", open('C:\\Program Files\\Hosangadi2.0\\cashflowdata.txt','r'), 'text')}
+        req = post("http://"+self.ip+":6000/reports/exportCashFlowSales",files = cashflowDataFile ) 
+        with open(self.location+"\\Desktop\\Invoices\\cashflow.pdf", "wb") as binary_file:
+            binary_file.write(req._content)
+        msg.showinfo("Info" , "Report generated")
     """--------------------------------------------------------------------------------------------------"""
