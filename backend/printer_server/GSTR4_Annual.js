@@ -1,3 +1,4 @@
+// used for testing only
 const homeDir = require('os').homedir()
 XLSX = require('xlsx')
 var MySql = require('sync-mysql');

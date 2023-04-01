@@ -1658,7 +1658,7 @@ for(i=0;i<purchase.length;i++){
         prodId = purchase[i]['pur_prod_id'].split(":").slice(1,-1)
         prodQty = purchase[i]['pur_prod_qty'].split(":").slice(1,-1)
         for(j=0;j<prodId.length;j++){
-            cp  = connection.query("SELECT stk_cost FROM somanath2022.stocks where stk_pur_id='"+purchase[i]['pur_id']+"'and stk_prod_id ="+prodId[j])[0]['stk_cost']
+            cp  = connection.query("SELECT stk_cost FROM somanath20"+dbYear+".stocks where stk_pur_id='"+purchase[i]['pur_id']+"'and stk_prod_id ="+prodId[j])[0]['stk_cost']
             gstCessId = connection.query("SELECT prod_gst,prod_cess FROM somanath.products where prod_id ="+prodId[j])[0]
             gst = connection.query("SELECT tax_per FROM somanath.taxes where tax_id ="+gstCessId['prod_gst'])[0]['tax_per']
             cess = connection.query("SELECT tax_per FROM somanath.taxes where tax_id ="+gstCessId['prod_cess'])[0]['tax_per']
@@ -1698,7 +1698,7 @@ for(i=0;i<purchase.length;i++){
         prodId = purchase[i]['pur_prod_id'].split(":").slice(1,-1)
         prodQty = purchase[i]['pur_prod_qty'].split(":").slice(1,-1)
         for(j=0;j<prodId.length;j++){
-            cp  = connection.query("SELECT stk_cost FROM somanath2022.stocks where stk_pur_id='"+purchase[i]['pur_id']+"'and stk_prod_id ="+prodId[j])[0]['stk_cost']
+            cp  = connection.query("SELECT stk_cost FROM somanath20"+dbYear+".stocks where stk_pur_id='"+purchase[i]['pur_id']+"'and stk_prod_id ="+prodId[j])[0]['stk_cost']
             gstCessId = connection.query("SELECT prod_gst,prod_cess FROM somanath.products where prod_id ="+prodId[j])[0]
             gst = connection.query("SELECT tax_per FROM somanath.taxes where tax_id ="+gstCessId['prod_gst'])[0]['tax_per']
             cess = connection.query("SELECT tax_per FROM somanath.taxes where tax_id ="+gstCessId['prod_cess'])[0]['tax_per']
@@ -1855,7 +1855,7 @@ app.post('/PrintInvoice' , files.single('file') ,(req,res) =>{
     res.sendStatus(200)
 }) 
 
-
+/*
 process.on('uncaughtException', (error) => {
   socket.emit('sendError' ,"\n"+String(error.stack))
   process.exit(1)
@@ -1872,7 +1872,7 @@ function myCustomErrorHandler(err, req, res, next) {
   process.exit(1);
 
 }
-app.use(myCustomErrorHandler);
+app.use(myCustomErrorHandler);*/
 
 
 app.listen(7000);

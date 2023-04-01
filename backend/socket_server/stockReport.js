@@ -1,3 +1,4 @@
+// not used anywhere under progress
 const express = require('express');
 const app = express();
 const MySql = require('sync-mysql');
@@ -37,6 +38,7 @@ for(i=0;i<n;i++)
 
 sql = 'SELECT pur_id,pur_prod_id,pur_prod_qty FROM somanath2021.purchases where pur_firm_id = 1 and pur_date >="2022-02-01" and pur_date<="2022-02-28"'
 con.query(sql,(err,result)=>{
+    console.log(err);
     for(i=0;i<result.length;i++)
     {
         stocks = connection.query("SELECT stk_prod_id,stk_cost,stk_tot_qty FROM somanath2021.stocks where stk_firm_id = 1 and stk_pur_id ='"+ result[i]['pur_id']+"'")
