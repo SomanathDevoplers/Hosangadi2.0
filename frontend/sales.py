@@ -9,6 +9,7 @@ import json
 from  tkdocviewer import DocViewer
 import os
 from shutil import copyfile
+from math import floor
 
 
 
@@ -1392,15 +1393,23 @@ class sales(base_window):
         sp = self.ent_prod_sp.get()
         qty = self.ent_prod_qty.get()
         name = self.ent_prod.get()
-        
+    
         try:
             float(qty)
         except ValueError:
             msg.showinfo("Info" , "ENTER QTY")
             return
 
+        unit_type = self.lbl_tot_stk.cget('text').split()[1]
 
-
+        if unit_type == 'N':
+            temp_qty = float(qty)
+            if temp_qty - floor(temp_qty) > 0:
+                self.root.bell()
+                ans = msg.askyesno( 'QTY ಕಾಣಿ!' , 'QTY ಚೆಕ್ ಮಾಡಿ!!! \n\n ಸರಿಯಾ??')
+                if not ans:
+                    return
+                   
         if float(qty) > float(self.max_qty):
             msg.showinfo("Info" , "ENTER QTY < " + "{:.3f}".format(round(self.max_qty,3)))
             self.ent_prod_qty.delete(0,con.END)
