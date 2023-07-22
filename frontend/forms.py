@@ -5941,6 +5941,7 @@ class order_list(base_window):
 
         self.frm_chk_cat = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_cat = ttk.Checkbutton(self.frm_chk_cat , text = "Category :" , style = "window_check.TCheckbutton" , variable = self.cat_state , onvalue = 'True' , offvalue = 'False')
+        self.cat_state.set('True')
         self.combo_cat1 = ttk.Combobox(self.frm_chk_cat  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 , style = "window_combo.TCombobox") 
         self.combo_cat1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_cat1.bind('<Down>', self.add_search_cats)
@@ -5956,6 +5957,7 @@ class order_list(base_window):
 
         self.frm_chk_sup = ttk.Frame(self.tree_frame , style = "root_main.TFrame")
         self.chk_sup = ttk.Checkbutton(self.frm_chk_sup , text = "Supplier :" , style = "window_check.TCheckbutton", variable = self.sup_state , onvalue = 'True' , offvalue = 'False')
+        self.sup_state.set('True')
         self.combo_sup1 = ttk.Combobox(self.frm_chk_sup  , font = ('Lucida Grande' , -int(self.main_hgt*0.03)) , width = 22 ,  validate="key", validatecommand=(validations[0], '%P')) 
         self.combo_sup1.bind("<FocusOut>" , self.combo_entry_out)
         self.combo_sup1.bind('<Down>', self.add_search_sup)
@@ -6123,7 +6125,11 @@ class order_list(base_window):
         sup1 = self.combo_sup1.get()
         sup2 = self.combo_sup2.get()
         prod = self.ent_prod_search.get().upper()
-        
+
+        if (self.cat_state.get() == 'False' and self.sup_state.get() == 'False') :
+            msg.showinfo("Info", "Select checkbox and enter supplier . Enter supplier")
+            return
+
         prod = ''
         firstSql = True
         sql = "select prod_name , prod_id , tax_per  from somanath.products , somanath.taxes"
@@ -6517,10 +6523,10 @@ class barcodes(base_window):
         self.btn_hoin.bind("<Return>" , self.print_hoin)
         
         if self.root.winfo_screenheight() > 1000:
-            self.btn_hoin.pack()
+            # self.btn_hoin.pack()
             self.btn_epson.pack()
         else:
-            self.btn_hoin.pack(side = con.LEFT)
+            # self.btn_hoin.pack(side = con.LEFT)
             self.btn_epson.pack(side = con.RIGHT)
 
 

@@ -3,7 +3,7 @@ from distutils.log import error
 from time import sleep, time
 import mysql.connector
 from requests import post
-conn = mysql.connector.connect(host='localhost', user='root', password='#mysqlpassword5') 
+conn = mysql.connector.connect(host='localhost', user='root', password='mysqlpassword5') 
 c = conn.cursor(buffered=True)
 import datetime
 import time

@@ -12,14 +12,24 @@ let custList = []
 
  
 
-con = mysql.createConnection({
-    host: "localhost",
-    port: "3306",
-    user: "root",
-    password: "#mysqlpassword5"
+// con = mysql.createConnection({
+//     host: "localhost",
+//     port: "3306",
+//     user: "root",
+//     password: "mysqlpassword5"
+// });
+
+let con = mysql.createPool({
+  connectionLimit : 50,
+  host: "localhost",
+  port: "3306",
+  user: "root",
+  password: "mysqlpassword5",
+  multipleStatements : true,
+  debug: false
 });
 
-con.connect()
+// con.connect()
 
 
 

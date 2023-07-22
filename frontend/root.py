@@ -479,7 +479,7 @@ menu_settings_head = ttk.Menubutton(frm_menubar , text = "SETTINGS" , direction 
 menu_settings = Menu(menu_settings_head , tearoff = 0 , font = ('Lucida Console' , -int(root_hgt*0.022)))
 menu_settings.add_command(label = "CATEGORIES" , command = categories)
 menu_settings.add_command(label = "TAXES" , command = taxes)
-menu_settings.add_command(label = "EMPLOYEES" , command = employees)
+# menu_settings.add_command(label = "EMPLOYEES" , command = employees)
 menu_settings.add_command(label = "DATA BACKUP" , command = data_backup)
 #menu_settings.add_command(label = "FIRMS" , command = firms)
 menu_settings_head.config(menu = menu_settings)
@@ -488,7 +488,7 @@ menu_settings_head.config(menu = menu_settings)
 menu_reports_head = ttk.Menubutton(frm_menubar , text = "REPORTS" , direction = 'below',style = "root_menu.TMenubutton" , takefocus = False)
 menu_reports = Menu(menu_reports_head , tearoff = 0 , font = ('Lucida Console' , -int(root_hgt*0.022)))
 menu_reports.add_command(label = "GST REPORTS" , command = return_report)
-menu_reports.add_command(label = "STOCK REPORTS" )
+# menu_reports.add_command(label = "STOCK REPORTS" )
 menu_reports.add_command(label = "ORDER LIST" ,  command = orderList)
 menu_reports.add_command(label = "PURCHASE CASHFLOW" ,  command = purchase_cashflow)
 menu_reports.add_command(label = "CUSTOMER BALANCE" ,  command = customer_balance)
@@ -608,16 +608,15 @@ except:
     ip = "127.0.0.1"
     lbl_user_name.config(text = "VIJAY")    
     lbl_user_type.config(text = "OWNER")
-    lbl_fin_year.config(text = "2022-2023")
+    lbl_fin_year.config(text = "2023-2024")
     lbl_server_name.config(text = ip)
     form_id = 'SomanathStores01'
-    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "HEMA" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2022-2023" , "form_id" : form_id })
+    sio.connect("http://"+ip+":5000/", headers = {"user_name" : "HEMA" , "user_type" : "OWNER", "form_type" : "root" , "fin_year":"2023-2024" , "form_id" : form_id })
     year = "22"
 
 user =lbl_user_name.cget("text")
 Thread(target=socketKeepAlive , daemon = True).start()
 
-products()
 
 root.mainloop()
 #edhe

@@ -46,23 +46,33 @@ const invoiceDataStorage = multer.diskStorage({
 const files = multer({storage : storage})
 const invoiceDataFiles = multer({storage : invoiceDataStorage})
 
-let con = mysql.createConnection({
+// let con = mysql.createConnection({
+//   host: "localhost",
+//   port: "3306",
+//   user: "root",
+//   password: "mysqlpassword5",
+//   multipleStatements : true
+// });
+// con.connect()
+
+let con = mysql.createPool({
+  connectionLimit : 50,
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#mysqlpassword5",
-  multipleStatements : true
+  password: "mysqlpassword5",
+  multipleStatements : true,
+  debug: false
 });
 
 var connection = new MySql({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#mysqlpassword5",
+  password: "mysqlpassword5",
   multipleStatements : true
 });
 
-con.connect()
 
 function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal,oldBalData,page, res,gst){
   if(page == 0)

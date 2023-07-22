@@ -1,6 +1,6 @@
 #
 import mysql.connector
-conn = mysql.connector.connect(host='localhost', user='root', password='#mysqlpassword5') 
+conn = mysql.connector.connect(host='localhost', user='root', password='mysqlpassword5') 
 c = conn.cursor(buffered=True)
 
 c.execute("SELECT trans_id,trans_sales FROM somanath2022.cashflow_sales where trans_sales is not null;")

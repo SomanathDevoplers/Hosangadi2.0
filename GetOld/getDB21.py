@@ -5,7 +5,7 @@ from time import sleep, time
 import mysql.connector
 from requests import post
 from PIL import Image,ImageTk
-conn = mysql.connector.connect(host='localhost', user='root', password='#mysqlpassword5') 
+conn = mysql.connector.connect(host='localhost', user='root', password='mysqlpassword5') 
 c = conn.cursor(buffered=True)
 from asyncio.windows_events import NULL
 import datetime

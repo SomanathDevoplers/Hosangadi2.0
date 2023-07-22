@@ -1,6 +1,6 @@
 
 import mysql.connector
-conn = mysql.connector.connect(host='localhost', user='root', password='#mysqlpassword5') 
+conn = mysql.connector.connect(host='localhost', user='root', password='mysqlpassword5') 
 c = conn.cursor(buffered=True)
 import datetime
 

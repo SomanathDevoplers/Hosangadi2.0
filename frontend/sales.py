@@ -50,6 +50,7 @@ class sales(base_window):
         self.new_state = False
         self.edit_state = False
         self.after_save = False
+        self.vch_save = False
         self.cust_id = -1
         
         self.for_page_change = {}
@@ -1513,8 +1514,8 @@ class sales(base_window):
         if self.prod_id != -1:
             msg.showwarning("Warning" , "A Product is selected")
             return
-        
-        if self.after_save:
+
+        if self.after_save or self.vch_save:
             return
     
     
@@ -1601,7 +1602,7 @@ class sales(base_window):
 
 
     def delete_from_treeview(self,e):
-        if self.after_save:
+        if self.after_save or self.vch_save:
             return
 
         curItemNo = self.tree_sales.focus()
@@ -1960,6 +1961,7 @@ class sales(base_window):
         self.new_state = True
         self.edit_state = False
         self.after_save = False
+        self.vch_save = False
 
         self.t1 = 0
         self.t2 = 0
@@ -2571,6 +2573,8 @@ class sales(base_window):
             pass 
 
     def print_only_bill(self , e):
+        if "bill_date" not in self.voucher:
+            return
         self.enable_print_details()
         self.clear_print_details()
         if len(self.ent_bill_date.get()) == 0:
@@ -2768,6 +2772,7 @@ class sales(base_window):
         self.edit_state = False
         self.new_state = False
         self.after_save = False
+        self.vch_save = True
         self.btn_new.config(state = con.NORMAL)
         self.btn_edit.config(state = con.NORMAL)
 

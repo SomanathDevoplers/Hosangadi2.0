@@ -18,21 +18,31 @@ var connection = new MySql({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#mysqlpassword5",
+  password: "mysqlpassword5",
   multipleStatements : true
 });
 
   
 
-let con = mysql.createConnection({
+// let con = mysql.createConnection({
+//   host: "localhost",
+//   port: "3306",
+//   user: "root",
+//   password: "#mysqlpassword5",
+//   multipleStatements : true
+// });
+
+let con = mysql.createPool({
+  connectionLimit : 50,
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#mysqlpassword5",
-  multipleStatements : true
+  password: "mysqlpassword5",
+  multipleStatements : true,
+  debug: false
 });
 
-con.connect()
+// con.connect()
 
 
 
@@ -115,7 +125,7 @@ function insertToStocks( stkId ,purId , accId , firmId , dbYear , Time , userNam
         sqlStock = sqlStock.slice(0 , -1)
         con.query(sqlStock , (err , res) => {
             purchaseSaving = false})
-        con.commit()
+        //con.commit()
         refreshProducts()
         return 0
       }

@@ -19,17 +19,27 @@ var connection = new MySql({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#mysqlpassword5",
+  password: "mysqlpassword5",
   multipleStatements : true
 });
 
 
-const con = mysql.createConnection({
+// const con = mysql.createConnection({
+//   host: "localhost",
+//   port: "3306",
+//   user: "root",
+//   password: "mysqlpassword5",
+//   multipleStatements : true
+// });
+
+let con = mysql.createPool({
+  connectionLimit : 50,
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#mysqlpassword5",
-  multipleStatements : true
+  password: "mysqlpassword5",
+  multipleStatements : true,
+  debug: false
 });
 
 const storage = multer.diskStorage({
@@ -61,7 +71,7 @@ const cashflowDataStorage = multer.diskStorage({
 
 const cashflowDataFiles = multer({storage : cashflowDataStorage})
 
-con.connect()
+// con.connect()
 
 
 
@@ -204,7 +214,7 @@ app.post('/firms/save' , files.array('images' , 3) , (req,res) =>{
 
                                                   sql2 = "update somanath.firms set firm_tax = '"+sqlInputs.firm_type+"', firm_name = '"+sqlInputs.firm_name+"', firm_suffix = '"+sqlInputs.firm_suffix+"', firm_email = '"+sqlInputs.firm_email+"', firm_mobile = '"+sqlInputs.firm_mobile+"', firm_website = '"+sqlInputs.firm_website+"', firm_address = '"+sqlInputs.firm_address+"', firm_gstin = '"+sqlInputs.firm_gst+"', firm_pan = '"+sqlInputs.firm_pan+"', firm_bank = '"+sqlInputs.firm_bank+"', firm_accno = '"+sqlInputs.firm_acno+"', firm_ifsc = '"+sqlInputs.firm_ifsc+"', firm_upid = '"+sqlInputs.firm_upiid+"', firm_upiqr = '"+sqlInputs.firm_qr+"', firm_logo = '"+sqlInputs.firm_logo+"', firm_photo = '"+sqlInputs.firm_photo+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where firm_id = "+String(ID) 
                                                   con.query(sql2 , (err2 , result2)=>{
-                                                    con.commit()
+                                                    //con.commit()
                                                     res.sendStatus(200)
                                                 })
 
@@ -271,7 +281,7 @@ app.post('/taxes/save' , (req,res) => {
             {
                 sql1 = "update somanath.taxes set tax_type='"+sqlInputs.tax_type+"',"+"tax_per ='"+sqlInputs.tax_per+"',"+"update_time='"+Time+"',"+"update_id=(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where tax_id ="+ID
                 con.query(sql1 , (err1 , result1) => {
-                  con.commit()
+                  //con.commit()
                   res.sendStatus(200)
                   //#socket call refresh event
                   })
@@ -288,7 +298,7 @@ app.post('/taxes/save' , (req,res) => {
                         ID = result1[0]['max(tax_id)']+1
                       sql2 =  "insert into somanath.taxes values ("+String(ID)+",'"+sqlInputs.tax_type+"','"+sqlInputs.tax_per+"','"+Time+"',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')"+" , NULL , NULL)"
                       con.query(sql2 , (err2 , result2) => {
-                          con.commit()
+                          //con.commit()
                           res.sendStatus(200)
                         //#socket call refresh event
                         })     
@@ -368,7 +378,7 @@ app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
 
                             sql1 = "update somanath.categories set cat_name = '"+sqlInputs.cat_name+"', cat_image = '"+sqlInputs.cat_image+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where cat_id = "+String(ID) 
                             con.query(sql1 , (err1 , result1)=>{
-                              con.commit()
+                              //con.commit()
                               res.sendStatus(200)
                           })
 
@@ -400,7 +410,7 @@ app.post('/cat/save' , files.array('images', 1) ,(req,res) => {
 
                               sql2 =  "insert into somanath.categories values ("+String(ID)+",'"+sqlInputs.cat_name+"','"+sqlInputs.cat_image+"','"+Time+"',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')"+" , NULL , NULL)"
                               con.query(sql2 , (err2 , result2) => {
-                                  con.commit()
+                                  //con.commit()
                                   res.sendStatus(200)
                                 //#socket call refresh event
                                 }) 
@@ -531,7 +541,7 @@ app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
                                                       sql2 = "insert into somanath.products values (" + String(ID) + ",'" + sqlInputs.prod_bar + "','"+ sqlInputs.prod_name + "','"+ sqlInputs.prod_cat + "','" + sqlInputs.prod_hsn + "','" + sqlInputs.prod_shelf + "','" + sqlInputs.prod_name_kan + "','" +sqlInputs.prod_name_eng + "'," + sqlInputs.prod_min_qty + "," + sqlInputs.prod_expiry + "," + sqlInputs.prod_mrp + "," + sqlInputs.prod_mrp_old + ",'" + sqlInputs.prod_sup + "', (select tax_id from somanath.taxes where tax_type = 0 and tax_per = " + sqlInputs.prod_gst + ") , (select tax_id from somanath.taxes where tax_type = 1 and tax_per = " + sqlInputs.prod_cess + "),'" + sqlInputs.prod_unit_type +"','" + sqlInputs.nml_unit + "','"   + sqlInputs.htl_unit + "','"  + sqlInputs.spl_unit + "','"  + sqlInputs.ang_unit + "','False','" + sqlInputs.prod_desc + "','" + sqlInputs.img_high + "','" + sqlInputs.img_low +"','" + Time + "',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') , NULL , NULL)"
                                                       
                                                       con.query(sql2,  (err2 , result2)=>{                                                          
-                                                          con.commit()                                                      
+                                                          //con.commit()                                                      
                                                           res.sendStatus(200)
                                                           socket.emit("refresh")
                                                        })
@@ -574,7 +584,7 @@ app.post('/products/save' , files.array('images' , 3) ,  (req,res) =>{
 
                                             sql2 = "update somanath.products set prod_bar = '" + sqlInputs.prod_bar + "', prod_name = '"+ sqlInputs.prod_name + "', prod_cat = '"+ sqlInputs.prod_cat + "', prod_hsn = '" + sqlInputs.prod_hsn + "', prod_shelf = '" + sqlInputs.prod_shelf +"', prod_name_kan = '" + sqlInputs.prod_name_kan + "',  prod_name_eng = '" +sqlInputs.prod_name_eng + "', prod_min_qty = " + sqlInputs.prod_min_qty + ", prod_expiry = " + sqlInputs.prod_expiry + ", prod_mrp = " + sqlInputs.prod_mrp + ", prod_mrp_old = " + sqlInputs.prod_mrp_old + ", prod_sup = '" + sqlInputs.prod_sup + "',  prod_gst =  (select tax_id from somanath.taxes where tax_type = 0 and tax_per = " + sqlInputs.prod_gst + ") , prod_cess = (select tax_id from somanath.taxes where tax_type = 1 and tax_per = " + sqlInputs.prod_cess + "), prod_unit_type = '" + sqlInputs.prod_unit_type +"', nml_unit = '" + sqlInputs.nml_unit + "', htl_unit = '"   + sqlInputs.htl_unit + "', spl_unit = '"  + sqlInputs.spl_unit + "',  ang_unit =  '"  + sqlInputs.ang_unit + "', prod_hide = '"+sqlInputs.prod_hide+"',prod_desc = '" + sqlInputs.prod_desc + "', high_img = '" + sqlInputs.img_high + "', low_img = '" + sqlInputs.img_low +"',update_time = '" + Time + "',update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')  where prod_id = "+ ID
                                             con.query(sql2 , (err2 , result2)=>{
-                                                  con.commit()                          
+                                                  //con.commit()                          
                                                   res.sendStatus(200)
                                                   socket.emit("refresh")
                                               })
@@ -737,7 +747,7 @@ app.post('/employs/save' , files.array('images', 1),(req,res) => {
                             //emp_id, emp_name, emp_address, emp_phone,emp_accno, emp_ifsc, emp_img, insert_time, insert_id, update_time, update_id
                             sql1 = "update somanath.employs set emp_name = '"+sqlInputs.emp_name+"',emp_address = '"+sqlInputs.emp_add+"',emp_phone = '"+sqlInputs.emp_mob+"',emp_accno = '"+sqlInputs.emp_acno+"',emp_ifsc = '"+sqlInputs.emp_ifsc+"', emp_img = '"+sqlInputs.emp_img+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where emp_id = "+String(ID) 
                             con.query(sql1 , (err1 , result1)=>{
-                              con.commit()
+                              //con.commit()
                               res.sendStatus(200)
                           })
 
@@ -769,7 +779,7 @@ app.post('/employs/save' , files.array('images', 1),(req,res) => {
                               //                                                                                                                                            emp_id, emp_name, emp_address, emp_phone, emp_accno, emp_ifsc, emp_img, insert_time, insert_id, update_time, update_id                                                                                             
                               sql2 =  "insert into somanath.employs values ("+String(ID)+",'"+sqlInputs.emp_name+"','"+sqlInputs.emp_add+"','"+sqlInputs.emp_mob+"','"+sqlInputs.emp_acno+"','"+sqlInputs.emp_ifsc+"','"+sqlInputs.emp_img+"','"+Time+"',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"')"+" , NULL , NULL)"
                               con.query(sql2 , (err2 , result2) => {
-                                  con.commit()
+                                  //con.commit()
                                   res.sendStatus(200)
                                 //#socket call refresh event
                                 }) 
@@ -872,7 +882,7 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                                                     sql2 = "insert into somanath.accounts values (" + String(ID) + ",'" + sqlInputs.acc_type + "','"+ sqlInputs.acc_name + "','"+ sqlInputs.acc_email + "','" + sqlInputs.acc_add + "','" + sqlInputs.acc_mob1+ "','" + sqlInputs.acc_mob2+ "','" + sqlInputs.acc_gstin+ "','" + sqlInputs.acc_accno+ "','" + sqlInputs.acc_ifsc+ "','" + sqlInputs.acc_cus_type + "','" +sqlInputs.acc_img+"','" + Time + "',(select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"'),NULL,NULL);"
                                                     sql2 += "insert into somanath20"+sqlInputs.db_year+".acc_bal values("+String(ID)+",0.00,0.00,0.00,0.00,0.00,0.00)"
                                                     con.query(sql2 , (err2 , result2)=>{
-                                                          con.commit()
+                                                          //con.commit()
                                                           res.sendStatus(200)
                                                           socket.emit("refresh")
                                                       })
@@ -890,7 +900,7 @@ app.post('/accounts/save' , files.array('images' , 3) , (req,res) =>{
                                                     photos = []
                                                 sql2 = "update somanath.accounts set acc_type = '"+sqlInputs.acc_type+"', acc_name = '"+sqlInputs.acc_name+"', acc_email = '"+sqlInputs.acc_email+"', acc_add = '"+sqlInputs.acc_add+"', acc_mob1 = '"+sqlInputs.acc_mob1+"', acc_mob2 = '"+sqlInputs.acc_mob2+"',acc_gstin = '"+sqlInputs.acc_gstin+"', acc_accno = '"+sqlInputs.acc_accno+"', acc_ifsc = '"+sqlInputs.acc_ifsc+"', acc_cus_type = '"+sqlInputs.acc_cus_type+"', acc_img = '"+sqlInputs.acc_img+"', update_time = '"+Time+"', update_id = (select user_id from somanath.users where user_name = '"+sqlInputs.user_name+"') where acc_id = "+String(ID) 
                                                 con.query(sql2 , (err2 , result2)=>{
-                                                  con.commit()
+                                                  //con.commit()
                                                   res.sendStatus(200)
                                                   socket.emit("refresh")
                                               })

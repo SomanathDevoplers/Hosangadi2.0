@@ -14,15 +14,24 @@ const connection = new MySql({
 
   
 
-let con = mysql.createConnection({
-  host: "localhost",
-  port: "3306",
-  user: "root",
-  password: "mysqlpassword5",
-  multipleStatements : true
-});
+// let con = mysql.createConnection({
+//   host: "localhost",
+//   port: "3306",
+//   user: "root",
+//   password: "mysqlpassword5",
+//   multipleStatements : true
+// });
 
-con.connect()
+// con.connect()
+let con = mysql.createPool({
+    connectionLimit : 50,
+    host: "localhost",
+    port: "3306",
+    user: "root",
+    password: "mysqlpassword5",
+    multipleStatements : true,
+    debug: false
+  });
 
 dict = {}
 inwardsTotal = 0
