@@ -15,7 +15,8 @@ socket = io.connect('http://localhost:5000')
 const process = require('process');
 const multer = require('multer')
 const path = require('path');
-
+const cors = require('cors')
+const fetch = require('node-fetch');
 
 
 
@@ -60,7 +61,7 @@ let con = mysql.createPool({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "mysqlpassword5",
+  password: "#mysqlpassword5",
   multipleStatements : true,
   debug: false
 });
@@ -69,7 +70,7 @@ var connection = new MySql({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "mysqlpassword5",
+  password: "#mysqlpassword5",
   multipleStatements : true
 });
 
@@ -665,12 +666,12 @@ function dbDataPurchase(firm,dbYear,year,firstDay,lastDay,month,res){
 fromDb = {}
 
 sql = "SELECT pur_id, pur_firm_id, pur_inv, pur_prod_id, pur_prod_qty, pur_exp, date_format(pur_date,'%m/%d/%Y') as pur_date,acc_name,acc_gstin FROM somanath20"+dbYear+".purchases,somanath.accounts where acc_id =pur_acc and pur_date>='"+firstDay+"' and pur_date<='"+lastDay+"' and pur_firm_id = "+firm+" order by pur_date"
-
 allPurchases = connection.query(sql)
 noOfPurchase = allPurchases.length
 if(noOfPurchase>0){
   res.sendStatus(200)
   sqlExmept = "SELECT pur_id,pur_prod_id,pur_prod_qty FROM somanath20"+dbYear+".purchases where pur_firm_id ="+firm+" and pur_date >='"+firstDay+"' and pur_date <='"+lastDay+"';"
+
   allExmept = connection.query(sqlExmept)
   let exemt = 0
   for(e=0;e<allExmept.length;e++)
@@ -682,9 +683,11 @@ if(noOfPurchase>0){
     {
       
       gst = connection.query("SELECT prod_gst FROM somanath.products where prod_id ="+prod_id[g])
+     
       if(gst[0]['prod_gst']==1)
       {
         cost = connection.query("SELECT stk_cost FROM somanath20"+dbYear+".stocks where stk_pur_id = '"+allExmept[e]['pur_id']+"' and stk_prod_id = "+prod_id[g])
+        
         exemt += (parseFloat(cost[0]['stk_cost'])*parseFloat(prod_qty[f]))
       }
       f++
@@ -703,7 +706,9 @@ if(noOfPurchase>0){
       for(k=0;k<prodId.length;k++)
       {
         result1 = connection.query("SELECT stk_cost,prod_gst,prod_cess FROM somanath20"+dbYear+".stocks,somanath.products where stk_prod_id = "+prodId[k]+" and stk_prod_id = prod_id   and stk_pur_id = '"+allPurchases[i]["pur_id"]+"';")
+       
         result2 = connection.query("SELECT tax_per FROM somanath.taxes where tax_id in ("+result1[0]["prod_gst"]+","+result1[0]["prod_cess"]+");")
+        
         prodTotal = result1[0]['stk_cost']*parseFloat(prodQty[k])
         billTotal += prodTotal
         taxableTotal += prodTotal/(1+(result2[0]['tax_per']/100))
@@ -1083,6 +1088,7 @@ worksheets['Purchase Reigster'] = {
 
 i = 6
 date1 = new Date("12/30/1899");
+
 Object.keys(fromDb).forEach(element => {
   GSTIN = String(fromDb[element][0][0])
   TradeName = String(fromDb[element][0][1])
@@ -1115,9 +1121,8 @@ const newBook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(newBook, worksheets['Read Me'], "Read Me");
 XLSX.utils.book_append_sheet(newBook, worksheets['Purchase Reigster'], "Purchase Reigster");
 XLSX.writeFileSync(newBook,path.join(homeDir , 'angadiImages' , "Purchase_"+month+".xlsx"));
-
+"reportFinished" , "Purchase Report" , "Purchase_"+month+".xlsx Exempted_"+month+".txt"
 socket.emit("reportFinished" , "Purchase Report" , "Purchase_"+month+".xlsx Exempted_"+month+".txt")
-
 }
 else{
   res.sendStatus(201)
@@ -1871,24 +1876,80 @@ app.post('/PrintInvoice' , files.single('file') ,(req,res) =>{
     res.sendStatus(200)
 }) 
 
-
-process.on('uncaughtException', (error) => {
-  socket.emit('sendError' ,"\n"+String(error.stack))
-  process.exit(1)
+app.get('/pricelist', async (req,res) =>{
+  const t = new Date();
+  let month = t.getMonth()+1;
+  let year = t.getFullYear();
+  if (month<4){
+    year--
+  }
   
-});
+  sql = `
+SELECT p.prod_name as name,
+s.stk_prod_qty as qty,
+s.stk_cost as cp,
+CONVERT(pur.pur_date,CHAR) as date,
+s.stk_tot_qty as totalQty,
+acc.acc_name as supName
+FROM somanath.products p
+INNER JOIN (
+SELECT stk_tot_qty,stk_cost,stk_pur_id,stk_prod_id,insert_time,stk_prod_qty, 
+ROW_NUMBER() OVER (PARTITION BY stk_prod_id ORDER BY insert_time DESC) AS row_num
+  FROM somanath`+year+`.stocks
+) AS s ON p.prod_id = s.stk_prod_id
+  INNER JOIN somanath`+year+`.purchases pur ON s.stk_pur_id = pur.pur_id
+INNER JOIN somanath.accounts acc ON acc.acc_id = pur.pur_acc
+WHERE s.row_num <= 4
+  ORDER BY p.prod_id, s.insert_time DESC;`
 
-process.on('unhandledRejection', (error, promise)  => {
-  socket.emit('sendError' , error)
-  process.exit(1); // Exit your app 
-})
+  data = connection.query(sql)
+  
+  var result = data.reduce((x, y) => {
+    (x[y.name] = x[y.name] || []).push(y);
+    return x;
+  }, {});
+  
+    const response = await fetch('https://ap-south-1.aws.data.mongodb-api.com/app/data-gfnnt/endpoint/data/v1/action/updateOne',{
+              method:  'post',
+              headers: {
+                'api-key':'DXB10rQxcW1TE8GGfekhZpksRQWWbEpsQ2VKJymkWa6deKpnjKJypdXASBksSq5c',
+                'Content-Type': 'application/json',
+                'Access-Control-Request-Headers': '*',
+              },
+              body:  JSON.stringify({
+                "dataSource": "Cluster0",
+                "database": "PriceList",
+                "collection": "Hosangadi",
+                "filter": {
+                    "_id": { "$oid": "65fd05d30a85dc1b38f69e49" }
+                },
+                "update": {
+                  "$set": {"products":result}
+                }
+              })
+          });
+  const opt = await response.json();
+  res.send(opt.modifiedCount===1)
+  }
+)
 
-function myCustomErrorHandler(err, req, res, next) {
-  socket.emit('sendError' ,req.path+"\n"+String(err.stack))
-  process.exit(1);
+// process.on('uncaughtException', (error) => {
+//   socket.emit('sendError' ,"\n"+String(error.stack))
+//   process.exit(1)
+  
+// });
 
-}
-app.use(myCustomErrorHandler);
+// process.on('unhandledRejection', (error, promise)  => {
+//   socket.emit('sendError' , error)
+//   process.exit(1); // Exit your app 
+// })
+
+// function myCustomErrorHandler(err, req, res, next) {
+//   socket.emit('sendError' ,req.path+"\n"+String(err.stack))
+//   process.exit(1);
+
+// }
+// app.use(myCustomErrorHandler);
 
 
 app.listen(7000);
