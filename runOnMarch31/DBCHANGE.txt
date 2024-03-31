@@ -1,9 +1,9 @@
 
-xx=>previousYear(oldDb)
-xy=>nextYear    (newDb)
+xx=>previousYear(oldDb) 23
+xy=>nextYear    (newDb) 24
 1)find this file in Github structureOfChangableDB.sql
 if (not Found){ 
-    export somanath2022 with include create schema and structure only
+    export somanath20xx with include create schema and structure only
     save the file as structureOfChangableDB.sql and save it in github
 }
 
@@ -40,12 +40,12 @@ no data copied from old Table
         """change oldDbYear and newDbYear as required"""
 
         import mysql.connector
-        conn = mysql.connector.connect(host='localhost', user='root', password='mysqlpassword5') 
+        conn = mysql.connector.connect(host='localhost', user='root', password='#mysqlpassword5') 
         c = conn.cursor(buffered=True)
         import datetime
 
-        oldDbYear = 22  #here
-        newDbYear = 23  #here
+        oldDbYear = 23  #here
+        newDbYear = 24  #here
 
         now = datetime.datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S")
