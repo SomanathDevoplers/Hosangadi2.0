@@ -20,6 +20,7 @@
     "pdfkit": "^0.13.0",
     "socket.io-client": "^4.5.1",
     "sync-mysql": "^3.0.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+     "html-to-pdf" : "^0.1.11"
   }
 }
