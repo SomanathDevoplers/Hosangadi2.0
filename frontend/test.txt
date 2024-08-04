@@ -1,6 +1,7 @@
 https://ghostscript.com/releases/gsdnld.html
 this is required for pip install tkDocViewer
-Uploaded to github fileName ghostScript.exe for windows
+Uploaded to drive fileName ghostScript.exe for windows
+https://drive.google.com/file/d/1gGvQjx86FTU2m5WSstDaB9hDpSMnFLLr/view?usp=drive_link
 
 http://timgolden.me.uk/python/win32_how_do_i/print.html
 
