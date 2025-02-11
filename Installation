@@ -1,0 +1,53 @@
+Desktop/
+└── Invoices/
+    ├── barcode
+    ├── oldinvoices
+    └── reports
+In C folder /
+├── for each files and folder
+├── Right Click properties->Security->For Each Group or user names
+└── Allow what ever is possible to check
+C:/
+├── backup/
+│   └── "Stores daily backup of DB."
+└── Program Files/
+    ├── Hosangadi2.0/
+    │   ├── login/
+    │   │   └── Directory of build of login.py from auto-py-to-exe
+    │   ├── root/
+    │   │   └── Directory of build of root.py from auto-py-to-exe
+    │   ├── All other files to be added here can be found in 
+    │   └── https://github.com/SomanathDevoplers/Hosangadi2.0/tree/main/frontend/files
+    └── Users/
+        └── UserName(Krish,shiva ...)/
+            ├── Images/
+            │   └── This folder is for saving product images.
+            ├── Hosangadi2.0/
+            │   ├── Store backend folder in this install all node modules
+            │   └── https://github.com/SomanathDevoplers/Hosangadi2.0/tree/main/backend
+            └── angadiImages/
+                └── For storing all reports and images
+
+->Install MySQL also workbench
+->Set MySQL password to mysqlpassword5
+Or
+->
+use mysql_native_password 
+SET GLOBAL validate_password.policy=LOW;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'mysqlpassword5';
+
+https://ghostscript.com/releases/gsdnld.html
+this is required for pip install tkDocViewer
+Uploaded to drive fileName ghostScript.exe for windows
+https://drive.google.com/file/d/1gGvQjx86FTU2m5WSstDaB9hDpSMnFLLr/view?usp=drive_link
+
+
+https://pypi.org/project/auto-py-to-exe
+To build login.py and root.py
+Choose 
+One Directory
+Window Based
+Select icon
+
+
+After build copy folders to respective places as shown above
