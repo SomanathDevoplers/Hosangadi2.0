@@ -43,11 +43,13 @@ https://drive.google.com/file/d/1gGvQjx86FTU2m5WSstDaB9hDpSMnFLLr/view?usp=drive
 
 
 https://pypi.org/project/auto-py-to-exe
+intallation using pip: pip install auto-py-to-exe
+to start the auto-py-to-exe => python -m auto_py_to_exe
+
 To build login.py and root.py
 Choose 
 One Directory
 Window Based
 Select icon
-
 
 After build copy folders to respective places as shown above
