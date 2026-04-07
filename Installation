@@ -28,6 +28,8 @@ C:/
             └── angadiImages/
                 └── For storing all reports and images
 
+
+-> install node and python
 ->Install MySQL also workbench
 ->Set MySQL password to mysqlpassword5
 Or
@@ -53,3 +55,21 @@ Window Based
 Select icon
 
 After build copy folders to respective places as shown above
+
+
+
+Backend installation:
+1. Install pm2
+    i.npm i pm2
+
+2.For each server:
+    i.  npm i <server>.js
+    ii. pm2 start <server>.js
+
+3. Setup autostart for nodeapps in pm2:
+    i.  npm install pm2-windows-startup -g
+    ii. pm2-startup install
+
+
+
+
