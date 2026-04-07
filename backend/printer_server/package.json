@@ -21,6 +21,8 @@
     "socket.io-client": "^4.5.1",
     "sync-mysql": "^3.0.1",
     "xlsx": "^0.18.5",
-     "html-to-pdf" : "^0.1.11"
+     "html-to-pdf" : "^0.1.11",
+     "cors": "^2.8.6",
+     "node-fetch": "^3.3.2"
   }
 }
