@@ -65,8 +65,9 @@ Backend installation:
 2.For each server:
     i.  npm i <server>.js
     ii. pm2 start <server>.js
+3. pm2 save
 
-3. Setup autostart for nodeapps in pm2:
+4. Setup autostart for nodeapps in pm2:
     i.  npm install pm2-windows-startup -g
     ii. pm2-startup install
 
