@@ -1,6 +1,6 @@
-#update 24 -> 25 and 25 - 26 on 1/4/2026 Before any bill is saved for 2026-2027
-xx=>previousYear(oldDb) 24
-xy=>nextYear    (newDb) 25
+#Update xx and yy based on current year and next year below is value for 01/04/2026 also in script update oldDbYear and newDbYear
+xx=>previousYear(oldDb) 25
+xy=>nextYear    (newDb) 26
 1)find this file in Github structureOfChangableDB.sql
 if (not Found){ 
     export somanath20xx with include create schema and structure only
@@ -44,8 +44,8 @@ no data copied from old Table
         c = conn.cursor(buffered=True)
         import datetime
 
-        oldDbYear = 24  #here
-        newDbYear = 25  #here
+        oldDbYear = 25  #here
+        newDbYear = 26  #here
 
         now = datetime.datetime.now()
         now = now.strftime("%Y-%m-%d %H:%M:%S")
