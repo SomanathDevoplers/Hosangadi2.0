@@ -61,7 +61,7 @@ let con = mysql.createPool({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#mysqlpassword5",
+  password: "mysqlpassword5",
   multipleStatements : true,
   debug: false
 });
@@ -70,7 +70,7 @@ var connection = new MySql({
   host: "localhost",
   port: "3306",
   user: "root",
-  password: "#mysqlpassword5",
+  password: "mysqlpassword5",
   multipleStatements : true
 });
 
@@ -1131,12 +1131,12 @@ else{
 }
 
 function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
-  sql = "SELECT gst_value, cess_value,sales_prod_qty, sales_prod_sp FROM somanath20"+dbYear+".sales LEFT JOIN somanath20"+dbYear+".sales_sp ON somanath20"+dbYear+".sales.sales_ref = somanath20"+dbYear+".sales_sp.sales_ref  where sale_date>='"+firstDay+"' and sale_date<='"+lastDay+"' and  somanath20"+dbYear+".sales.sales_ref regexp '"+firm+"' order by sale_date"
-  con.query(sql,(err,sales)=>{
+  sql = "SELECT gst_value, cess_value,sales_prod_qty, sales_prod_sp FROM somanath20"+dbYear+".sales LEFT JOIN somanath20"+dbYear+".sales_sp ON somanath20"+dbYear+".sales.sales_ref = somanath20"+dbYear+".sales_sp.sales_ref  where sale_date>='"+firstDay+"' and sale_date<='"+lastDay+"' and  somanath20"+dbYear+".sales.sales_ref regexp '"+firm+"' order by sale_date"  
+con.query(sql,(err,sales)=>{
     if(sales.length>0)
         {
               res.sendStatus(200)
-              total = {0:[0,0],5:[0,0],12:[0,0],18:[0,0],28:[0,0]}
+              total = {0:[0,0], 5:[0,0], 12:[0,0], 18:[0,0], 28:[0,0], 40:[0,0]}
               Object.keys(sales).forEach(bill => 
                   {
                       gst = sales[bill]['gst_value'].split(':').slice(1,-1)
@@ -1156,11 +1156,14 @@ function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
               total[12][0] = (total[12][0]/1.12).toFixed(2)
               total[18][0] = (total[18][0]/1.18).toFixed(2)
               total[28][0] = (total[28][0]/1.28).toFixed(2)
+              total[40][0] = (total[40][0]/1.40).toFixed(2)
+
               total[0][1] = total[0][1].toFixed(2)
               total[5][1] = total[5][1].toFixed(2)
               total[12][1] = total[12][1].toFixed(2)
               total[18][1] = total[18][1].toFixed(2)
               total[28][1] = total[28][1].toFixed(2)
+              total[40][1] = total[40][1].toFixed(2)
               //location
               const workbook = XLSX.readFile(path.join(homeDir,'Hosangadi2.0','backend','printer_server','GSTR1_Excel_Workbook_Template_V1.81.xlsx'));
 
@@ -1284,8 +1287,8 @@ function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
           workbook.Sheets['exemp']['B8'] = { t: 'n', v: parseFloat(total['0'][0]), w: total['0'][0] }
 
 
-          ttlTaxable = (parseFloat(total['0'][0]) + parseFloat(total['5'][0]) + parseFloat(total['12'][0]) + parseFloat(total['18'][0]) + parseFloat(total['28'][0])).toFixed(2)
-          ttlCess = (parseFloat(total['0'][1]) + parseFloat(total['5'][1]) + parseFloat(total['12'][1]) + parseFloat(total['18'][1]) + parseFloat(total['28'][1])).toFixed(2)
+          ttlTaxable = (parseFloat(total['0'][0]) + parseFloat(total['5'][0]) + parseFloat(total['12'][0]) + parseFloat(total['18'][0]) + parseFloat(total['28'][0]) + parseFloat(total['40'][0])).toFixed(2)
+          ttlCess = (parseFloat(total['0'][1]) + parseFloat(total['5'][1]) + parseFloat(total['12'][1]) + parseFloat(total['18'][1]) + parseFloat(total['28'][1]) + parseFloat(total['40'][0])).toFixed(2)
 
           workbook.Sheets['b2cs'] =  
           {
@@ -1370,7 +1373,6 @@ function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
             Object.keys(total).slice(1).forEach( gst => {
               if (parseFloat(total[gst][0]) > 0)
               {
-                
                 workbook.Sheets['b2cs']["A"+i] = { t: 's', v: 'OE', r: '<t>OE</t>', h: 'OE', w: 'OE' },
                 workbook.Sheets['b2cs']["B"+i] = { t: 's', v: '29-Karnataka',r: '<t>29-Karnataka</t>',h: '29-Karnataka',w: '29-Karnataka'},
                 workbook.Sheets['b2cs']["D"+i] = { t: 'n', v: parseFloat(gst), w: gst },
@@ -1381,8 +1383,10 @@ function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
                   workbook.Sheets['b2cs']["F"+i] = { t: 'n', v: parseFloat(total[gst][1]), w: total[gst][1] }
                 
                 }
+		i++
+
               }
-            i++
+            
           });
 
           workbook.Sheets['b2cs']["!margins"] = {left: 0.7,right: 0.7,top: 0.75,bottom: 0.75,header: 0.3,footer: 0.3}
@@ -1806,45 +1810,46 @@ worksheets['Sheet1'] = {
     J1: { t: 's', v: 'Action*', h: 'Action*', w: 'Action*' },
     L1: { t: 's', v: 'Suplier Name', h: 'Suplier Name', w: 'Suplier Name' }
 }
-let rows = 1
-Object.keys(data).forEach(supId => {
 
-    supInfo = connection.query("SELECT acc_name,acc_gstin FROM somanath.accounts where acc_id = "+supId)
-    Object.keys(data[supId]).forEach(rates=>{
-        rows++
-        Taxable = data[supId][rates]/(1+(rates/100))
-        tax = (data[supId][rates] - Taxable )/2
-        let Cess = 0
-        if(rates==28){
-            q = dataCess[supId]
-            if (typeof q !== 'undefined'){
-                Object.keys(q).forEach(cessrates=>{
-                    Cess = Cess +(q[cessrates]*((1+(cessrates/100))-1))
-                })
+    let rows = 1
+    Object.keys(data).forEach(supId => {
+
+        supInfo = connection.query("SELECT acc_name,acc_gstin FROM somanath.accounts where acc_id = "+supId)
+        Object.keys(data[supId]).forEach(rates=>{
+            rows++
+            Taxable = data[supId][rates]/(1+(rates/100))
+            tax = (data[supId][rates] - Taxable )/2
+            let Cess = 0
+            if(rates==28){
+                q = dataCess[supId]
+                if (typeof q !== 'undefined'){
+                    Object.keys(q).forEach(cessrates=>{
+                        Cess = Cess +(q[cessrates]*((1+(cessrates/100))-1))
+                    })
+                }
             }
-        }
-        worksheets['Sheet1']['A'+rows] = { t: 's', v: supInfo[0]["acc_gstin"], h: supInfo[0]["acc_gstin"], w: supInfo[0]["acc_gstin"]}
-        worksheets['Sheet1']['B'+rows] = { t: 's', v: '29-Karnataka', h: '29-Karnataka', w: '29-Karnataka'}
-        worksheets['Sheet1']['C'+rows] = { t: 's', v: 'Intra-State', h: 'Intra-State', w: 'Intra-State'}
-        worksheets['Sheet1']['D'+rows] = { t: 's', v: Taxable.toFixed(2), h: Taxable.toFixed(2), w: Taxable.toFixed(2)}
-        worksheets['Sheet1']['E'+rows] = { t: 's', v: rates, h: rates, w: rates }
-        worksheets['Sheet1']['F'+rows] = { t: 's', v: 0, h: 0, w: 0}
-        worksheets['Sheet1']['G'+rows] = { t: 's', v: tax.toFixed(2), h: tax.toFixed(2), w: tax.toFixed(2)}
-        worksheets['Sheet1']['H'+rows] = { t: 's', v: tax.toFixed(2), h: tax.toFixed(2), w: tax.toFixed(2)}
-        worksheets['Sheet1']['I'+rows] =  { t: 's', v: Cess.toFixed(2), h: Cess.toFixed(2), w: Cess.toFixed(2) },
-        worksheets['Sheet1']['J'+rows] = { t: 's', v: 'Add', h: 'Add', w: 'Add' }
-        worksheets['Sheet1']['L'+rows] = { t: 's', v: supInfo[0]['acc_name'], h: supInfo[0]['acc_name'], w: supInfo[0]['acc_name'] }
-        worksheets['Sheet1']['!ref']   = 'A1:L'+rows
-    })
-     
-});
+            worksheets['Sheet1']['A'+rows] = { t: 's', v: supInfo[0]["acc_gstin"], h: supInfo[0]["acc_gstin"], w: supInfo[0]["acc_gstin"]}
+            worksheets['Sheet1']['B'+rows] = { t: 's', v: '29-Karnataka', h: '29-Karnataka', w: '29-Karnataka'}
+            worksheets['Sheet1']['C'+rows] = { t: 's', v: 'Intra-State', h: 'Intra-State', w: 'Intra-State'}
+            worksheets['Sheet1']['D'+rows] = { t: 's', v: Taxable.toFixed(2), h: Taxable.toFixed(2), w: Taxable.toFixed(2)}
+            worksheets['Sheet1']['E'+rows] = { t: 's', v: rates, h: rates, w: rates }
+            worksheets['Sheet1']['F'+rows] = { t: 's', v: 0, h: 0, w: 0}
+            worksheets['Sheet1']['G'+rows] = { t: 's', v: tax.toFixed(2), h: tax.toFixed(2), w: tax.toFixed(2)}
+            worksheets['Sheet1']['H'+rows] = { t: 's', v: tax.toFixed(2), h: tax.toFixed(2), w: tax.toFixed(2)}
+            worksheets['Sheet1']['I'+rows] =  { t: 's', v: Cess.toFixed(2), h: Cess.toFixed(2), w: Cess.toFixed(2) },
+            worksheets['Sheet1']['J'+rows] = { t: 's', v: 'Add', h: 'Add', w: 'Add' }
+            worksheets['Sheet1']['L'+rows] = { t: 's', v: supInfo[0]['acc_name'], h: supInfo[0]['acc_name'], w: supInfo[0]['acc_name'] }
+            worksheets['Sheet1']['!ref']   = 'A1:L'+rows
+        })
+        
+    });
 
-reportFileName = path.join(homeDir , 'angadiImages' , "NGSTR04.xlsx")
-const newBook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(newBook, worksheets['Sheet1'], "Sheet1");
-XLSX.writeFileSync(newBook,reportFileName);
+    reportFileName = path.join(homeDir , 'angadiImages' , "NGSTR04.xlsx")
+    const newBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(newBook, worksheets['Sheet1'], "Sheet1");
+    XLSX.writeFileSync(newBook,reportFileName);
 
-socket.emit("reportFinished" , "GSTR04" , "NGSTR04.xlsx")
+    socket.emit("reportFinished" , "GSTR04" , "NGSTR04.xlsx")
 
 
 })
