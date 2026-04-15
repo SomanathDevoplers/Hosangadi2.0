@@ -1,6 +1,6 @@
 from forms import acc
 from pyperclip import copy as copy_text
-from tkinter import  StringVar, constants as con  , messagebox as msg , ttk , Listbox , Text , IntVar
+from tkinter import  Text, StringVar, constants as con  , messagebox as msg , ttk , Listbox , Text , IntVar
 from requests import get , post
 from other_classes import base_window
 import datetime
@@ -75,6 +75,8 @@ class sales(base_window):
         self.rendered_page_count = 0
         self.change_page_count = False
         self.location = os.path.expanduser("~")
+
+        self.vch_only_selected = False
 
         #----------------------------------------cust_name toplevel------------------------------------------------------------------------------#
         if self.screen_height > 1000:
@@ -562,7 +564,7 @@ class sales(base_window):
         self.rad_odd_only = ttk.Radiobutton(self.frm_pdf , text = "Odd " ,  value = 0 , variable = self.rad_even_odd , style = "window_radio_med.TRadiobutton", state = con.DISABLED ,  command = self.show_odd_pages)
         self.rad_even_only = ttk.Radiobutton(self.frm_pdf , text = "Even ", value = 1 , variable = self.rad_even_odd , style = "window_radio_med.TRadiobutton", state = con.DISABLED ,  command = self.show_even_pages)
         self.rad_printer_1 = ttk.Radiobutton(self.frm_pdf , text = "EPSON  ", value = 0 , variable = self.rad_printer , style = "window_radio_med.TRadiobutton", state = con.DISABLED, command = self.select_page)
-        self.rad_printer_2 = ttk.Radiobutton(self.frm_pdf , text = "SHREYANS", value = 1 , variable = self.rad_printer , style = "window_radio_med.TRadiobutton", state = con.DISABLED, command = self.select_page)
+        self.rad_printer_2 = ttk.Radiobutton(self.frm_pdf , text = "ROLL", value = 1 , variable = self.rad_printer , style = "window_radio_med.TRadiobutton", state = con.DISABLED, command = self.select_page)
         
         if self.screen_height > 1000: self.frm_bill = ttk.Frame( self.frm_pdf , height = int(self.main_hgt *0.659 ) , width = int(self.main_wdt * 0.225))
         else : self.frm_bill = ttk.Frame( self.frm_pdf , height = int(self.main_hgt *0.55 ) , width = int(self.main_wdt * 0.315))
@@ -617,8 +619,8 @@ class sales(base_window):
         self.rad_odd_only.grid(row = 6 , column = 0, pady = int(self.main_hgt*0.01))
         self.rad_even_only.grid(row = 6 , column = 1)
         self.chk_gst_bill.grid(row = 6 , column = 3)
-        #self.rad_printer_1.grid(row = 6 , column = 3)
-        #self.rad_printer_2.grid(row = 6 , column = 4)
+        self.rad_printer_1.grid(row = 6 , column = 4)
+        self.rad_printer_2.grid(row = 7 , column = 4)
 
         if self.screen_height>1000:
             self.frm_bill.grid(row = 7 , column = 0 , columnspan =  4 , rowspan = 2)
@@ -848,7 +850,6 @@ class sales(base_window):
         self.rad_vch_bill.grid(row = 1 , column = 0  , sticky = con.W, pady = int(self.main_hgt*0.01))
         self.rad_stocks.grid(row = 2 , column = 0  , sticky = con.W, pady = int(self.main_hgt*0.01))
         self.rad_cashflow.grid(row = 3 , column = 0  , sticky = con.W, pady = int(self.main_hgt*0.01))
-
 
 
 
@@ -1957,7 +1958,7 @@ class sales(base_window):
         self.ent_pdf_bill_no.delete(0 , con.END)
         self.ent_pdf_bill_no.config(state  = con.DISABLED)
 
-
+        self.vch_only_selected = False
         self.new_state = True
         self.edit_state = False
         self.after_save = False
@@ -2363,15 +2364,31 @@ class sales(base_window):
         self.clear_cust_details(None)
 
     def select_page(self):
-        f = open("C:\\Program Files\\Hosangadi2.0\\invoiceData.txt", "w")
-        f.write(self.billInfo)
-        f.close()
-        invoiceDataFile = {'upload_file': ("C:\\Program Files\\Hosangadi2.0\\invoiceData.txt", open('C:\\Program Files\\Hosangadi2.0\\invoiceData.txt','r'), 'text')}
-        pdf = post("http://"+self.ip+":7000/sales/invoice" , files = invoiceDataFile , params = {'billNo' :self.for_page_change['billNo'], 'Date' : self.for_page_change['Date'],'customerName': self.for_page_change['customerName'] , 'billTotal': self.for_page_change['billTotal'] , 'oldBal' : self.for_page_change['oldBal'] , 'oldBalData':self.for_page_change['oldBalData'],'page': self.rad_printer.get()})
-        self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
-        open(self.displayed_pdf,"wb").write(pdf.content)  
-        self.pdf.display_file(self.displayed_pdf)
-        self.change_page_count = True
+        if self.vch_only_selected == True:
+            self.vch_only_selected = True
+            self.enable_print_details()
+            # self.clear_print_details()
+            pdf = get("http://"+self.ip+":7000/sales/voucherPrint" , params = {'Date' : str(datetime.datetime.today().strftime('%d-%m-%Y')), 'customerName': self.combo_cust_vch.get().title() , 'oldBalData':json.dumps(self.voucher), 'page': self.rad_printer.get()} , allow_redirects = True)
+            self.displayed_pdf = self.location+"\\Desktop\\Invoices\\voucher.pdf"
+            open(self.displayed_pdf ,"wb").write(pdf.content)
+            self.pdf.display_file(self.displayed_pdf)
+            self.change_page_count = False
+            self.rad_even_odd.set(-1)
+            try:
+                copyfile(self.location+"\\Desktop\\Invoices\\voucher.pdf",self.location+"\\Desktop\\Invoices\\oldinvoices\\voucher\\"+"V_"+self.combo_cust_vch.get()+str(datetime.datetime.today().strftime('%Y-%m-%d_%H_%M_%S'))+".pdf")
+            except:
+                pass
+        else : 
+            f = open("C:\\Program Files\\Hosangadi2.0\\invoiceData.txt", "w")
+            f.write(self.billInfo)
+            f.close()
+            invoiceDataFile = {'upload_file': ("C:\\Program Files\\Hosangadi2.0\\invoiceData.txt", open('C:\\Program Files\\Hosangadi2.0\\invoiceData.txt','r'), 'text')}
+            pdf = post("http://"+self.ip+":7000/sales/invoice" , files = invoiceDataFile , params = {'billNo' :self.for_page_change['billNo'], 'Date' : self.for_page_change['Date'],'customerName': self.for_page_change['customerName'] , 'billTotal': self.for_page_change['billTotal'] , 'oldBal' : self.for_page_change['oldBal'] , 'oldBalData':self.for_page_change['oldBalData'],'page': self.rad_printer.get()})
+            self.displayed_pdf = self.location+"\\Desktop\\Invoices\\invoice.pdf"
+            open(self.displayed_pdf,"wb").write(pdf.content)  
+            self.pdf.display_file(self.displayed_pdf)
+            self.change_page_count = True
+        
         #self.rad_even_odd.set(-1)
 
 
@@ -2469,7 +2486,7 @@ class sales(base_window):
         self.rad_odd_only.config(state = con.NORMAL)
         self.rad_even_only.config(state = con.NORMAL)
         self.rad_printer_1.config(state = con.NORMAL)
-        #self.rad_printer_2.config(state = con.NORMAL)
+        self.rad_printer_2.config(state = con.NORMAL)
         self.chk_gst_bill.config(state = con.NORMAL)
 
         self.btn_print_bill.config(state = con.NORMAL)
@@ -2540,6 +2557,7 @@ class sales(base_window):
         self.disable_print_details()
 
     def print_both(self , e):
+        self.vch_only_selected = False
         self.enable_print_details()
         self.clear_print_details()
         f = open("C:\\Program Files\\Hosangadi2.0\\invoiceData.txt", "w")
@@ -2559,9 +2577,10 @@ class sales(base_window):
             pass 
 
     def print_only_vch(self , e):
+        self.vch_only_selected = True
         self.enable_print_details()
         self.clear_print_details()
-        pdf = get("http://"+self.ip+":7000/sales/voucherPrint" , params = {'Date' : str(datetime.datetime.today().strftime('%d-%m-%Y')), 'customerName': self.combo_cust_vch.get().title() , 'oldBalData':json.dumps(self.voucher)} , allow_redirects = True)
+        pdf = get("http://"+self.ip+":7000/sales/voucherPrint" , params = {'Date' : str(datetime.datetime.today().strftime('%d-%m-%Y')), 'customerName': self.combo_cust_vch.get().title() , 'oldBalData':json.dumps(self.voucher), 'page':self.rad_printer.get()} , allow_redirects = True)
         self.displayed_pdf = self.location+"\\Desktop\\Invoices\\voucher.pdf"
         open(self.displayed_pdf ,"wb").write(pdf.content)
         self.pdf.display_file(self.displayed_pdf)
@@ -2599,6 +2618,7 @@ class sales(base_window):
         self.pdf.display_file(self.displayed_pdf)
         self.change_page_count = True
         self.rad_even_odd.set(-1)
+        self.vch_only_selected = False
         try:
             copyfile(self.location+"\\Desktop\\Invoices\\invoice.pdf",self.location+"\\Desktop\\Invoices\\oldinvoices\\"+str(bill_no)+".pdf")
         except:
@@ -2616,14 +2636,13 @@ class sales(base_window):
         range = self.ent_page_range.get()
         files = {'file': open(self.displayed_pdf, 'rb')}
 
-        post("http://"+self.ip+":7000/PrintInvoice" , params = {'range' : range , 'even_odd' : self.rad_even_odd.get() , 'total_pages' : self.rendered_page_count} , files = files)
+        post("http://"+self.ip+":7000/PrintInvoice" , params = {'range' : range , 'even_odd' : self.rad_even_odd.get() , 'total_pages' : self.rendered_page_count, 'printer' : self.rad_printer.get()} , files = files)
 
 
         self.btn_edit.config(state = con.NORMAL)
         self.btn_new.config(state = con.NORMAL)
         self.btn_save.config(state = con.DISABLED)
         self.btn_cancel.config(state = con.DISABLED)
-
         self.acc_title.config(text = "Sales Entry")
 
 
@@ -2683,7 +2702,7 @@ class sales(base_window):
         self.disable_vch_details()
         #self.enable_print_details()
         #self.clear_print_details()
-        #self.disable_print_details()
+        self.disable_print_details()
         self.clear_cust_details(None)
         self.btn_save_vch.config(state = con.DISABLED)
         self.btn_vch.config(state = con.DISABLED)
@@ -2763,7 +2782,7 @@ class sales(base_window):
         self.ent_pdf_bill_no.delete(0 , con.END)
         self.ent_page_range.delete(0 , con.END)
         self.rad_even_odd.set(0)
-        self.rad_printer.set(0)
+        # self.rad_printer.set(0)
         self.disable_vch_details()
         self.enable_print_details()
         
@@ -2781,7 +2800,7 @@ class sales(base_window):
     """--------------------------------------edit bill functions----------------------------------------"""
     def get_invoice_details(self,e):
         bill_no = self.ent_bill_no.get()
-        
+        self.vch_only_selected = False
         
     
 
@@ -2918,6 +2937,7 @@ class sales(base_window):
         self.disable_vch_details()
         self.disable_print_details()
         self.btn_save.config( state = con.NORMAL)
+
     """----------------------------------------print bill functions-------------------------------------------"""
     def bill_pdf_only(self,e):
         x = self.ent_pdf_bill_no.get().split(' ')
@@ -3034,6 +3054,7 @@ class sales(base_window):
         self.btn_vch.config(state = con.DISABLED)
         self.btn_vch_bill.config(state = con.DISABLED)
         self.rad_even_odd.set(-1)
+        self.vch_only_selected = False
     def show_even_pages(self):
         i = self.rendered_page_count
         even_page_string = ""
