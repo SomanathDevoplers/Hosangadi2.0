@@ -73,9 +73,11 @@ class return_reports(base_window):
         self.btn_mntly_report = ttk.Button(self.main_frame , text = "Monthly Sales Report" , width = 24 , style = "window_btn_medium.TButton" ,command = lambda : self.monthly(None))
         self.btn_mntly_report.bind("<Return>" , self.monthly)
 
-        self.btn_gstr04 = ttk.Button(self.main_frame , text = "GSTR04 Annual Report" , width = 24 , style = "window_btn_medium.TButton" ,command = lambda : self.gstr04(None))
-        self.btn_gstr04.bind("<Return>" , self.gstr04)
-
+        # self.btn_gstr04 = ttk.Button(self.main_frame , text = "GSTR04 Annual Report" , width = 24 , style = "window_btn_medium.TButton" ,command = lambda : self.gstr04(None))
+        # self.btn_gstr04.bind("<Return>" , self.gstr04)
+        self.btn_avg_sales = ttk.Button(self.main_frame , text = "Avg Sales" , width = 24 , style = "window_btn_medium.TButton" ,command = lambda : self.avg_sales(None))
+        self.btn_avg_sales.bind("<Return>" , self.avg_sales)
+        self.lbl_avg_sales = ttk.Label(self.main_frame , text = ""  ,style = "window_text_medium.TLabel")
 
         self.lbl_firms.grid(row = 0 , column = 0 , pady = int(self.main_hgt * 0.03) , padx = int(self.main_wdt * 0.03))
         self.combo_firms.grid(row = 0 , column = 1)
@@ -90,7 +92,10 @@ class return_reports(base_window):
         self.lbl_cust.grid(row = 6 , column = 0, pady = int(self.main_hgt * 0.03), padx = int(self.main_wdt * 0.03))
         self.combo_cust.grid(row = 6 , column = 1)
         self.btn_mntly_report.grid(row = 7 , column = 1)
-        self.btn_gstr04.grid(row = 8 , column = 1 , pady = self.main_hgt*0.05)
+        # self.btn_gstr04.grid(row = 8 , column = 1 , pady = self.main_hgt*0.05)
+        self.btn_avg_sales.grid(row = 8 , column = 1 , pady = self.main_hgt*0.05)
+        self.lbl_avg_sales.grid(row = 8 , column = 2, pady = int(self.main_hgt * 0.03), padx = int(self.main_wdt * 0.03))
+
 
     def combo_entry_out(self , e):
         e.widget.select_clear()
@@ -364,6 +369,15 @@ class return_reports(base_window):
             return
         get("http://"+self.ip+":7000/gstr04" , params = {'dbYear' : year[2:4]})
         msg.showinfo("Sucess","GSTR4 Excel will be ready in few minutes")
+    
+    def avg_sales(self , e):
+        req = get("http://"+self.ip+":7000/salesavg" , params = {'dbYear' : self.year})
+        print(req)
+        if req.status_code == 200:
+            resp = req.json()
+            self.lbl_avg_sales.config(text='Average Sales: '+resp['monthly_avg_sales_taxable']+'\n\n'+'Total   Sales: '+resp['total_sales_taxable'])
+
+            
         
       
 
