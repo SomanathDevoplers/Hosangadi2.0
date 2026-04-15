@@ -16,7 +16,7 @@ const process = require('process');
 const multer = require('multer')
 const path = require('path');
 const cors = require('cors')
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 
 
 
@@ -535,9 +535,9 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
     //Thermal Printer Invoice
   const prodName = Object.keys(InvoiceData)
   let numberOfItems = prodName.length
-  height = 85+ numberOfItems*20.5+50
+  height = 85+ numberOfItems*20.5+60
     // start pdf document
-    let doc = new PDFDocument({ size: [225,height], margins: {
+    let doc = new PDFDocument({ size: [167,height], margins: {
         top: 3,
         bottom: 3,
         left: 10,
@@ -558,11 +558,11 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
         .text('ಮರವಂತೆ - ೫೭೬೨೨೪',0,20,{align: 'center'} )
     doc 
         .font('Helvetica')
-        .text('MRP',40, 69,{ width: 50, align: "right" })
+        // .text('MRP',40, 69,{ width: 50, align: "right" })
         .fontSize(9)
         .text('GST : 29ATBPS7012G1ZN',5,35 )
         .text('Mob  : 9902664717',5,45)
-        .text(`Bill No:    ${BillNumber}`,0,35,{align: 'right'})
+        .text(`No:    ${BillNumber}`,0,35,{align: 'right'})
         .text(`${Date}`,0,45,{align: 'right'})
         .fontSize(9)
         .text(`To     : ${customerName}`,5,55)
@@ -580,8 +580,8 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
         .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Light.ttf'))
         .fontSize(12)
         .text('ವಿವರಗಳು',15,66 )
-        .text('ದರ',85,66,{ width: 50, align: "right" })
-        .text('ಪ್ರಮಾಣ',135,66, { width: 50, align: "right" })
+        // .text('ದರ',85,66,{ width: 50, align: "right" })
+        .text('ಪ್ರಮಾಣ',50,66, { width: 50, align: "right" })
         .text('ಮೊತ್ತ',0,66,{ align: "right" })
         .text()
         
@@ -601,12 +601,12 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
           else
             mrp = ''
           doc
-          .fontSize(8.5)
+          .fontSize(10)
           .font("Helvetica")
           .text(prodName[i],5, position)
-          .text(mrp, 40, position1,{ width: 50, align: "right" })
-          .text((InvoiceData[prodName[i]][1]).toFixed(1), 85, position1, { width: 50, align: "right" })
-          .text((InvoiceData[prodName[i]][2]).toFixed(3) , 120, position1, { width: 50, align: "right" })
+          // .text(mrp, 40, position1,{ width: 50, align: "right" })
+          // .text((InvoiceData[prodName[i]][1]).toFixed(1), 85, position1, { width: 50, align: "right" })
+          .text((InvoiceData[prodName[i]][2]).toFixed(3) , 50, position1, { width: 50, align: "right" })
           .text((InvoiceData[prodName[i]][3]).toFixed(2), 0, position1, { align: "right" });
           
         }
@@ -621,9 +621,9 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
 
     if(old_bal === 'True'){
     doc
-        .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['old_bal'])).toFixed(2)}`,10,position+10,{ align: "left" })
-        .text(`ಜಮಾ      : ₹ ${Math.round(Number(oldBalData['amountPaid'])).toFixed(2)}`,10,position+23,{ align: "left" })
-        .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['remaining_bal'])).toFixed(2)}`,0,position+23,{ align: "right" })
+        .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['old_bal'])).toFixed(0)}`,5,position+10,{ align: "left" })
+        .text(`ಜಮಾ      : ₹ ${Math.round(Number(oldBalData['amountPaid'])).toFixed(0)}`,5,position+23,{ align: "left" })
+        .text(`ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['remaining_bal'])).toFixed(0)}`,0,position+23,{ align: "right" })
     }
     doc .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Regular.ttf'))
         .text("ನಮ್ಮೊಂದಿಗೆ ವ್ಯವಹರಿಸಿದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಮತ್ತೆ ಬನ್ನಿ",{align:"center"})
@@ -631,34 +631,63 @@ function Invoice(BillNumber, Date, customerName, InvoiceData, BillTotal, old_bal
   }
 }
 
-function voucher( Date, customerName, oldBalData , res){
-  // start pdf document
-  let doc = new PDFDocument({ size: 'A6', margins: {
-      top: 3,
-      bottom: 3,
-      left: 10,
-      right:5
-    }
-    });
+function voucher( Date, customerName, oldBalData , res,page){
+  if(page == 0){
+    // start pdf document
+    let doc = new PDFDocument({ size: 'A6', margins: {
+        top: 3,
+        bottom: 3,
+        left: 10,
+        right:5
+      }
+      });
 
   
 
-  doc.pipe(res);
-  doc 
-      .font('Helvetica')
-      .fontSize(12)
-      .text(`${customerName}`,0,5,{ align: "center" })
-      
-  doc
-      .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Medium.ttf'))
-      .text(`ದಿನಾಂಕ :${Date}`,0,20,{ align: "right" })
-      .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['old_bal'])).toFixed(2)}`,10,20,{ align: "left" })
-      .text(`ಜಮಾ      : ₹ ${Math.round(Number(oldBalData['amountPaid'])).toFixed(2)}`,10,40,{ align: "left" })
-      .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['remaining_bal'])).toFixed(2)}`,0,40,{ align: "right" })
-  
+    doc.pipe(res);
+    doc 
+        .font('Helvetica')
+        .fontSize(12)
+        .text(`${customerName}`,0,5,{ align: "center" })
+        
+    doc
+        .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Medium.ttf'))
+        .text(`ದಿನಾಂಕ :${Date}`,0,20,{ align: "right" })
+        .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['old_bal'])).toFixed(2)}`,10,20,{ align: "left" })
+        .text(`ಜಮಾ      : ₹ ${Math.round(Number(oldBalData['amountPaid'])).toFixed(2)}`,10,40,{ align: "left" })
+        .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['remaining_bal'])).toFixed(2)}`,0,40,{ align: "right" })
+    
 
+  
+    doc.end();
+  }else {
+    // Thermal
+    let doc = new PDFDocument({ size: [167,200], margins: {
+        top: 3,
+        bottom: 3,
+        left: 10,
+        right:5
+      }
+      });
  
-  doc.end();
+    doc.pipe(res);
+     doc 
+        .font('Helvetica')
+        .fontSize(12)
+        .text(`${customerName}`,0,5,{ align: "center" })
+        
+    doc
+        .font(path.join(homeDir,'Hosangadi2.0','backend','report_server','Languages','NotoFont','static','NotoSerifKannada-Medium.ttf'))
+        .text(`ದಿನಾಂಕ :${Date}`,0,20,{ align: "left" })
+        .text(`ಹಳೆ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['old_bal'])).toFixed(0)}`,10,40,{ align: "left" })
+        .text(`ಜಮಾ      : ₹ ${Math.round(Number(oldBalData['amountPaid'])).toFixed(0)}`,10,60,{ align: "left" })
+        .text(`ಉಳಿದ ಬಾಕಿ : ₹ ${Math.round(Number(oldBalData['remaining_bal'])).toFixed(0)}`,0,80,{ align: "left" })
+    
+
+  
+    doc.end();
+  }
+  
 
 }
 
@@ -693,7 +722,7 @@ if(noOfPurchase>0){
       f++
     }
   }
-  writeFileSync(path.join(homeDir , 'angadiImages' , 'Exempted_'+month+'.txt'),`Somanath Stores\n Total Inward Supply of Exempt/Nil Rated for the month of ${month} : ${exemt}` );
+  writeFileSync(path.join(homeDir , 'angadiImages' , 'Exempted_'+month+'.txt'),`Somanath Stores\n Total Inward Supply of Exempt/Nil Rated for the month of ${month} : ${Math.round(Number(exemt)).toFixed(2)} ` );
 
   for(i=0;i<noOfPurchase;i++)
   {
@@ -1131,8 +1160,8 @@ else{
 }
 
 function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
-  sql = "SELECT gst_value, cess_value,sales_prod_qty, sales_prod_sp FROM somanath20"+dbYear+".sales LEFT JOIN somanath20"+dbYear+".sales_sp ON somanath20"+dbYear+".sales.sales_ref = somanath20"+dbYear+".sales_sp.sales_ref  where sale_date>='"+firstDay+"' and sale_date<='"+lastDay+"' and  somanath20"+dbYear+".sales.sales_ref regexp '"+firm+"' order by sale_date"  
-con.query(sql,(err,sales)=>{
+  sql = "SELECT gst_value, cess_value,sales_prod_qty, sales_prod_sp FROM somanath20"+dbYear+".sales LEFT JOIN somanath20"+dbYear+".sales_sp ON somanath20"+dbYear+".sales.sales_ref = somanath20"+dbYear+".sales_sp.sales_ref  where sale_date>='"+firstDay+"' and sale_date<='"+lastDay+"' and  somanath20"+dbYear+".sales.sales_ref regexp '"+firm+"' order by sale_date"
+  con.query(sql,(err,sales)=>{
     if(sales.length>0)
         {
               res.sendStatus(200)
@@ -1523,7 +1552,7 @@ app.post('/sales/invoice', invoiceDataFiles.single('upload_file') ,  (req,res) =
 
 app.get('/sales/voucherPrint', (req,res) =>{
   oldBalData = JSON.parse(req.query.oldBalData)
-  voucher(req.query.Date,req.query.customerName,oldBalData , res)
+  voucher(req.query.Date,req.query.customerName,oldBalData , res,req.query.page)
 })
 
 app.get('/sales/checkKannada', (req,res) =>{
@@ -1546,11 +1575,36 @@ app.get('/sales/checkKannada', (req,res) =>{
 })
 
 app.get('/PurchaseReport',(req,res)=>{
-  dbDataPurchase(req.query.firm,req.query.dbYear,req.query.year,req.query.firstDay,req.query.lastDay,req.query.month,res)
+	if (req.query.month == "DECEMBER"){
+      const [yearStart, monthStart, dayStart] = req.query.firstDay.split('-').map(Number);
+      const newDateStart = new Date(yearStart + 1, monthStart - 1, dayStart);
+      const start = `${newDateStart.getFullYear()}-${String(newDateStart.getMonth() + 1).padStart(2, '0')}-${String(newDateStart.getDate()).padStart(2, '0')}`;
+
+      const [yearEnd, monthEnd, dayEnd] = req.query.lastDay.split('-').map(Number);
+      const newDateEnd = new Date(yearEnd + 1, monthEnd - 1, dayEnd);
+      const end = `${newDateEnd.getFullYear()}-${String(newDateEnd.getMonth() + 1).padStart(2, '0')}-${String(newDateEnd.getDate()).padStart(2, '0')}`;
+
+	   dbDataPurchase(req.query.firm,req.query.dbYear,req.query.year,start,end,req.query.month,res)
+	}else{
+	  dbDataPurchase(req.query.firm,req.query.dbYear,req.query.year,req.query.firstDay,req.query.lastDay,req.query.month,res)
+	}
 });
 
 app.get('/SalesReport',(req,res)=>{
-  dbDataSales(req.query.firm,req.query.dbYear,req.query.firstDay,req.query.lastDay,req.query.month,res)
+	if (req.query.month == "DECEMBER"){
+      const [yearStart, monthStart, dayStart] = req.query.firstDay.split('-').map(Number);
+      const newDateStart = new Date(yearStart + 1, monthStart - 1, dayStart);
+      const start = `${newDateStart.getFullYear()}-${String(newDateStart.getMonth() + 1).padStart(2, '0')}-${String(newDateStart.getDate()).padStart(2, '0')}`;
+
+
+      const [yearEnd, monthEnd, dayEnd] = req.query.lastDay.split('-').map(Number);
+      const newDateEnd = new Date(yearEnd + 1, monthEnd - 1, dayEnd);
+      const end = `${newDateEnd.getFullYear()}-${String(newDateEnd.getMonth() + 1).padStart(2, '0')}-${String(newDateEnd.getDate()).padStart(2, '0')}`;
+	   dbDataSales(req.query.firm,req.query.dbYear,start,end,req.query.month,res)
+	}else{
+	  dbDataSales(req.query.firm,req.query.dbYear,req.query.firstDay,req.query.lastDay,req.query.month,res)
+	}  
+
 });
 
 app.get('/orderList',(req,res)=>{
@@ -1633,9 +1687,9 @@ app.get('/billOnly',(req, res)=>{
 app.get('/cmp08',(req,res)=>{
   reportFileName = ""
   sql = "SELECT sales_prod_sp,sales_prod_qty FROM somanath20"+req.query.dbYear+".sales where sales_ref regexp 'SEM' and sale_date>='"+req.query.firstDay+"' and sale_date<='"+req.query.lastDay+"';"//sales_ref regexp 'SCM' and 
-  con.query(sql,(err,result)=>{
+ con.query(sql,(err,result)=>{
     totalSales = 0
-    if(result.length==0){
+    if(result == null || result.length==0){
       res.sendStatus(201)
     }
     else{
@@ -1811,132 +1865,221 @@ worksheets['Sheet1'] = {
     L1: { t: 's', v: 'Suplier Name', h: 'Suplier Name', w: 'Suplier Name' }
 }
 
-    let rows = 1
-    Object.keys(data).forEach(supId => {
+let rows = 1
+Object.keys(data).forEach(supId => {
 
-        supInfo = connection.query("SELECT acc_name,acc_gstin FROM somanath.accounts where acc_id = "+supId)
-        Object.keys(data[supId]).forEach(rates=>{
-            rows++
-            Taxable = data[supId][rates]/(1+(rates/100))
-            tax = (data[supId][rates] - Taxable )/2
-            let Cess = 0
-            if(rates==28){
-                q = dataCess[supId]
-                if (typeof q !== 'undefined'){
-                    Object.keys(q).forEach(cessrates=>{
-                        Cess = Cess +(q[cessrates]*((1+(cessrates/100))-1))
-                    })
-                }
+    supInfo = connection.query("SELECT acc_name,acc_gstin FROM somanath.accounts where acc_id = "+supId)
+    Object.keys(data[supId]).forEach(rates=>{
+        rows++
+        Taxable = data[supId][rates]/(1+(rates/100))
+        tax = (data[supId][rates] - Taxable )/2
+        let Cess = 0
+        if(rates==28){
+            q = dataCess[supId]
+            if (typeof q !== 'undefined'){
+                Object.keys(q).forEach(cessrates=>{
+                    Cess = Cess +(q[cessrates]*((1+(cessrates/100))-1))
+                })
             }
-            worksheets['Sheet1']['A'+rows] = { t: 's', v: supInfo[0]["acc_gstin"], h: supInfo[0]["acc_gstin"], w: supInfo[0]["acc_gstin"]}
-            worksheets['Sheet1']['B'+rows] = { t: 's', v: '29-Karnataka', h: '29-Karnataka', w: '29-Karnataka'}
-            worksheets['Sheet1']['C'+rows] = { t: 's', v: 'Intra-State', h: 'Intra-State', w: 'Intra-State'}
-            worksheets['Sheet1']['D'+rows] = { t: 's', v: Taxable.toFixed(2), h: Taxable.toFixed(2), w: Taxable.toFixed(2)}
-            worksheets['Sheet1']['E'+rows] = { t: 's', v: rates, h: rates, w: rates }
-            worksheets['Sheet1']['F'+rows] = { t: 's', v: 0, h: 0, w: 0}
-            worksheets['Sheet1']['G'+rows] = { t: 's', v: tax.toFixed(2), h: tax.toFixed(2), w: tax.toFixed(2)}
-            worksheets['Sheet1']['H'+rows] = { t: 's', v: tax.toFixed(2), h: tax.toFixed(2), w: tax.toFixed(2)}
-            worksheets['Sheet1']['I'+rows] =  { t: 's', v: Cess.toFixed(2), h: Cess.toFixed(2), w: Cess.toFixed(2) },
-            worksheets['Sheet1']['J'+rows] = { t: 's', v: 'Add', h: 'Add', w: 'Add' }
-            worksheets['Sheet1']['L'+rows] = { t: 's', v: supInfo[0]['acc_name'], h: supInfo[0]['acc_name'], w: supInfo[0]['acc_name'] }
-            worksheets['Sheet1']['!ref']   = 'A1:L'+rows
-        })
-        
-    });
+        }
+        worksheets['Sheet1']['A'+rows] = { t: 's', v: supInfo[0]["acc_gstin"], h: supInfo[0]["acc_gstin"], w: supInfo[0]["acc_gstin"]}
+        worksheets['Sheet1']['B'+rows] = { t: 's', v: '29-Karnataka', h: '29-Karnataka', w: '29-Karnataka'}
+        worksheets['Sheet1']['C'+rows] = { t: 's', v: 'Intra-State', h: 'Intra-State', w: 'Intra-State'}
+        worksheets['Sheet1']['D'+rows] = { t: 's', v: Taxable.toFixed(2), h: Taxable.toFixed(2), w: Taxable.toFixed(2)}
+        worksheets['Sheet1']['E'+rows] = { t: 's', v: rates, h: rates, w: rates }
+        worksheets['Sheet1']['F'+rows] = { t: 's', v: 0, h: 0, w: 0}
+        worksheets['Sheet1']['G'+rows] = { t: 's', v: tax.toFixed(2), h: tax.toFixed(2), w: tax.toFixed(2)}
+        worksheets['Sheet1']['H'+rows] = { t: 's', v: tax.toFixed(2), h: tax.toFixed(2), w: tax.toFixed(2)}
+        worksheets['Sheet1']['I'+rows] =  { t: 's', v: Cess.toFixed(2), h: Cess.toFixed(2), w: Cess.toFixed(2) },
+        worksheets['Sheet1']['J'+rows] = { t: 's', v: 'Add', h: 'Add', w: 'Add' }
+        worksheets['Sheet1']['L'+rows] = { t: 's', v: supInfo[0]['acc_name'], h: supInfo[0]['acc_name'], w: supInfo[0]['acc_name'] }
+        worksheets['Sheet1']['!ref']   = 'A1:L'+rows
+    })
+     
+});
 
-    reportFileName = path.join(homeDir , 'angadiImages' , "NGSTR04.xlsx")
-    const newBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(newBook, worksheets['Sheet1'], "Sheet1");
-    XLSX.writeFileSync(newBook,reportFileName);
+reportFileName = path.join(homeDir , 'angadiImages' , "NGSTR04.xlsx")
+const newBook = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(newBook, worksheets['Sheet1'], "Sheet1");
+XLSX.writeFileSync(newBook,reportFileName);
 
-    socket.emit("reportFinished" , "GSTR04" , "NGSTR04.xlsx")
+socket.emit("reportFinished" , "GSTR04" , "NGSTR04.xlsx")
 
 
 })
 
 app.post('/PrintInvoice' , files.single('file') ,(req,res) =>{
-    let printOptions = {}
-    if(req.query.range != '')
-      {
-        printOptions.range =  req.query.range
-        
-      }
-    else
-    if(req.query.even_odd != '-1')
-      {
+    let printOptions = {};
 
-        if (req.query.even_odd == '0')
-          printOptions.subset = 'odd'
-        else
-          printOptions.subset = 'even'
+    // 1. Determine which printer to use
+    if (req.query.printer == 1) {
+        // Replace with your actual thermal printer name in Windows
+        printOptions.printer = "POS58 Printer"; 
+      } 
+    // If not 1, pdf-to-printer defaults to the Windows default printer automatically
 
-        
-      }
-    
+    // 2. Handle Page Ranges
+    if (req.query.range && req.query.range !== '') {
+        printOptions.range = req.query.range;
+    } 
+    // 3. Handle Even/Odd subsets
+    else if (req.query.even_odd !== '-1') {
+        if (req.query.even_odd == '0') {
+            printOptions.subset = 'odd';
+        } else {
+            printOptions.subset = 'even';
+        }
+    }
 
-
-    print.print(path.join(homeDir , "invoice.pdf") , printOptions )
-      
-
-    res.sendStatus(200)
+    // 4. Execute Print
+    print.print(path.join(homeDir, "invoice.pdf"), printOptions)
+          .catch((err) => {
+            console.error("Print failed:", err);
+          });
+          res.sendStatus(200);
 }) 
 
-app.get('/pricelist', async (req,res) =>{
-  const t = new Date();
-  let month = t.getMonth()+1;
-  let year = t.getFullYear();
-  if (month<4){
-    year--
-  }
+// Returns sales amount and avg sales amount per month
+app.get('/salesavg', (req , res)=>{
   
-  sql = `
-SELECT p.prod_name as name,
-s.stk_prod_qty as qty,
-s.stk_cost as cp,
-CONVERT(pur.pur_date,CHAR) as date,
-s.stk_tot_qty as totalQty,
-acc.acc_name as supName
-FROM somanath.products p
-INNER JOIN (
-SELECT stk_tot_qty,stk_cost,stk_pur_id,stk_prod_id,insert_time,stk_prod_qty, 
-ROW_NUMBER() OVER (PARTITION BY stk_prod_id ORDER BY insert_time DESC) AS row_num
-  FROM somanath`+year+`.stocks
-) AS s ON p.prod_id = s.stk_prod_id
-  INNER JOIN somanath`+year+`.purchases pur ON s.stk_pur_id = pur.pur_id
-INNER JOIN somanath.accounts acc ON acc.acc_id = pur.pur_acc
-WHERE s.row_num <= 4
-  ORDER BY p.prod_id, s.insert_time DESC;`
+  dbYear = req.query.dbYear
+  ref = req.query.ref 
+  if (ref == undefined || ref == '') {
+    ref = 'SSM'
+  }
 
-  data = connection.query(sql)
+  sql =  "SELECT sales_prod_qty,sales_prod_sp,gst_value "
+  sql += "FROM somanath20"+dbYear+".sales s "
+  sql += "INNER JOIN somanath20"+dbYear+".sales_sp sp ON s.sales_ref = sp.sales_ref "
+  sql += "WHERE s.sales_ref REGEXP '"+ref+"'"
   
-  var result = data.reduce((x, y) => {
-    (x[y.name] = x[y.name] || []).push(y);
-    return x;
-  }, {});
+  con.query(sql,(err,result)=>{
+    if(result.length==0){
+      res.sendStatus(201)
+    }
+    else{
+      let totalTaxableValue = 0;
+      let totalValue = 0;
+      Object.keys(result).forEach(element => {
+        Qty = result[element]['sales_prod_qty'].split(':').slice(1,-1)
+        Sp = result[element]['sales_prod_sp'].split(':').slice(1,-1)
+        Gst = result[element]['gst_value'].split(':').slice(1,-1)
+        i = 0
+        Qty.forEach(qty => {
+           // Formula: (Qty * SP) / (1 + GST/100)
+           const totalAmount = (Number(qty) * Number(Sp[i]))
+           const taxableAmount =  totalAmount / (1 + (Number(Gst[i]) / 100));
+           totalValue += totalAmount 
+           totalTaxableValue += taxableAmount;    
+           i+=1
+        });
+      });
+      
+      const targetDate = new Date()
+      const currentYear = targetDate.getFullYear();
+   
+      // April 1st of the current year (Month is 0-indexed, so 3 = April)
+      // If today is BEFORE April 1st, you might want the previous year's April.
+      let startYear = currentYear;
+      if (targetDate.getMonth() < 3) {
+          startYear -= 1;
+      }
+    
+      const startDate = new Date(startYear, 3, 1);
+
+      // 1. Calculate full months difference
+      const yearDiff = targetDate.getFullYear() - startDate.getFullYear();
+      const monthDiff = targetDate.getMonth() - startDate.getMonth();
+      let totalFullMonths = (yearDiff * 12) + monthDiff;
+
+      // 2. Calculate fractional part of the current month
+      const currentDay = targetDate.getDate();
+      // Get total days in the current month
+      const daysInCurrentMonth = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0).getDate();
+    
+      const fractionalMonth = currentDay / daysInCurrentMonth;
+
+      // Total months
+      const monthsPassed = parseFloat((totalFullMonths + fractionalMonth).toFixed(2));
+      
+      res.send({
+        'monthly_avg_sales_taxable': Number(parseFloat(totalTaxableValue / monthsPassed).toFixed(0)).toLocaleString('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        }),
+        'monthly_avg_total': Number(parseFloat(totalValue / monthsPassed).toFixed(0)).toLocaleString('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        }),
+        'total_sales_taxable': Number(parseFloat(totalTaxableValue).toFixed(0)).toLocaleString('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        })
+      }
+      )
+    }
+  })
   
-    const response = await fetch('https://ap-south-1.aws.data.mongodb-api.com/app/data-gfnnt/endpoint/data/v1/action/updateOne',{
-              method:  'post',
-              headers: {
-                'api-key':'DXB10rQxcW1TE8GGfekhZpksRQWWbEpsQ2VKJymkWa6deKpnjKJypdXASBksSq5c',
-                'Content-Type': 'application/json',
-                'Access-Control-Request-Headers': '*',
-              },
-              body:  JSON.stringify({
-                "dataSource": "Cluster0",
-                "database": "PriceList",
-                "collection": "Hosangadi",
-                "filter": {
-                    "_id": { "$oid": "65fd05d30a85dc1b38f69e49" }
-                },
-                "update": {
-                  "$set": {"products":result}
-                }
-              })
-          });
-  const opt = await response.json();
-  res.send(opt.modifiedCount===1)
-  }
-)
+})
+// app.get('/pricelist', async (req,res) =>{
+//   const t = new Date();
+//   let month = t.getMonth()+1;
+//   let year = t.getFullYear();
+//   if (month<4){
+//     year--
+//   }
+  
+//   sql = `
+// SELECT p.prod_name as name,
+// s.stk_prod_qty as qty,
+// s.stk_cost as cp,
+// CONVERT(pur.pur_date,CHAR) as date,
+// s.stk_tot_qty as totalQty,
+// acc.acc_name as supName
+// FROM somanath.products p
+// INNER JOIN (
+// SELECT stk_tot_qty,stk_cost,stk_pur_id,stk_prod_id,insert_time,stk_prod_qty, 
+// ROW_NUMBER() OVER (PARTITION BY stk_prod_id ORDER BY insert_time DESC) AS row_num
+//   FROM somanath`+year+`.stocks
+// ) AS s ON p.prod_id = s.stk_prod_id
+//   INNER JOIN somanath`+year+`.purchases pur ON s.stk_pur_id = pur.pur_id
+// INNER JOIN somanath.accounts acc ON acc.acc_id = pur.pur_acc
+// WHERE s.row_num <= 4
+//   ORDER BY p.prod_id, s.insert_time DESC;`
+
+//   data = connection.query(sql)
+  
+//   var result = data.reduce((x, y) => {
+//     (x[y.name] = x[y.name] || []).push(y);
+//     return x;
+//   }, {});
+  
+//     const response = await fetch('https://ap-south-1.aws.data.mongodb-api.com/app/data-gfnnt/endpoint/data/v1/action/updateOne',{
+//               method:  'post',
+//               headers: {
+//                 'api-key':'DXB10rQxcW1TE8GGfekhZpksRQWWbEpsQ2VKJymkWa6deKpnjKJypdXASBksSq5c',
+//                 'Content-Type': 'application/json',
+//                 'Access-Control-Request-Headers': '*',
+//               },
+//               body:  JSON.stringify({
+//                 "dataSource": "Cluster0",
+//                 "database": "PriceList",
+//                 "collection": "Hosangadi",
+//                 "filter": {
+//                     "_id": { "$oid": "65fd05d30a85dc1b38f69e49" }
+//                 },
+//                 "update": {
+//                   "$set": {"products":result}
+//                 }
+//               })
+//           });
+//   const opt = await response.json();
+//   res.send(opt.modifiedCount===1)
+//   }
+// )
 
 // process.on('uncaughtException', (error) => {
 //   socket.emit('sendError' ,"\n"+String(error.stack))
