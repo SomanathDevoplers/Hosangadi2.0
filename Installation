@@ -404,3 +404,32 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install_database_backup_task.
 ```
 
 No automatic retention deletion is performed. Monitor free disk and Google storage space and define a retention policy before accumulated two-hour backups become excessive. When `C:\backup` is configured under Google Drive for desktop's **Folders from your computer**, each completed `.sql` file can sync off-machine; verify successful cloud upload and periodic restore testing independently.
+
+## Post-restore acceptance checklist
+
+Complete this checklist after every new installation or full recovery. Do not consider the restore complete until every applicable item has been tested on the restored computer. Record failures and corrective action in the Notes column.
+
+| Done | Verification | Expected result | Date / Notes |
+| --- | --- | --- | --- |
+| [ ] | MySQL databases restored | The `somanath` master database and the required `somanath20YY` financial-year database exist and can be opened by the application. | |
+| [ ] | Application login tested | Login succeeds using `SYSTEM` mode and the correct financial year opens. | |
+| [ ] | Backend services tested | All required PM2 services are online and their configured localhost ports are listening. | |
+| [ ] | Automatic GST workflow installed | The GST Monthly Automation scheduled task exists, is enabled, and its configured account, schedule, `.env`, recipients and SMTP settings are correct. | |
+| [ ] | Automatic GST workflow test run completed | A controlled manual run creates the expected output and log without sending a duplicate production email. | |
+| [ ] | Automatic database backup installed | The `Hosangadi Database Backup` scheduled task exists, is enabled, runs after startup and repeats every two hours. | |
+| [ ] | Automatic database backup test run completed | A manual task run creates a non-empty `.sql` file in `C:\backup`; `scheduled-backup.log` reports success and no stale `.partial` file remains. | |
+| [ ] | Backup contents checked | The new dump contains both the `somanath` master database and the current `somanath20YY` financial-year database. | |
+| [ ] | Google Drive sync configured | Google Drive for desktop is signed in and `C:\backup` is configured under **Folders from your computer** to sync with Google Drive. | |
+| [ ] | Google Drive upload verified | A completed `.sql` backup appears in Google Drive from another browser/device; local presence alone is not sufficient. | |
+| [ ] | Printer drivers installed | Drivers for the invoice, POS receipt and barcode printers are installed without Windows device errors. | |
+| [ ] | POS 58 mm receipt printer installed | Use `Windows Receipt Printer Drivers.zip` from the repository root to install the POS 58 mm printer driver, then create/rename its Windows queue as `POS58 Printer`. | |
+| [ ] | Default printer selected | The intended invoice printer is set as the Windows default printer and a Windows test page prints correctly. | |
+| [ ] | Purchase entry created | Create and save a test purchase entry, reopen it, and confirm quantities, rates, tax and totals. | |
+| [ ] | Sales invoice created | Create and save a test sales invoice, reopen it, and confirm customer, items, tax and totals. | |
+| [ ] | Sales invoice printed | Print the test sales invoice and verify layout, paper size, margins, text and totals on the intended printer. | |
+| [ ] | Barcode label created and printed | Generate and print a test barcode label; verify alignment and confirm that the barcode scans to the expected value. | |
+| [ ] | Product edited | Edit a test product, save it, reopen it, and confirm the change persists. | |
+| [ ] | Product selling price updated | Update the selling price (SP) of a test product and confirm the new price is used when adding it to a new sales invoice. | |
+| [ ] | Restore test completed | Restore a copied backup into a separate test MySQL instance/database and verify that it is readable. Do not overwrite the production databases for this test. | |
+
+After testing, cancel or clearly mark the test purchase and sales records according to the business's normal accounting procedure. Keep the completed checklist with the recovery record.
