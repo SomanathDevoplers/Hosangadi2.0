@@ -421,6 +421,7 @@ Complete this checklist after every new installation or full recovery. Do not co
 | [ ] | Backup contents checked | The new dump contains both the `somanath` master database and the current `somanath20YY` financial-year database. | |
 | [ ] | Google Drive sync configured | Google Drive for desktop is signed in and `C:\backup` is configured under **Folders from your computer** to sync with Google Drive. | |
 | [ ] | Google Drive upload verified | A completed `.sql` backup appears in Google Drive from another browser/device; local presence alone is not sufficient. | |
+| [ ] | AnyDesk installed and tested | AnyDesk is installed from its official source, unattended-access settings follow the shop's security policy, and a supervised test connection succeeds. Do not record its password in this repository. | |
 | [ ] | Printer drivers installed | Drivers for the invoice, POS receipt and barcode printers are installed without Windows device errors. | |
 | [ ] | POS 58 mm receipt printer installed | Use `Windows Receipt Printer Drivers.zip` from the repository root to install the POS 58 mm printer driver, then create/rename its Windows queue as `POS58 Printer`. | |
 | [ ] | Default printer selected | The intended invoice printer is set as the Windows default printer and a Windows test page prints correctly. | |
@@ -433,6 +434,17 @@ Complete this checklist after every new installation or full recovery. Do not co
 | [ ] | Restore test completed | Restore a copied backup into a separate test MySQL instance/database and verify that it is readable. Do not overwrite the production databases for this test. | |
 
 After testing, cancel or clearly mark the test purchase and sales records according to the business's normal accounting procedure. Keep the completed checklist with the recovery record.
+
+## Restore the latest selected pendrive backup
+
+The standalone recovery instructions are maintained in `RESTORE_FROM_PENDRIVE.md`. After selecting and verifying the newest completed `.sql` file on the pendrive, open 64-bit PowerShell as Administrator from the repository root and provide its complete path:
+
+```powershell
+& .\scripts\setup_hosangadi.ps1 `
+    -DatabaseBackupPath 'E:\backup\somanathstores_2026-08-22_14-00-03.sql'
+```
+
+Replace `E:` with the actual pendrive drive letter. Paths containing spaces work when enclosed in single quotes. Do not select `.partial` files. The setup script requires a dump containing exactly `somanath` plus one `somanath20YY` database and prompts securely for the MySQL root password.
 
 ## Financial-year rollover on March 31 / April 1
 

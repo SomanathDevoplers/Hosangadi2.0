@@ -1,5 +1,10 @@
 # Hosangadi2.0
 
+## Recovery and installation
+
+- See [`Installation`](Installation) for complete system setup, scheduled tasks and the post-restore acceptance checklist.
+- See [`RESTORE_FROM_PENDRIVE.md`](RESTORE_FROM_PENDRIVE.md) for the exact command used to restore the master and current financial-year databases from a selected pendrive backup.
+
 ### Features availble in Hosangadi2.0
 
 ![ezgif### H3 com-gif-maker](https://user-images.githubusercontent.com/90487058/177008011-dccf6922-fe01-434d-a5c7-92195e7a6d51.gif)
