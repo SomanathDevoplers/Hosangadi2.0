@@ -141,6 +141,15 @@ function queryPool(pool, sql, parameters) {
   });
 }
 
+function invoiceNumberForAuditor(value) {
+  const storedValue = String(value ?? '').trim();
+  const match = /^\d{2}_(\d+)$/.exec(storedValue);
+  if (!match) {
+    throw new Error(`Unexpected trans_sales invoice format: ${storedValue || '(empty)'}. Expected XY_Number.`);
+  }
+  return match[1];
+}
+
 async function getInvoiceRange(period, logger) {
   const mysql = require('mysql');
   const pool = mysql.createPool({
@@ -167,8 +176,8 @@ async function getInvoiceRange(period, logger) {
       throw error;
     }
     return {
-      startingInvoice: String(row.starting_invoice),
-      endingInvoice: String(row.ending_invoice)
+      startingInvoice: invoiceNumberForAuditor(row.starting_invoice),
+      endingInvoice: invoiceNumberForAuditor(row.ending_invoice)
     };
   } finally {
     await new Promise((resolve) => pool.end(() => resolve()));
@@ -414,6 +423,7 @@ module.exports = {
   formatLocalDate,
   getInvoiceRange,
   getReportingPeriod,
+  invoiceNumberForAuditor,
   parseArguments,
   parseMonthOverride,
   resolveDesktopDirectory,

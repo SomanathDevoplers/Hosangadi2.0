@@ -13,7 +13,7 @@ It reuses the existing Purchase and Sales report endpoints in `backend/printer_s
 - Scheduled execution: first Saturday of every month at 10:00 AM.
 - Reporting period: previous completed calendar month.
 - Financial year: April through March (`somanath2026` for April 2026 through March 2027).
-- Invoice range: first and last non-null `trans_sales` ordered by `cashflow_sales.insert_time` within the reporting month.
+- Invoice range: first and last non-null `trans_sales` ordered by `cashflow_sales.insert_time` within the reporting month. Stored values such as `26_1234` are sent to the auditor as `1234`, without the `XY_` financial-year prefix.
 - Auditor subject: `GST Returns - SOMANATH STORES - Month YYYY`.
 - Auditor recipient: `jathindra_co@yahoo.com`.
 - CC: `vshivanand2@gmail.com`.

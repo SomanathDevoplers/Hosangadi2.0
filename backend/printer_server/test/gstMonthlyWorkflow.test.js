@@ -9,6 +9,7 @@ const {
   buildInvoiceRangeSql,
   desktopErrorFilename,
   getReportingPeriod,
+  invoiceNumberForAuditor,
   parseArguments,
   runWorkflow
 } = require('../gstMonthlyWorkflow');
@@ -59,6 +60,13 @@ test('invoice query preserves insert_time and trans_sales semantics', () => {
   assert.match(sql, /ORDER BY insert_time ASC/);
   assert.match(sql, /ORDER BY insert_time DESC/);
   assert.throws(() => buildInvoiceRangeSql('somanath2026; DROP DATABASE somanath'), /Invalid/);
+});
+
+test('auditor invoice numbers omit the financial-year prefix', () => {
+  assert.equal(invoiceNumberForAuditor('26_1234'), '1234');
+  assert.equal(invoiceNumberForAuditor('26_0007'), '0007');
+  assert.throws(() => invoiceNumberForAuditor('26-1234'), /Expected XY_Number/);
+  assert.throws(() => invoiceNumberForAuditor('1234'), /Expected XY_Number/);
 });
 
 test('scheduled execution cannot force an auditor resend', () => {
