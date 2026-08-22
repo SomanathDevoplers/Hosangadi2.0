@@ -10,6 +10,8 @@ param(
     [switch]$InstallPrerequisites,
     [switch]$SkipDatabaseRestore,
     [switch]$SkipFrontendBuild,
+    [switch]$SkipDatabaseBackupTask,
+    [switch]$NoShutdownBackupTrigger,
     [switch]$EnableGstAutomation
 )
 
@@ -324,6 +326,27 @@ try {
     } finally {
         $plainPassword = $null
         Remove-Item Env:MYSQL_PWD -ErrorAction SilentlyContinue
+    }
+
+    if (-not $SkipDatabaseBackupTask) {
+        Write-Step 'Scheduled database backups'
+        $deployedScripts = Join-Path $DeploymentRoot 'scripts'
+        Ensure-Directory $deployedScripts
+        foreach ($scriptName in @('backup_databases.ps1', 'install_database_backup_task.ps1')) {
+            $sourceScript = Join-Path $RepositoryRoot "scripts\$scriptName"
+            $destinationScript = Join-Path $deployedScripts $scriptName
+            if ((Resolve-Path -LiteralPath $sourceScript).Path -ine $destinationScript) {
+                Copy-Item -LiteralPath $sourceScript -Destination $destinationScript -Force
+            }
+        }
+        $taskArguments = @(
+            '-NoProfile', '-ExecutionPolicy', 'Bypass',
+            '-File', (Join-Path $deployedScripts 'install_database_backup_task.ps1'),
+            '-ApplicationRoot', $DeploymentRoot,
+            '-BackupDirectory', $BackupDirectory
+        )
+        if ($NoShutdownBackupTrigger) { $taskArguments += '-NoShutdownTrigger' }
+        Invoke-Checked -FilePath 'powershell.exe' -ArgumentList $taskArguments
     }
 
     Write-Step 'Starting backend services'

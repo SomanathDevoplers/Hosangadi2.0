@@ -290,6 +290,8 @@ Useful switches:
 - `-InstallPrerequisites`: downloads signed official Python 3.14.3 and Node 22.22.2 installers when those commands are absent. A conflicting installed version stops the run for manual resolution.
 - `-SkipDatabaseRestore`: prepares/validates MySQL without importing a dump.
 - `-SkipFrontendBuild`: requires existing deployed `login.exe` and `root.exe` and skips rebuilding.
+- `-SkipDatabaseBackupTask`: does not install the otherwise-default hidden database backup task.
+- `-NoShutdownBackupTrigger`: installs startup/two-hour backups but omits the best-effort shutdown trigger.
 - `-EnableGstAutomation`: installs/updates the monthly scheduled task; `.env` SMTP secrets and recipients still require manual entry/verification.
 
 The script intentionally stops for manual intervention when MySQL is absent without an installer, an exact version differs, the database password does not match the hardcoded legacy contract, the dump does not contain exactly `somanath` plus one `somanath20YY` schema, or final service ports do not listen. Missing printer queues are clearly reported warnings because their driver setup requires manual work. Its transcript is written to `%TEMP%\Hosangadi-setup-*.log`; secrets are not written to the command line or transcript.
@@ -362,3 +364,43 @@ Input is hidden by PowerShell's `Read-Host -AsSecureString` (`scripts/setup_hosa
 For MySQL commands, the script temporarily places the password in the process-only `MYSQL_PWD` environment variable rather than adding `-p<password>` to the command line (`scripts/setup_hosangadi.ps1:293`). It uses that temporary value to verify the connection, configure `mysql_native_password` when necessary and restore the dump. The variable and plaintext in-memory value are cleared in the `finally` block (`scripts/setup_hosangadi.ps1:324-326`). Secure prompt input is not echoed into the setup transcript.
 
 Enter the same existing application password referenced by the backend configuration and legacy backup commands. On a fresh MySQL installation, use that same value when configuring the `root` account in the MySQL installer. Do not add the password to this document or to the PowerShell command line.
+
+## Automatic two-hour database backups
+
+Unless `-SkipDatabaseBackupTask` is supplied, `setup_hosangadi.ps1` installs or updates this Windows scheduled task:
+
+```text
+Hosangadi Database Backup
+```
+
+It runs as Local System with highest privileges and launches PowerShell with `-NonInteractive -WindowStyle Hidden`, so no console window is shown. Its normal trigger starts two minutes after Windows startup and repeats every two hours. Concurrent triggers are ignored while a dump is already running.
+
+The worker is `%USERPROFILE%\Hosangadi2.0\scripts\backup_databases.ps1`. On each run it derives the current financial-year schema from the system date, using the previous calendar year during January-March and the current calendar year during April-December. It dumps exactly:
+
+- `somanath`
+- The current `somanathYYYY` financial-year schema
+
+Files are written only to `C:\backup` with a collision-free timestamp, for example:
+
+```text
+C:\backup\somanathstores_2026-08-22_14-00-03.sql
+```
+
+The dump is initially written with a `.partial` suffix and renamed to `.sql` only after `mysqldump` succeeds and produces a non-empty file. This prevents Google Drive or another backup tool from treating an incomplete dump as valid. Results are appended to:
+
+```text
+C:\backup\scheduled-backup.log
+```
+
+The worker obtains the existing legacy password from the deployed `gstRuntimeConfig.js`, places it only in its child-process environment, and removes it afterward. The password is not included in the scheduled-task arguments.
+
+By default, the task also has an event trigger for Windows User32 event 1074, which is emitted when a shutdown or restart is initiated. This shutdown backup is **best-effort only**: Windows can terminate background work before a large MySQL dump finishes. The atomic `.partial` behavior prevents such an interrupted attempt from replacing a completed dump. The startup/two-hour schedule—not the shutdown trigger—is the authoritative protection. Supply `-NoShutdownBackupTrigger` to omit it.
+
+To manually install/update or remove only this task:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install_database_backup_task.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\install_database_backup_task.ps1 -Uninstall
+```
+
+No automatic retention deletion is performed. Monitor free disk and Google storage space and define a retention policy before accumulated two-hour backups become excessive. When `C:\backup` is configured under Google Drive for desktop's **Folders from your computer**, each completed `.sql` file can sync off-machine; verify successful cloud upload and periodic restore testing independently.
