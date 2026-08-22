@@ -718,7 +718,6 @@ backend/socket_server/node_modules/ws/lib/websocket.js
 /backend/report_server/node_modules
 /backend/socket_server/node_modules
 frontend/accounts.py
-.gitignore
 frontend/accounts.py
 frontend/__pycache__/account.cpython-38.pyc
 frontend/__pycache__/account.cpython-39.pyc
@@ -871,6 +870,9 @@ node_modules/wrappy/package.json
 node_modules/wrappy/README.md
 node_modules/wrappy/wrappy.js
 package-lock.json
+!backend/product_server/package-lock.json
+!backend/report_server/package-lock.json
+!backend/barcode_server/package-lock.json
 !/backend/printer_server/package-lock.json
 frontend/__pycache__/accounts.cpython-38.pyc
 frontend/__pycache__/base_window.cpython-38.pyc
@@ -898,15 +900,10 @@ frontend/__pycache__/taxes.cpython-38.pyc
 frontend/__pycache__/users.cpython-38.pyc
 /backend/product_server/node_modules
 backend/report_server/images-1639002054727-142496305
-.gitignore
 purchase.py
 frontend/__pycache__/sales_bill.cpython-38.pyc
-.gitignore
-.gitignore
-.gitignore
 frontend/__pycache__/other_classes.cpython-38.pyc
 frontend/__pycache__/root.cpython-38.pyc
-.gitignore
 /backend/printer_server/node_modules
 /backend/barcode_server/node_modules
 frontend/__pycache__/other_classes.cpython-39.pyc

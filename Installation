@@ -1,76 +1,364 @@
-Desktop/
-└── Invoices/
-    ├── barcode
-    ├── oldinvoices
-    └── reports
-In C folder /
-├── for each files and folder
-├── Right Click properties->Security->For Each Group or user names
-└── Allow what ever is possible to check
-C:/
-├── backup/
-│   └── "Stores daily backup of DB."
-└── Program Files/
-    ├── Hosangadi2.0/
-    │   ├── login/
-    │   │   └── Directory of build of login.py from auto-py-to-exe
-    │   ├── root/
-    │   │   └── Directory of build of root.py from auto-py-to-exe
-    │   ├── All other files to be added here can be found in 
-    │   └── https://github.com/SomanathDevoplers/Hosangadi2.0/tree/main/frontend/files
-    └── Users/
-        └── UserName(Krish,shiva ...)/
-            ├── Images/
-            │   └── This folder is for saving product images.
-            ├── Hosangadi2.0/
-            │   ├── Store backend folder in this install all node modules
-            │   └── https://github.com/SomanathDevoplers/Hosangadi2.0/tree/main/backend
-            └── angadiImages/
-                └── For storing all reports and images
+# Hosangadi 2.0 installation and disaster-recovery specification
 
+## Audit conclusion
 
--> install node and python
-->Install MySQL also workbench
-->Set MySQL password to mysqlpassword5
-Or
-->
-use mysql_native_password 
+**No — important recovery information was missing.**
+
+The old document had the broad layout, but not a complete database restore, all directories/files, local ports, printers, dependencies, permissions, startup order, or GST automation. This audit treats checked-in code as authoritative; absence from this backup PC does not make a code dependency optional.
+
+## Audit table
+
+| Status | Requirement | Code reference | Old coverage | Required change |
+| --- | --- | --- | --- | --- |
+| INCOMPLETE | `%USERPROFILE%\Desktop\Invoices` tree | `frontend/sales.py:2197-2203`; `backend/barcode_server/barcodeServer.js:21` | Three children listed | Add `oldinvoices\voucher`; code does not create these folders. |
+| INCOMPLETE | `%USERPROFILE%\Images` staging tree | `frontend/forms.py:336-339,1062-1065,1473-1476,1984-1987,3727-3730` | Parent only | Add `firms`, `categories`, `accounts`, `products`; edits delete contents. |
+| INCOMPLETE | `%USERPROFILE%\angadiImages` | `backend/report_server/reportServer.js:47,81,133,366,513,735,862` | Only products/accounts | Add firms, categories, employs; restore persistent images/reports. |
+| MISSING | Backend exact home-relative location | `backend/printer_server/printerServer.js:108`; `backend/socket_server/socketServer.js:401` | Ambiguous | Must be `%USERPROFILE%\Hosangadi2.0\backend`. |
+| INCOMPLETE | Program Files assets/writable files | `frontend/login.py:15,92,103`; `root.py:47,56,429`; `sales.py:2191,3455` | “All other files” | List files and Modify permission. |
+| MISSING | Ports 4000/5000/6000/7000/8000 | server `listen` calls | None | Document local service ownership. No inbound firewall rules are required for SYSTEM/localhost mode. |
+| VERIFY | Legacy LAN host `192.168.0.103` | `frontend/login.py:11,62-65`; `frontend/forms.py:6912` | None | SERVER mode and the HOIN print call use it, but both are intentionally unused in this deployment. |
+| INCOMPLETE | MySQL schemas/data recovery | `frontend/forms.py:7038-7043`; `reportServer.js:883`; `frontend/reports.py:302` | Password only | Restore master plus every yearly schema; retain off-machine dumps. |
+| MISSING | Exact MySQL dump location | `frontend/forms.py:7038-7040` | None | Install MySQL 8.0 CLI at hardcoded path. |
+| MISSING | Printer queues/drivers | `barcodeServer.js:65`; `printerServer.js:1917-1937` | None | Add `BarcodePrinter`, `POS58 Printer`, default printer. |
+| MISSING | Python packages | imports in `frontend/forms.py:1-21`, `sales.py:1-11`, `root.py:9-20` | Python only | Add imported third-party packages. |
+| INCOMPLETE | npm installation | all `backend/*_server/package.json` | Incorrect `npm i <server>.js` | Run `npm install` in each service directory. |
+| MISSING | Fonts/templates/workbook | `printerServer.js:108-678,1195`; `reportServer.js` | None | Preserve Languages tree, HBS and XLSX template. |
+| MISSING | GST `.env`, state, mail/task | `gstRuntimeConfig.js:13-18,55-114`; `gstMonthlyWorkflow.js:253-270` | None | Add variables, Local AppData state and task setup. |
+| OK | Runtime/build versions | Confirmed on production system | Not pinned | Pin Python 3.14.3, Node.js 22.22.2 and auto-py-to-exe 2.50.0. |
+
+## 1. Required Windows folders
+
+Create these before use. `%USERPROFILE%` must be the account running both the frontend and PM2.
+
+```text
+C:\Program Files\Hosangadi2.0\
+├── login\                 complete one-directory build of login.py
+├── root\                  complete one-directory build of root.py
+├── formId.txt
+├── logo_hosagadi.png
+├── logo_hosagadi.ico
+├── Error.txt
+├── invoiceData.txt
+├── cashflowdata.txt
+├── error.mp3
+├── purchaseQtyError.mp3
+├── SSM.mp3
+├── SEM.mp3
+└── otherbarcodeerror.mp3
+
+C:\backup\
+
+%USERPROFILE%\Hosangadi2.0\backend\
+├── barcode_server\
+├── printer_server\
+├── product_server\
+├── report_server\
+└── socket_server\NodeErr.txt
+
+%USERPROFILE%\Desktop\Invoices\
+├── barcode\
+├── oldinvoices\
+│   └── voucher\
+└── reports\
+
+%USERPROFILE%\Images\
+├── firms\
+├── categories\
+├── accounts\              also used for employee staging
+└── products\
+
+%USERPROFILE%\angadiImages\
+├── firms\
+├── categories\
+├── employs\
+├── accounts\
+└── products\
+
+%LOCALAPPDATA%\Hosangadi\gst-monthly-automation\
+```
+
+Entity-ID folders under `angadiImages` are created for many new records (`reportServer.js:133-136,366-372,513-525,735-741,862-872`). Its top-level/category parents, Desktop invoice tree and frontend Images tree are assumed to exist. GST state/log/lock and Desktop error directories are auto-created (`gstWorkflowState.js:23-24`; `gstMonthlyWorkflow.js:219-220`).
+
+## 2. Required files/assets
+
+- Copy all `frontend/files/` contents to `C:\Program Files\Hosangadi2.0`. `formId.txt` and logo are startup requirements; text files are writable; MP3s support warnings (`login.py:15,103`; `root.py:47-56,429`; `purchase.py:2593-2599`; `forms.py:6991`; `sales.py:2191-2194,3455-3458`).
+- Restore the complete backend, not isolated JS files. Preserve `report_server\Languages` exactly: PDF code loads its Kannada/Work Sans TTFs through `%USERPROFILE%\Hosangadi2.0\backend` (`printerServer.js:108-115`).
+- Preserve `report_server\salesCashflow.hbs` and `printer_server\GSTR1_Excel_Workbook_Template_V1.81.xlsx` (`printerServer.js:1195`).
+- Preserve writable `socket_server\NodeErr.txt`; it stores session/recovery state (`socketServer.js:401-438,1825-1839`).
+- Restore all `%USERPROFILE%\angadiImages`; database rows may refer to its firm/category/employee/account/product images.
+- Generated records include invoices/vouchers, archived vouchers, MonthlyReport/orderList/print_BAR/barcode/cashflow PDFs, and GST text/XLSX files (`sales.py:2197-2203`; `reports.py:318`; `printerServer.js:723,1150,1426,1707,1903`). Retain historical outputs if operationally required.
+- `printer_server\.env` is machine-local. It is optional for ordinary defaults but required to enable/configure monthly email automation. Create from the example and restore secrets securely.
+
+## 3. Permissions
+
+| Location | Access needed | Purpose |
+| --- | --- | --- |
+| `C:\Program Files\Hosangadi2.0` | Read/execute; Modify on `Error.txt`, `invoiceData.txt`, `cashflowdata.txt` | Executables/assets and runtime writes. An administrator normally must grant this. |
+| `C:\backup` | Read/create/write/modify | SQL-dump copies; creating/granting root folder may require admin. |
+| `%USERPROFILE%\Desktop\Invoices` | Read/create/write/modify | PDFs, archives, barcodes, reports. |
+| `%USERPROFILE%\Images` | Read/create/write/modify/delete | Editing deletes existing staging files. |
+| `%USERPROFILE%\angadiImages` | Read/create/write/modify/delete/rename | Persistent images, reports, temporary dump. |
+| `%USERPROFILE%\Hosangadi2.0\backend` | Read/execute; Modify `NodeErr.txt`; install-time writes | Services/dependencies/state. |
+| GST Local AppData directory | Read/create/write/modify/delete | State, logs, locks. |
+| `<USB>:\backup` (optional) | Read/create/write/modify | Optional dump destination; folder must exist. |
+
+Do not grant blanket access to all of `C:\`.
+
+## 4. Python/frontend runtime
+
+Install **Windows Python 3.14.3** with Tkinter and pip. This version was confirmed on the production system. Use `frontend/requirements.txt` for pinned protocol-sensitive dependencies.
+
+```powershell
+py -3.14 -m pip install requests Pillow reportlab playsound pyperclip tkdocviewer auto-py-to-exe==2.50.0
+py -3.14 -m pip install -r frontend\requirements.txt
+```
+
+Install Ghostscript for `tkdocviewer`/invoice PDF display (`frontend/sales.py:9,574`): <https://ghostscript.com/releases/gsdnld.html>. **[NEEDS MANUAL VERIFICATION: exact Ghostscript version/PATH setup.]**
+
+Run `py -3.14 -m auto_py_to_exe` using **auto-py-to-exe 2.50.0**. Build `frontend/login.py` and `frontend/root.py` as **One Directory**, **Window Based**, with `logo_hosagadi.ico`; copy complete outputs to the `login` and `root` paths above. Ensure local modules `style`, `other_classes`, `forms`, `purchase`, `sales`, `reports` and dependencies are bundled. **[NEEDS MANUAL VERIFICATION: known-good PyInstaller options/hidden imports.]**
+
+## 5. Node/backend runtime
+
+Install **Windows Node.js 22.22.2** (including its bundled npm). This version was confirmed on the production system. Run `npm ci` where a lockfile is present and `npm install` otherwise, separately in each of:
+
+```text
+backend\socket_server
+backend\product_server
+backend\report_server
+backend\printer_server
+backend\barcode_server
+```
+
+Each directory's `package.json` is authoritative. Socket.IO is deliberately aligned at exact Node `socket.io`/`socket.io-client` **4.8.3** and confirmed-production frontend `python-socketio` **5.16.1**. These version numbers differ because they are separate implementations, but they share Socket.IO protocol 5 and Engine.IO protocol 4. Keep all checked-in lockfiles.
+
+```powershell
+npm install pm2 -g
+npm install pm2-windows-startup -g
+pm2-startup install
+```
+
+`backend/ecosystem.config.js` points to nonexistent `./app.js`, so start the actual entries, each from its directory:
+
+```powershell
+pm2 start socketServer.js --name hosangadi-socket
+pm2 start productServer.js --name hosangadi-product
+pm2 start reportServer.js --name hosangadi-report
+pm2 start printerServer.js --name hosangadi-printer
+pm2 start barcodeServer.js --name hosangadi-barcode
+pm2 save
+```
+
+PM2 must run as the prepared Windows user. The commands above are each executed after changing to the matching service directory.
+
+## 6. MySQL and business-data recovery
+
+Install MySQL Server 8.0 including CLI tools at the hardcoded backup path (`frontend/forms.py:7038`):
+
+```text
+C:\Program Files\MySQL\MySQL Server 8.0\bin
+```
+
+Workbench is useful for restore but not invoked by code. MySQL must listen before Node starts. Services use localhost:3306, root, and a hardcoded existing credential (`socketServer.js:15-22`; `reportServer.js:18-24`; `productServer.js:21-29`). Do not record it here. The legacy authentication procedure was:
+
+```sql
 SET GLOBAL validate_password.policy=LOW;
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'mysqlpassword5';
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '[RESTORE EXISTING APPLICATION PASSWORD]';
+```
 
-https://ghostscript.com/releases/gsdnld.html
-this is required for pip install tkDocViewer
-Uploaded to drive fileName ghostScript.exe for windows
-https://drive.google.com/file/d/1gGvQjx86FTU2m5WSstDaB9hDpSMnFLLr/view?usp=drive_link
+**[NEEDS MANUAL VERIFICATION: compatible MySQL 8.x version/authentication and credential.]**
 
+Restore:
 
-https://pypi.org/project/auto-py-to-exe
-intallation using pip: pip install auto-py-to-exe
-to start the auto-py-to-exe => python -m auto_py_to_exe
+- `somanath`: master/permanent firms, users, products, accounts, categories, employees, taxes and data.
+- Every required `somanath20YY`: one transaction schema per financial-year start. FY 2023-2024 uses `somanath2023`; code concatenates `somanath20` with two-digit year (`reportServer.js:883`; `frontend/reports.py:302`). Historical code directly uses `somanath2021` (`reportServer.js:951`).
 
-To build login.py and root.py
-Choose 
-One Directory
-Window Based
-Select icon
+The in-app backup dumps only `somanath` plus the selected `somanath20YY`, writes `%USERPROFILE%\angadiImages\somanathstores_YYYY_M_D.sql`, copies to `C:\backup` and optionally `<drive>:\backup`, then deletes the temporary (`frontend/forms.py:7025-7054`). Therefore maintain tested, off-machine dumps for master **and every historical/current yearly schema**. `C:\backup` alone is not disaster recovery. Restore `angadiImages` separately because SQL dumps do not contain images. **[NEEDS MANUAL VERIFICATION: schema inventory, off-machine destination, frequency, retention and restore-test schedule.]**
 
-After build copy folders to respective places as shown above
+## 7. Environment/configuration
 
+Monthly GST automation reads `printer_server\.env` or `GST_MONTHLY_AUTOMATION_CONFIG` (`gstRuntimeConfig.js:18,55`). Supported names:
 
+| Name | Requirement/purpose |
+| --- | --- |
+| `GST_MONTHLY_AUTOMATION_ENABLED` | Must be true for scheduled runs; false by default. |
+| `GST_DB_HOST`, `GST_DB_PORT`, `GST_DB_USER`, `GST_DB_PASSWORD` | Optional printer/GST DB overrides. |
+| `GST_DB_CONNECT_TIMEOUT_MS` | Optional; default 15000. |
+| `GST_SMTP_HOST`, `GST_SMTP_PORT`, `GST_SMTP_SECURE`, `GST_SMTP_USER`, `GST_SMTP_PASSWORD` | Mail transport; password required to send. |
+| `GST_EMAIL_FROM`, `GST_EMAIL_TO`, `GST_EMAIL_CC`, `GST_ERROR_EMAIL_TO` | Operational sender/recipients; manually verify example values. |
+| `GST_REPORT_TIMEOUT_MS` | Optional; default 15 minutes. |
+| `GST_AUTOMATION_STATE_DIR` | Optional override of Local AppData state. |
+| `GST_DESKTOP_DIRECTORY` | Optional error-output Desktop override. |
+| `LOCALAPPDATA` | Normally Windows-provided state base. |
 
-Backend installation:
-1. Install pm2
-    i.npm i pm2
+Copy the example to `.env`, set real values, restrict it to the service user, and provide outbound DNS/SMTP access. Configure Task Scheduler using checked-in `scripts/install_gst_monthly_task.ps1` and `GST_MONTHLY_AUTOMATION.md`, then securely back up/export the working task and config.
 
-2.For each server:
-    i.  npm i <server>.js
-    ii. pm2 start <server>.js
-3. pm2 save
+## 8. External programs/services
 
-4. Setup autostart for nodeapps in pm2:
-    i.  npm install pm2-windows-startup -g
-    ii. pm2-startup install
+- MySQL Server 8.0 service and `mysqldump.exe`.
+- Node.js/npm, PM2 and pm2-windows-startup.
+- Python/Tkinter/pip, auto-py-to-exe and Ghostscript.
+- Windows default browser/PDF handler: `webbrowser.open` opens reports (`reports.py:362`; `forms.py:6983`). Edge is not launched by name, so another registered handler may work. **[VERIFY production handler.]**
+- Windows print spooler and drivers for named/default queues.
+- Internet for initial package installation and GST email.
 
+Excel and Workbench are conveniences, not code-level runtime dependencies: Node `xlsx` creates workbooks. Git and VS Code are maintenance tools, not runtime requirements.
 
+## 9. Hardware/Windows specifics
 
+- Exact print queue `BarcodePrinter` (`barcodeServer.js:65`).
+- Exact receipt queue `POS58 Printer` for printer choice 1 (`printerServer.js:1917-1920`). Choice 0 uses Windows default; UI calls it EPSON (`frontend/sales.py:566`).
+- **[NEEDS MANUAL VERIFICATION: models, drivers, paper/labels, default queue, USB/network ports.]**
+- `192.168.0.103` remains in legacy SERVER-mode login and the HOIN barcode-print function (`login.py:11`; `forms.py:6912`). This deployment uses SYSTEM mode/localhost and does not use the HOIN function, so no fixed LAN address is required. If either feature is re-enabled later, its address requirement must be revisited.
+- No evidenced COM/serial, mapped-drive, share, hostname or scanner-driver configuration exists. A keyboard scanner may be operational but is not configured in code.
 
+## 10. Ports/startup
+
+| TCP port | Owner | Evidence |
+| --- | --- | --- |
+| 3306 | MySQL | `reportServer.js:19-24` |
+| 4000 | productServer | `productServer.js:164` |
+| 5000 | socketServer | `socketServer.js:1846` |
+| 6000 | reportServer | `reportServer.js:1603` |
+| 7000 | printerServer | `printerServer.js:2105` |
+| 8000 | barcodeServer | `barcodeServer.js:71` |
+
+Use SYSTEM mode so the frontend uses localhost for ports 4000-7000. The separately hardcoded `192.168.0.103:8000` call belongs only to the intentionally unused HOIN barcode-print function (`forms.py:6911-6912`). The setup script does not create inbound firewall rules.
+
+1. Start MySQL and verify restored schemas.
+2. Start socketServer first; product/report/printer connect immediately to port 5000 (`productServer.js:1-3`; `reportServer.js:2-4`; `printerServer.js:14`).
+3. Start product, report, printer, barcode services and verify all ports/PM2 status.
+4. Launch `C:\Program Files\Hosangadi2.0\login\login.exe`. It reads `formId.txt`, authenticates on 5000, then launches root.exe with six arguments (`login.py:15,65,92-96`; `root.py:590-601`). Do not normally start root directly.
+5. Select `SYSTEM`, which uses localhost. Do not select the unused `SERVER` mode, which retains `192.168.0.103` (`login.py:41-65,159-178`).
+
+## 11. Backup/recovery checklist
+
+Back up off-machine: exact source revision; deployed login/root build folders; dumps of `somanath` and every `somanath20YY`; all `angadiImages`; Program Files configuration/working files (especially `formId.txt`); `.env` and SMTP secret through secure secret backup; GST Local AppData if history matters; PM2/task/printer/network configuration; and historical PDFs if required.
+
+After rebuilding:
+
+1. Restore paths/permissions under the same service user and restore all MySQL schemas.
+2. Start services in order and verify ports.
+3. Test login and a real financial year.
+4. Verify stored images; test disposable image edit/upload.
+5. Generate/view an invoice and report; test default, POS58 and barcode printing.
+6. Generate business-used GST TXT/XLSX outputs.
+7. Run a backup, verify local/USB copies, and restore a copy into a separate test MySQL instance.
+8. If automation is enabled, do a controlled manual test of state/log/output/email without duplicate production email.
+
+## 12. Manual verification still required
+
+- Known-good Windows, npm bundled with Node 22.22.2, MySQL 8.x patch, Ghostscript, PyInstaller dependency of auto-py-to-exe 2.50.0, PM2 and driver versions.
+- Exact build flags/hidden imports and archive of deployed builds.
+- Production account, secrets, `formId.txt` value/meaning and GST recipients; never put secrets here.
+- Complete yearly-schema inventory and tested off-machine backups.
+- Backup schedule, retention, encryption, owner and restore testing.
+- If SERVER mode or HOIN barcode printing is ever restored, verify its network address/firewall requirements first.
+- Printer queue/default/driver/paper configuration.
+- Whether generated PDFs are required legal/operational records.
+- Task Scheduler identity/schedule and exported task definition.
+
+## Source-of-truth note
+
+This specification records current `frontend/` and `backend/` behavior. Missing items on a backup machine do not override code requirements. Development conveniences formerly mentioned (VS Code, Git, Workbench, Excel) are not runtime dependencies unless the recovery process separately chooses them.
+
+## Automated setup script
+
+Run `scripts\setup_hosangadi.ps1` from an elevated 64-bit Windows PowerShell session. It is idempotent: completed steps are revalidated/reused, runtime `.env` and `NodeErr.txt` are preserved, PM2 definitions are updated rather than duplicated, and a failed run can be corrected and rerun.
+
+Safest recovery, using archived known-good frontend builds:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
+  -InstallPrerequisites `
+  -DatabaseBackupPath 'E:\Recovery\somanathstores_YYYY_M_D.sql' `
+  -MySqlInstallerPath 'E:\Recovery\mysql-installer-community-8.0.45.0.msi' `
+  -PrebuiltLoginDirectory 'E:\Recovery\builds\login' `
+  -PrebuiltRootDirectory 'E:\Recovery\builds\root'
+```
+
+Source rebuild when archived executable folders are unavailable:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
+  -InstallPrerequisites `
+  -DatabaseBackupPath 'E:\Recovery\somanathstores_YYYY_M_D.sql' `
+  -MySqlInstallerPath 'E:\Recovery\mysql-installer-community-8.0.45.0.msi'
+```
+
+Useful switches:
+
+- `-InstallPrerequisites`: downloads signed official Python 3.14.3 and Node 22.22.2 installers when those commands are absent. A conflicting installed version stops the run for manual resolution.
+- `-SkipDatabaseRestore`: prepares/validates MySQL without importing a dump.
+- `-SkipFrontendBuild`: requires existing deployed `login.exe` and `root.exe` and skips rebuilding.
+- `-EnableGstAutomation`: installs/updates the monthly scheduled task; `.env` SMTP secrets and recipients still require manual entry/verification.
+
+The script intentionally stops for manual intervention when MySQL is absent without an installer, an exact version differs, the database password does not match the hardcoded legacy contract, the dump does not contain exactly `somanath` plus one `somanath20YY` schema, or final service ports do not listen. Missing printer queues are clearly reported warnings because their driver setup requires manual work. Its transcript is written to `%TEMP%\Hosangadi-setup-*.log`; secrets are not written to the command line or transcript.
+
+## Setup script questions and preparation
+
+### Does the script create all required folders and permissions?
+
+Yes. The script creates the code-required directory tree under:
+
+- `C:\Program Files\Hosangadi2.0`
+- `C:\backup`
+- `%USERPROFILE%\Hosangadi2.0\backend`
+- `%USERPROFILE%\Desktop\Invoices` and its barcode, invoice archive, voucher archive and report children
+- `%USERPROFILE%\Images` and its firms, categories, accounts and products children
+- `%USERPROFILE%\angadiImages` and its firms, categories, employs, accounts and products children
+- `%LOCALAPPDATA%\Hosangadi\gst-monthly-automation`
+
+It explicitly grants the current Windows user Modify permission on `C:\Program Files\Hosangadi2.0` and `C:\backup`. Directories below `%USERPROFILE%` normally inherit access for their owning user.
+
+The script cannot create an optional USB `<drive>:\backup` directory in advance because the drive letter is machine-specific. Create that directory manually if the application's optional USB backup is used. Printer drivers and queues also require manual installation; the script reports warnings when `BarcodePrinter`, `POS58 Printer`, or a default Windows printer is missing.
+
+### What does `E:` mean in the examples?
+
+`E:` is only an example recovery-media drive letter. Replace it with the real path containing the SQL dump, MySQL installer, or archived application builds. Valid examples include:
+
+```powershell
+-DatabaseBackupPath 'D:\Backup\somanathstores_2026_8_22.sql'
+-DatabaseBackupPath 'C:\Users\ADMIN\Downloads\somanathstores_2026_8_22.sql'
+-MySqlInstallerPath 'F:\Installers\mysql-installer-community-8.0.45.0.msi'
+```
+
+### What must be prepared before running the script?
+
+Prepare:
+
+1. A 64-bit Windows computer with internet access for Python/npm packages and optional prerequisite downloads.
+2. A complete clone/copy of this repository, including `ghostScript.exe`.
+3. A daily SQL dump containing exactly the master `somanath` database and one current `somanath20YY` financial-year database.
+4. The MySQL Server 8.0.45 installer if that exact server version is not already installed.
+5. The MySQL `root` password expected by the hardcoded legacy application configuration.
+6. Printer drivers and the details needed to create queues named `BarcodePrinter` and `POS58 Printer`, plus the intended default invoice printer.
+7. Preferably, archived known-good `login` and `root` one-directory build folders. If unavailable, the script rebuilds them from source using the pinned Python environment.
+
+Open an elevated 64-bit Windows PowerShell session as the same Windows account that will operate Hosangadi and run PM2. This is important because the application uses that account's `%USERPROFILE%`, Desktop, AppData and image directories. Do not elevate by supplying credentials for a different administrator account unless that different account will also run the application.
+
+From the repository root, run for example:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
+  -InstallPrerequisites `
+  -DatabaseBackupPath 'D:\Backup\somanathstores_2026_8_22.sql' `
+  -MySqlInstallerPath 'D:\Installers\mysql-installer-community-8.0.45.0.msi'
+```
+
+When MySQL is absent and `-MySqlInstallerPath` is supplied, its installer opens interactively. Install MySQL Server and command-line tools in `C:\Program Files\MySQL\MySQL Server 8.0` and configure the root account with the password expected by this application.
+
+After setup, select `SYSTEM` at login so all application services use localhost. Manually test login, invoice/report generation, the default and named printers, barcode printing and creation/restoration of a database backup. Complete `printer_server\.env` separately if GST email automation is enabled.
+
+### Where does the database-restore query obtain the MySQL password?
+
+The setup script prompts interactively:
+
+```text
+MySQL root password expected by the hardcoded application configuration:
+```
+
+Input is hidden by PowerShell's `Read-Host -AsSecureString` (`scripts/setup_hosangadi.ps1:288`). The script converts it only in memory, reads the expected legacy value from `backend/printer_server/gstRuntimeConfig.js`, and stops before changing the database if the values do not match (`scripts/setup_hosangadi.ps1:290-292`).
+
+For MySQL commands, the script temporarily places the password in the process-only `MYSQL_PWD` environment variable rather than adding `-p<password>` to the command line (`scripts/setup_hosangadi.ps1:293`). It uses that temporary value to verify the connection, configure `mysql_native_password` when necessary and restore the dump. The variable and plaintext in-memory value are cleared in the `finally` block (`scripts/setup_hosangadi.ps1:324-326`). Secure prompt input is not echoed into the setup transcript.
+
+Enter the same existing application password referenced by the backend configuration and legacy backup commands. On a fresh MySQL installation, use that same value when configuring the `root` account in the MySQL installer. Do not add the password to this document or to the PowerShell command line.
