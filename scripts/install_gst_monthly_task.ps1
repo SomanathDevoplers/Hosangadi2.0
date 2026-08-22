@@ -1,6 +1,6 @@
 param(
     [string]$TaskName = 'Hosangadi GST Monthly Automation',
-    [string]$ConfigPath = (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'Hosangadi\gst-monthly-automation\gst-monthly-automation.env'),
+    [string]$ConfigPath,
     [switch]$Uninstall
 )
 
@@ -11,6 +11,10 @@ $printerDirectory = Join-Path $repositoryRoot 'backend\printer_server'
 $workflowPath = Join-Path $printerDirectory 'gstMonthlyWorkflow.js'
 $exampleConfig = Join-Path $printerDirectory 'gst-monthly-automation.env.example'
 $nodePath = (Get-Command node.exe -ErrorAction Stop).Source
+
+if ([string]::IsNullOrWhiteSpace($ConfigPath)) {
+    $ConfigPath = Join-Path $printerDirectory '.env'
+}
 
 $service = New-Object -ComObject 'Schedule.Service'
 $service.Connect()

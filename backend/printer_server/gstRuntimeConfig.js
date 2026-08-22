@@ -15,7 +15,7 @@ function defaultStateDirectory() {
 }
 
 function defaultConfigPath() {
-  return path.join(defaultStateDirectory(), 'gst-monthly-automation.env');
+  return path.join(__dirname, '.env');
 }
 
 function unquote(value) {

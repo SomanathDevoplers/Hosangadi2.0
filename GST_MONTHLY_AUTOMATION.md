@@ -39,9 +39,9 @@ The committed example is:
 
 `backend\printer_server\gst-monthly-automation.env.example`
 
-The default live configuration location is outside the repository:
+The default live configuration location is in the printer server root:
 
-`%LOCALAPPDATA%\Hosangadi\gst-monthly-automation\gst-monthly-automation.env`
+`backend\printer_server\.env`
 
 The scheduler installer creates that file from the example when it does not exist. Edit it and set:
 
@@ -50,7 +50,7 @@ GST_MONTHLY_AUTOMATION_ENABLED=true
 GST_SMTP_PASSWORD=your_16_character_gmail_app_password
 ```
 
-Do not add the real Gmail App Password to a committed repository file. The repository's existing local MySQL defaults are used unless `GST_DB_HOST`, `GST_DB_PORT`, `GST_DB_USER`, or `GST_DB_PASSWORD` is set in the live configuration.
+Do not commit the `.env` file or its real Gmail App Password. The repository's existing local MySQL defaults are used unless `GST_DB_HOST`, `GST_DB_PORT`, `GST_DB_USER`, or `GST_DB_PASSWORD` is set in the live configuration.
 
 ### Enable or disable scheduled execution
 
@@ -70,7 +70,7 @@ Run PowerShell as the Windows user that operates Hosangadi:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\install_gst_monthly_task.ps1
 ```
 
-The task is named `Hosangadi GST Monthly Automation`. It runs with that user's interactive token, preventing a hardcoded Windows username and keeping `%USERPROFILE%`, output, logs, and Desktop fallback paths consistent if the repository is moved to a replacement computer.
+The task is named `Hosangadi GST Monthly Automation`. It reads `backend\printer_server\.env` by default and runs with that user's interactive token, preventing a hardcoded Windows username and keeping `%USERPROFILE%`, output, logs, and Desktop fallback paths consistent if the repository is moved to a replacement computer.
 
 The task has `StartWhenAvailable` enabled. If the computer is off at 10:00 AM on the first Saturday, Windows Task Scheduler runs it when the task becomes available after the user next logs on.
 
@@ -80,7 +80,7 @@ To remove the scheduled task:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\install_gst_monthly_task.ps1 -Uninstall
 ```
 
-After moving to a replacement computer, install Node.js and dependencies, copy the live configuration to the new user's `%LOCALAPPDATA%` location, and run the installer again from the new repository location. The action uses absolute paths generated at installation time, so reinstalling the task after a move is required.
+After moving to a replacement computer, install Node.js and dependencies, create `backend\printer_server\.env` from the example, and run the installer again from the new repository location. The action uses absolute paths generated at installation time, so reinstalling the task after a move is required.
 
 ## Manual execution
 
