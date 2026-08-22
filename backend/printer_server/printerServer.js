@@ -17,6 +17,10 @@ const multer = require('multer')
 const path = require('path');
 const cors = require('cors')
 // const fetch = require('node-fetch');
+const { getDatabaseConfig, loadRuntimeEnvironment } = require('./gstRuntimeConfig');
+
+loadRuntimeEnvironment();
+const gstDatabaseConfig = getDatabaseConfig();
 
 
 
@@ -58,19 +62,13 @@ const invoiceDataFiles = multer({storage : invoiceDataStorage})
 
 let con = mysql.createPool({
   connectionLimit : 50,
-  host: "localhost",
-  port: "3306",
-  user: "root",
-  password: "mysqlpassword5",
+  ...gstDatabaseConfig,
   multipleStatements : true,
   debug: false
 });
 
 var connection = new MySql({
-  host: "localhost",
-  port: "3306",
-  user: "root",
-  password: "mysqlpassword5",
+  ...gstDatabaseConfig,
   multipleStatements : true
 });
 
@@ -1194,7 +1192,7 @@ function dbDataSales(firm,dbYear,firstDay,lastDay,month,res){
               total[28][1] = total[28][1].toFixed(2)
               total[40][1] = total[40][1].toFixed(2)
               //location
-              const workbook = XLSX.readFile(path.join(homeDir,'Hosangadi2.0','backend','printer_server','GSTR1_Excel_Workbook_Template_V1.81.xlsx'));
+              const workbook = XLSX.readFile(path.join(__dirname, 'GSTR1_Excel_Workbook_Template_V1.81.xlsx'));
 
           SheetNames = ['Help Instruction', 'b2b','b2ba','b2cl','b2cla','b2cs','b2csa','cdnr','cdnra','cdnur','cdnura','exp','expa','at','ata','atadj','atadja','exemp','hsn','docs','master']
 
@@ -1573,6 +1571,10 @@ app.get('/sales/checkKannada', (req,res) =>{
 
   
 })
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ service: 'printer_server', status: 'ok' });
+});
 
 app.get('/PurchaseReport',(req,res)=>{
 	if (req.query.month == "DECEMBER"){
