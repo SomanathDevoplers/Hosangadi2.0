@@ -1,3 +1,17 @@
+# CURRENT PROCEDURE
+#
+# Do not manually edit years or run the historical Python fragment below.
+# Close Hosangadi after business on March 31 and run, from the repository root:
+#
+#     run_financial_year_rollover.bat
+#
+# The idempotent PowerShell implementation derives both years from the system
+# date, creates the new database from structureOfChangableDB.sql, carries
+# account balances and positive stock, and archives old invoices. See the
+# Financial-year rollover section in Installation. The remaining text is kept
+# only as the historical description of the business rules.
+
+# HISTORICAL MANUAL PROCEDURE (reference only)
 #Update xx and yy based on current year and next year below is value for 01/04/2026 also in script update oldDbYear and newDbYear
 xx=>previousYear(oldDb) 25
 xy=>nextYear    (newDb) 26

@@ -433,3 +433,48 @@ Complete this checklist after every new installation or full recovery. Do not co
 | [ ] | Restore test completed | Restore a copied backup into a separate test MySQL instance/database and verify that it is readable. Do not overwrite the production databases for this test. | |
 
 After testing, cancel or clearly mark the test purchase and sales records according to the business's normal accounting procedure. Keep the completed checklist with the recovery record.
+
+## Financial-year rollover on March 31 / April 1
+
+The preferred procedure is to close Hosangadi after the shop closes on March 31 and manually run:
+
+```text
+run_financial_year_rollover.bat
+```
+
+Do not open the login application again until the command reports success. The command runs `scripts\invoke_financial_year_rollover.ps1`, which derives the years from the Windows system date; no annual editing of database names is required. Without `-Force`, it refuses to run on any date other than March 31 or April 1.
+
+For example, on March 31, 2026 or April 1, 2026 it performs the `2025-26` to `2026-27` rollover:
+
+- Verifies that source database `somanath2025` exists.
+- Creates `somanath2026` using `runOnMarch31\structureOfChangableDB.sql` as a structure-only template. The database name written inside that historical SQL file is ignored.
+- Copies every account's closing balances to both opening and closing balances in the new `acc_bal` table.
+- Carries forward stock rows whose `stk_prod_qty` is greater than zero and initializes `max_id`.
+- Leaves purchases, sales and both cashflow tables empty.
+- Writes a completion marker inside the new database. A repeat run exits safely instead of copying the data twice.
+- Moves every existing file and directory inside `%USERPROFILE%\Desktop\Invoices\oldinvoices` into `%USERPROFILE%\Desktop\Invoices\oldinvoices\z25-26`. The `z` prefix keeps the archive at the end of a name-sorted listing.
+- Writes results to `C:\ProgramData\Hosangadi\financial-year-rollover.log`.
+
+The archive move is also idempotent. The destination year folder itself is never moved. If an item with the same name already exists inside the year archive, the script stops rather than overwriting either copy.
+
+Before running the rollover, close the login and main application, allow pending sales/purchases to finish, verify the computer's date, and take a completed database backup. Afterward, verify the log contains `COMPLETE`, confirm the new schema and invoice archive, then open login and perform a controlled purchase/sales test in the new financial year.
+
+### April 1 safety task
+
+Install the fallback task once from an elevated PowerShell session:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install_financial_year_rollover_task.ps1
+```
+
+This creates the `Hosangadi Financial Year Rollover` task, running as Local System at 00:01 every April 1. `StartWhenAvailable` is enabled, so if the computer was switched off at that time, Windows runs the missed task when Task Scheduler next becomes available. The same idempotent completion marker makes this safe when the manual March 31 run already succeeded.
+
+There is intentionally no every-startup trigger throughout the year. The annual trigger plus `StartWhenAvailable` supplies the startup fallback without needlessly invoking the rollover on ordinary boot days. The task is an operational safety net, not a substitute for checking the March 31 manual result.
+
+The scheduled task cannot physically prevent a user from opening `login.exe` while a fallback rollover is still running. On April 1, check that the task's Last Run Result is `0x0` and that the rollover log contains `COMPLETE` for the new year before clicking login. Absolute enforcement would require rebuilding the login application with a rollover gate.
+
+To remove only this task:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install_financial_year_rollover_task.ps1 -Uninstall
+```
