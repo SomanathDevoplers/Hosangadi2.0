@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$TaskName = 'Hosangadi Financial Year Rollover',
-    [string]$ApplicationRoot = (Split-Path $PSScriptRoot -Parent),
+    [string]$ApplicationRoot,
     [string]$OperatorProfile = $env:USERPROFILE,
     [switch]$Uninstall
 )
@@ -10,6 +10,9 @@ param(
 #Requires -RunAsAdministrator
 $ErrorActionPreference = 'Stop'
 
+if ([string]::IsNullOrWhiteSpace($ApplicationRoot)) {
+    $ApplicationRoot = Split-Path $PSScriptRoot -Parent
+}
 # Normalize user-supplied paths before embedding them in Task Scheduler's
 # command-line string. This also removes an accidentally retained quote after
 # a directory argument ending in a backslash.

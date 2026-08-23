@@ -1,12 +1,16 @@
 [CmdletBinding()]
 param(
-    [string]$ApplicationRoot = (Split-Path $PSScriptRoot -Parent),
+    [string]$ApplicationRoot,
     [string]$InvoiceRoot = (Join-Path $env:USERPROFILE 'Desktop\Invoices'),
     [switch]$Force
 )
 
 #Requires -Version 5.1
 $ErrorActionPreference = 'Stop'
+
+if ([string]::IsNullOrWhiteSpace($ApplicationRoot)) {
+    $ApplicationRoot = Split-Path $PSScriptRoot -Parent
+}
 Set-StrictMode -Version 2.0
 
 $mutex = New-Object Threading.Mutex($false, 'Global\HosangadiFinancialYearRollover')

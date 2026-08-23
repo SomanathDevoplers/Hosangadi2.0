@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$TaskName = 'Hosangadi Database Backup Cleanup',
-    [string]$ApplicationRoot = (Split-Path $PSScriptRoot -Parent),
+    [string]$ApplicationRoot,
     [string]$BackupDirectory = 'C:\backup',
     [int]$RetentionDays = 6,
     [switch]$Uninstall
@@ -12,6 +12,9 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+if ([string]::IsNullOrWhiteSpace($ApplicationRoot)) {
+    $ApplicationRoot = Split-Path $PSScriptRoot -Parent
+}
 $ApplicationRoot = [IO.Path]::GetFullPath($ApplicationRoot.Trim().Trim('"'))
 $BackupDirectory = [IO.Path]::GetFullPath($BackupDirectory.Trim().Trim('"'))
 $cleanupScript = Join-Path $ApplicationRoot 'scripts\cleanup_database_backups.ps1'
@@ -69,4 +72,3 @@ Write-Host "Installed or updated scheduled task: $TaskName"
 Write-Host 'Schedule: every Sunday at 3:00 AM; a missed run starts when Windows is next available.'
 Write-Host "Retention: completed SQL backups older than $RetentionDays days. aFullBackup_*.sql is always preserved."
 Write-Host "Log: $(Join-Path $BackupDirectory 'backup-cleanup.log')"
-
