@@ -12,6 +12,7 @@ param(
     [switch]$SkipFrontendBuild,
     [switch]$SkipNodeInstall,
     [switch]$SkipDatabaseBackupTask,
+    [switch]$SkipDatabaseBackupCleanupTask,
     [switch]$NoShutdownBackupTrigger,
     [switch]$EnableGstAutomation
 )
@@ -384,7 +385,12 @@ try {
         Write-Step 'Scheduled database backups'
         $deployedScripts = Join-Path $DeploymentRoot 'scripts'
         Ensure-Directory $deployedScripts
-        foreach ($scriptName in @('backup_databases.ps1', 'install_database_backup_task.ps1')) {
+        foreach ($scriptName in @(
+            'backup_databases.ps1',
+            'install_database_backup_task.ps1',
+            'cleanup_database_backups.ps1',
+            'install_database_backup_cleanup_task.ps1'
+        )) {
             $sourceScript = Join-Path $RepositoryRoot "scripts\$scriptName"
             $destinationScript = Join-Path $deployedScripts $scriptName
             if ((Resolve-Path -LiteralPath $sourceScript).Path -ine $destinationScript) {
@@ -399,6 +405,26 @@ try {
         )
         if ($NoShutdownBackupTrigger) { $taskArguments += '-NoShutdownTrigger' }
         Invoke-Checked -FilePath 'powershell.exe' -ArgumentList $taskArguments
+    }
+
+    if (-not $SkipDatabaseBackupCleanupTask) {
+        Write-Step 'Weekly database-backup cleanup'
+        $deployedScripts = Join-Path $DeploymentRoot 'scripts'
+        Ensure-Directory $deployedScripts
+        foreach ($scriptName in @('cleanup_database_backups.ps1', 'install_database_backup_cleanup_task.ps1')) {
+            $sourceScript = Join-Path $RepositoryRoot "scripts\$scriptName"
+            $destinationScript = Join-Path $deployedScripts $scriptName
+            if ((Resolve-Path -LiteralPath $sourceScript).Path -ine $destinationScript) {
+                Copy-Item -LiteralPath $sourceScript -Destination $destinationScript -Force
+            }
+        }
+        Invoke-Checked -FilePath 'powershell.exe' -ArgumentList @(
+            '-NoProfile', '-ExecutionPolicy', 'Bypass',
+            '-File', (Join-Path $deployedScripts 'install_database_backup_cleanup_task.ps1'),
+            '-ApplicationRoot', $DeploymentRoot,
+            '-BackupDirectory', $BackupDirectory,
+            '-RetentionDays', '6'
+        )
     }
 
     Write-Step 'Starting backend services'

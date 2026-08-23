@@ -292,6 +292,7 @@ Useful switches:
 - `-SkipFrontendBuild`: requires existing deployed `login.exe` and `root.exe` and skips rebuilding.
 - `-SkipNodeInstall`: reuses the deployed `node_modules` directory for all five backend services and the installed global PM2 packages. Required directories and exact PM2 versions are still validated; setup stops safely if anything is missing or incompatible.
 - `-SkipDatabaseBackupTask`: does not install the otherwise-default hidden database backup task.
+- `-SkipDatabaseBackupCleanupTask`: does not install the otherwise-default Sunday cleanup task for ordinary SQL backups.
 - `-NoShutdownBackupTrigger`: installs startup/two-hour backups but omits the best-effort shutdown trigger.
 - `-EnableGstAutomation`: installs/updates the monthly scheduled task; `.env` SMTP secrets and recipients still require manual entry/verification.
 
@@ -369,6 +370,8 @@ Hosangadi Database Backup
 ```
 
 It runs as Local System with highest privileges and launches PowerShell with `-NonInteractive -WindowStyle Hidden`, so no console window is shown. One trigger runs two minutes after every Windows startup. A separate time trigger begins two minutes after task installation and repeats every two hours, allowing Task Scheduler to display a concrete **Next Run Time** immediately without requiring a reboot. Concurrent triggers are ignored while a dump is already running.
+
+Setup also installs `Hosangadi Database Backup Cleanup`. It runs every Sunday at 3:00 AM, or as soon as Windows is next available after a missed run. It deletes completed `.sql` files directly inside `C:\backup` when their creation time is more than six days old. It never deletes `aFullBackup_*.sql`, logs, `.partial` files or files inside subfolders. Activity is recorded in `C:\backup\backup-cleanup.log`.
 
 The worker is `%USERPROFILE%\Hosangadi2.0\scripts\backup_databases.ps1`. On each run it derives the current financial-year schema from the system date, using the previous calendar year during January-March and the current calendar year during April-December. It dumps exactly:
 
