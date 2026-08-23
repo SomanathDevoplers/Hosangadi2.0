@@ -10,6 +10,7 @@ param(
     [switch]$InstallPrerequisites,
     [switch]$SkipDatabaseRestore,
     [switch]$SkipFrontendBuild,
+    [switch]$SkipNodeInstall,
     [switch]$SkipDatabaseBackupTask,
     [switch]$NoShutdownBackupTrigger,
     [switch]$EnableGstAutomation
@@ -23,7 +24,7 @@ $Expected = @{
     Python = '3.14.3'
     Node = '22.22.2'
     Npm = '10.9.7'
-    MySql = '8.0.45'
+    MySqlMinimum = '8.0.45'
     Pm2 = '6.0.14'
     Pm2Startup = '1.0.3'
     AutoPyToExe = '2.50.0'
@@ -141,6 +142,10 @@ try {
     Write-Host "Installing for Windows user: $env:USERDOMAIN\$env:USERNAME"
 
     Write-Step 'Python and Node prerequisites'
+    # An elevated terminal opened before a prerequisite was installed retains
+    # its old process PATH, and child powershell.exe processes inherit it.
+    # Reload persisted machine/user values before discovering executables.
+    Refresh-ProcessPath
     $pythonVersion = Get-CommandVersion 'python.exe' @('--version')
     if (-not $pythonVersion -and $InstallPrerequisites) {
         Install-DownloadedPackage -Name 'Python 3.14.3' `
@@ -217,9 +222,15 @@ try {
 
     Write-Step 'Python environment and frontend builds'
     Invoke-Checked -FilePath 'python.exe' -ArgumentList @('-m', 'pip', 'install', '--disable-pip-version-check', '-r', (Join-Path $FrontendSource 'requirements.txt'))
-    Invoke-Checked -FilePath 'python.exe' -ArgumentList @('-c', 'import requests, PIL, reportlab, playsound, socketio, pyperclip, tkdocviewer; print("Frontend imports OK")')
+    # Avoid an embedded quoted string here: Windows PowerShell 5.1 can strip
+    # those quotes while forwarding a native executable's -c argument.
+    Invoke-Checked -FilePath 'python.exe' -ArgumentList @('-c', 'import requests, PIL, reportlab, playsound, socketio, pyperclip, tkdocviewer; print(True)')
     Assert-Version 'auto-py-to-exe' (Get-CommandVersion 'python.exe' @('-m', 'pip', 'show', 'auto-py-to-exe')) $Expected.AutoPyToExe 'Reinstall frontend/requirements.txt.'
-    Assert-Version 'PyInstaller' (Get-CommandVersion 'python.exe' @('-m', 'PyInstaller', '--version')) $Expected.PyInstaller 'Reinstall frontend/requirements.txt.'
+    # Invoking `python -m PyInstaller --version` as administrator writes a
+    # deprecation notice to stderr. Under this script's strict error handling,
+    # that harmless notice can look like a failed version check. Read the
+    # installed module version without starting PyInstaller instead.
+    Assert-Version 'PyInstaller' (Get-CommandVersion 'python.exe' @('-c', 'import PyInstaller; print(PyInstaller.__version__)')) $Expected.PyInstaller 'Reinstall frontend/requirements.txt.'
 
     $loginDestination = Join-Path $ProgramDirectory 'login'
     $rootDestination = Join-Path $ProgramDirectory 'root'
@@ -251,17 +262,43 @@ try {
         if (-not (Test-Path -LiteralPath $exe)) { throw "Frontend executable is missing: $exe" }
     }
 
+    Write-Step 'Desktop shortcut'
+    $desktopDirectory = [Environment]::GetFolderPath('Desktop')
+    if ([string]::IsNullOrWhiteSpace($desktopDirectory)) {
+        $desktopDirectory = Join-Path $env:USERPROFILE 'Desktop'
+    }
+    Ensure-Directory $desktopDirectory
+    $loginExecutable = Join-Path $loginDestination 'login.exe'
+    $shortcutPath = Join-Path $desktopDirectory 'Hosangadi 2.0.lnk'
+    $shell = New-Object -ComObject 'WScript.Shell'
+    $shortcut = $shell.CreateShortcut($shortcutPath)
+    $shortcut.TargetPath = $loginExecutable
+    $shortcut.WorkingDirectory = $loginDestination
+    $shortcut.IconLocation = "$loginExecutable,0"
+    $shortcut.Description = 'Launch Hosangadi 2.0'
+    $shortcut.Save()
+    Write-Host "OK: Desktop shortcut: $shortcutPath"
+
     Write-Step 'Node dependencies and PM2'
     foreach ($service in @('socket_server', 'product_server', 'report_server', 'printer_server', 'barcode_server')) {
         $serviceDirectory = Join-Path $BackendDestination $service
-        if (Test-Path (Join-Path $serviceDirectory 'package-lock.json')) {
+        if ($SkipNodeInstall) {
+            if (-not (Test-Path -LiteralPath (Join-Path $serviceDirectory 'node_modules') -PathType Container)) {
+                throw "-SkipNodeInstall was supplied, but deployed dependencies are missing for $service. Rerun without -SkipNodeInstall."
+            }
+            Write-Host "Reusing deployed Node dependencies: $service"
+        } elseif (Test-Path (Join-Path $serviceDirectory 'package-lock.json')) {
             # Lifecycle scripts are required, notably for the Chromium used by html-pdf-node/Puppeteer.
             Invoke-Checked -FilePath 'npm.cmd' -WorkingDirectory $serviceDirectory -ArgumentList @('ci')
         } else {
             throw "A lockfile is missing for $service; refusing a non-reproducible npm install."
         }
     }
-    Invoke-Checked -FilePath 'npm.cmd' -ArgumentList @('install', '--global', "pm2@$($Expected.Pm2)", "pm2-windows-startup@$($Expected.Pm2Startup)")
+    if ($SkipNodeInstall) {
+        Write-Host 'Reusing installed global PM2 packages.'
+    } else {
+        Invoke-Checked -FilePath 'npm.cmd' -ArgumentList @('install', '--global', "pm2@$($Expected.Pm2)", "pm2-windows-startup@$($Expected.Pm2Startup)")
+    }
     Refresh-ProcessPath
     Assert-Version 'PM2' (Get-CommandVersion 'pm2.cmd' @('--version')) $Expected.Pm2 'Check the global npm binary directory in PATH.'
     $startupListing = (& npm.cmd list --global pm2-windows-startup --depth=0 2>&1 | Out-String)
@@ -269,38 +306,46 @@ try {
     Invoke-Checked -FilePath 'pm2-startup.cmd' -ArgumentList @('install')
 
     Write-Step 'MySQL 8.0.45 and database restore'
-    $mysql = Get-Command mysql.exe -ErrorAction SilentlyContinue
-    if (-not $mysql) {
+    $mysqlCommand = Get-Command mysql.exe -ErrorAction SilentlyContinue
+    $mysqlPath = if ($mysqlCommand) { $mysqlCommand.Source } else { $null }
+    if (-not $mysqlPath) {
         $standardMysql = 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe'
-        if (Test-Path -LiteralPath $standardMysql) { $mysql = Get-Item $standardMysql }
+        if (Test-Path -LiteralPath $standardMysql) { $mysqlPath = $standardMysql }
     }
-    if (-not $mysql -and $MySqlInstallerPath) {
+    if (-not $mysqlPath -and $MySqlInstallerPath) {
         if (-not (Test-Path -LiteralPath $MySqlInstallerPath)) { throw "MySQL installer not found: $MySqlInstallerPath" }
         Write-Host 'The MySQL installer will open. Install MySQL Server 8.0.45 and command-line tools to the standard path.'
         Start-Process -FilePath $MySqlInstallerPath -Wait
         Refresh-ProcessPath
         $standardMysql = 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe'
-        if (Test-Path -LiteralPath $standardMysql) { $mysql = Get-Item $standardMysql }
+        $mysqlCommand = Get-Command mysql.exe -ErrorAction SilentlyContinue
+        $mysqlPath = if ($mysqlCommand) { $mysqlCommand.Source } elseif (Test-Path -LiteralPath $standardMysql) { $standardMysql } else { $null }
     }
-    if (-not $mysql) { throw 'MySQL was not found. Install MySQL Server 8.0.45, or provide -MySqlInstallerPath.' }
-    $mysqlVersionText = (& $mysql.FullName --version | Out-String)
-    if ($mysqlVersionText -notmatch [regex]::Escape($Expected.MySql)) { throw "Expected MySQL $($Expected.MySql), found: $mysqlVersionText" }
+    if (-not $mysqlPath) { throw 'MySQL was not found. Install MySQL Server 8.0.45, or provide -MySqlInstallerPath.' }
+    $mysqlPath = (Resolve-Path -LiteralPath $mysqlPath).Path
+    $mysqlVersionText = (& $mysqlPath --version | Out-String)
+    $mysqlVersionMatch = [regex]::Match($mysqlVersionText, '\b(\d+\.\d+\.\d+)\b')
+    if (-not $mysqlVersionMatch.Success) { throw "Could not determine the MySQL version from: $mysqlVersionText" }
+    $mysqlVersion = [version]$mysqlVersionMatch.Groups[1].Value
+    $minimumMySqlVersion = [version]$Expected.MySqlMinimum
+    if ($mysqlVersion.Major -ne 8 -or $mysqlVersion.Minor -ne 0 -or $mysqlVersion -lt $minimumMySqlVersion) {
+        throw "MySQL $($Expected.MySqlMinimum) or newer within the compatible 8.0.x series is required; found $mysqlVersion. MySQL 8.4+ is not accepted because the legacy application requires mysql_native_password."
+    }
     Write-Host "OK: $($mysqlVersionText.Trim())"
 
-    $securePassword = Read-Host 'MySQL root password expected by the hardcoded application configuration' -AsSecureString
-    $plainPassword = Convert-SecureStringToPlainText $securePassword
     $legacyConfigText = Get-Content -Raw -LiteralPath (Join-Path $BackendDestination 'printer_server\gstRuntimeConfig.js')
-    if ($legacyConfigText -notmatch "(?m)^\s*password:\s*'([^']+)'\s*$") { throw 'Could not read the legacy database password contract from gstRuntimeConfig.js.' }
-    if ($plainPassword -cne $Matches[1]) { throw 'The entered password does not match the hardcoded legacy application configuration. No database changes were made.' }
+    $passwordMatch = [regex]::Match($legacyConfigText, "(?m)^\s*password:\s*'([^']+)'\s*$")
+    if (-not $passwordMatch.Success) { throw 'Could not read the legacy database password contract from gstRuntimeConfig.js.' }
+    $plainPassword = $passwordMatch.Groups[1].Value
     $env:MYSQL_PWD = $plainPassword
     try {
-        Invoke-Checked -FilePath $mysql.FullName -ArgumentList @('--host=localhost', '--port=3306', '--user=root', '--execute', 'SELECT 1;')
-        $plugin = (& $mysql.FullName --host=localhost --port=3306 --user=root --batch --skip-column-names --execute="SELECT plugin FROM mysql.user WHERE user='root' AND host='localhost';" | Out-String).Trim()
+        Invoke-Checked -FilePath $mysqlPath -ArgumentList @('--host=localhost', '--port=3306', '--user=root', '--execute', 'SELECT 1;')
+        $plugin = (& $mysqlPath --host=localhost --port=3306 --user=root --batch --skip-column-names --execute="SELECT plugin FROM mysql.user WHERE user='root' AND host='localhost';" | Out-String).Trim()
         if ($LASTEXITCODE -ne 0) { throw 'Could not inspect the MySQL root authentication plugin.' }
         if ($plugin -ne 'mysql_native_password') {
             $escapedPassword = $plainPassword.Replace("'", "''")
             "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$escapedPassword';" |
-                & $mysql.FullName --host=localhost --port=3306 --user=root
+                & $mysqlPath --host=localhost --port=3306 --user=root
             if ($LASTEXITCODE -ne 0) { throw 'Could not configure mysql_native_password for the legacy Node MySQL client.' }
             $escapedPassword = $null
         }
@@ -308,8 +353,15 @@ try {
       if (-not $SkipDatabaseRestore) {
         if (-not $DatabaseBackupPath) { $DatabaseBackupPath = Read-Host 'Full path to the daily SQL backup containing master + current FY databases' }
         $DatabaseBackupPath = (Resolve-Path -LiteralPath $DatabaseBackupPath).Path
-        $schemaMatches = Select-String -LiteralPath $DatabaseBackupPath -Pattern '(?i)CREATE\s+DATABASE(?:\s+IF\s+NOT\s+EXISTS)?\s+[`'']?([a-z0-9_]+)' -AllMatches
-        $schemas = @($schemaMatches.Matches | ForEach-Object { $_.Groups[1].Value.ToLowerInvariant() } | Sort-Object -Unique)
+        # mysqldump writes CREATE DATABASE with a versioned comment such as
+        # /*!32312 IF NOT EXISTS*/, so USE statements are the stable schema
+        # boundary for dumps created with --databases.
+        $schemas = @(
+            Select-String -LiteralPath $DatabaseBackupPath -Pattern '(?i)^\s*USE\s+`?([a-z0-9_]+)`?\s*;' -AllMatches |
+                ForEach-Object { $_.Matches } |
+                ForEach-Object { $_.Groups[1].Value.ToLowerInvariant() } |
+                Sort-Object -Unique
+        )
         if ($schemas.Count -ne 2 -or $schemas -notcontains 'somanath' -or -not ($schemas | Where-Object { $_ -match '^somanath20\d{2,4}$' })) {
             throw "Backup must contain exactly master 'somanath' and one financial-year schema. Found: $($schemas -join ', ')"
         }
@@ -318,9 +370,9 @@ try {
         $restoreCopy = Join-Path $SetupTemp 'database-restore.sql'
         Copy-Item -LiteralPath $DatabaseBackupPath -Destination $restoreCopy -Force
         $sourcePath = $restoreCopy.Replace('\', '/')
-        Invoke-Checked -FilePath $mysql.FullName -ArgumentList @('--host=localhost', '--port=3306', '--user=root', '--execute', "source $sourcePath")
+        Invoke-Checked -FilePath $mysqlPath -ArgumentList @('--host=localhost', '--port=3306', '--user=root', '--execute', "source $sourcePath")
         foreach ($schema in $schemas) {
-            Invoke-Checked -FilePath $mysql.FullName -ArgumentList @('--host=localhost', '--port=3306', '--user=root', '--batch', '--skip-column-names', '--execute', "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$schema';")
+            Invoke-Checked -FilePath $mysqlPath -ArgumentList @('--host=localhost', '--port=3306', '--user=root', '--batch', '--skip-column-names', '--execute', "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$schema';")
         }
       }
     } finally {

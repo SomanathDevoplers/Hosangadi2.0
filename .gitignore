@@ -910,3 +910,5 @@ frontend/__pycache__/other_classes.cpython-39.pyc
 frontend/__pycache__/other_classes.cpython-39.pyc
 frontend/__pycache__/reports.cpython-39.pyc
 frontend/__pycache__/style.cpython-39.pyc
+backend/printer_server/.env
+.setup-build/

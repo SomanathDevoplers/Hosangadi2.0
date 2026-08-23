@@ -165,7 +165,7 @@ SET GLOBAL validate_password.policy=LOW;
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '[RESTORE EXISTING APPLICATION PASSWORD]';
 ```
 
-**[NEEDS MANUAL VERIFICATION: compatible MySQL 8.x version/authentication and credential.]**
+The automated setup accepts MySQL 8.0.45 or newer within the 8.0.x series. It intentionally rejects MySQL 8.4 and 9.x: `mysql_native_password`, required by the legacy Node database client, is disabled by default in 8.4 and removed in 9.0. Verify the existing application credential manually and never record it here.
 
 Restore:
 
@@ -247,7 +247,7 @@ After rebuilding:
 
 ## 12. Manual verification still required
 
-- Known-good Windows, npm bundled with Node 22.22.2, MySQL 8.x patch, Ghostscript, PyInstaller dependency of auto-py-to-exe 2.50.0, PM2 and driver versions.
+- Known-good Windows, npm bundled with Node 22.22.2, MySQL 8.0.45 or newer within 8.0.x, Ghostscript, PyInstaller dependency of auto-py-to-exe 2.50.0, PM2 and driver versions.
 - Exact build flags/hidden imports and archive of deployed builds.
 - Production account, secrets, `formId.txt` value/meaning and GST recipients; never put secrets here.
 - Complete yearly-schema inventory and tested off-machine backups.
@@ -263,12 +263,12 @@ This specification records current `frontend/` and `backend/` behavior. Missing 
 
 ## Automated setup script
 
-Run `scripts\setup_hosangadi.ps1` from an elevated 64-bit Windows PowerShell session. It is idempotent: completed steps are revalidated/reused, runtime `.env` and `NodeErr.txt` are preserved, PM2 definitions are updated rather than duplicated, and a failed run can be corrected and rerun.
+Run `scripts\setup_hosangadi.ps1` from an elevated 64-bit Windows PowerShell session. Always launch it through `powershell.exe` with the process-specific `-ExecutionPolicy Bypass` shown below, because a fresh or recovered Windows installation may block direct `.ps1` execution. This bypass applies only to the launched process and does not permanently change the computer's execution policy. The script is idempotent: completed steps are revalidated/reused, runtime `.env` and `NodeErr.txt` are preserved, PM2 definitions are updated rather than duplicated, and a failed run can be corrected and rerun.
 
 Safest recovery, using archived known-good frontend builds:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
   -InstallPrerequisites `
   -DatabaseBackupPath 'E:\Recovery\somanathstores_YYYY_M_D.sql' `
   -MySqlInstallerPath 'E:\Recovery\mysql-installer-community-8.0.45.0.msi' `
@@ -279,7 +279,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
 Source rebuild when archived executable folders are unavailable:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
   -InstallPrerequisites `
   -DatabaseBackupPath 'E:\Recovery\somanathstores_YYYY_M_D.sql' `
   -MySqlInstallerPath 'E:\Recovery\mysql-installer-community-8.0.45.0.msi'
@@ -290,11 +290,12 @@ Useful switches:
 - `-InstallPrerequisites`: downloads signed official Python 3.14.3 and Node 22.22.2 installers when those commands are absent. A conflicting installed version stops the run for manual resolution.
 - `-SkipDatabaseRestore`: prepares/validates MySQL without importing a dump.
 - `-SkipFrontendBuild`: requires existing deployed `login.exe` and `root.exe` and skips rebuilding.
+- `-SkipNodeInstall`: reuses the deployed `node_modules` directory for all five backend services and the installed global PM2 packages. Required directories and exact PM2 versions are still validated; setup stops safely if anything is missing or incompatible.
 - `-SkipDatabaseBackupTask`: does not install the otherwise-default hidden database backup task.
 - `-NoShutdownBackupTrigger`: installs startup/two-hour backups but omits the best-effort shutdown trigger.
 - `-EnableGstAutomation`: installs/updates the monthly scheduled task; `.env` SMTP secrets and recipients still require manual entry/verification.
 
-The script intentionally stops for manual intervention when MySQL is absent without an installer, an exact version differs, the database password does not match the hardcoded legacy contract, the dump does not contain exactly `somanath` plus one `somanath20YY` schema, or final service ports do not listen. Missing printer queues are clearly reported warnings because their driver setup requires manual work. Its transcript is written to `%TEMP%\Hosangadi-setup-*.log`; secrets are not written to the command line or transcript.
+The script intentionally stops for manual intervention when MySQL is absent without an installer, MySQL is older than 8.0.45 or outside the compatible 8.0.x series, the database password does not match the hardcoded legacy contract, the dump does not contain exactly `somanath` plus one `somanath20YY` schema, or final service ports do not listen. Missing printer queues are clearly reported warnings because their driver setup requires manual work. Its transcript is written to `%TEMP%\Hosangadi-setup-*.log`; secrets are not written to the command line or transcript.
 
 ## Setup script questions and preparation
 
@@ -311,6 +312,8 @@ Yes. The script creates the code-required directory tree under:
 - `%LOCALAPPDATA%\Hosangadi\gst-monthly-automation`
 
 It explicitly grants the current Windows user Modify permission on `C:\Program Files\Hosangadi2.0` and `C:\backup`. Directories below `%USERPROFILE%` normally inherit access for their owning user.
+
+After verifying the deployed frontend executables, the setup creates or updates `Hosangadi 2.0.lnk` on the current operator's Windows Desktop. It points to `C:\Program Files\Hosangadi2.0\login\login.exe`, uses the login directory as its working directory and reuses the executable's icon. Rerunning setup updates the same shortcut rather than creating duplicates.
 
 The script cannot create an optional USB `<drive>:\backup` directory in advance because the drive letter is machine-specific. Create that directory manually if the application's optional USB backup is used. Printer drivers and queues also require manual installation; the script reports warnings when `BarcodePrinter`, `POS58 Printer`, or a default Windows printer is missing.
 
@@ -331,7 +334,7 @@ Prepare:
 1. A 64-bit Windows computer with internet access for Python/npm packages and optional prerequisite downloads.
 2. A complete clone/copy of this repository, including `ghostScript.exe`.
 3. A daily SQL dump containing exactly the master `somanath` database and one current `somanath20YY` financial-year database.
-4. The MySQL Server 8.0.45 installer if that exact server version is not already installed.
+4. A MySQL Server 8.0 installer if compatible MySQL 8.0.45 or newer is not already installed. Do not use MySQL 8.4 or 9.x with the current legacy authentication client.
 5. The MySQL `root` password expected by the hardcoded legacy application configuration.
 6. Printer drivers and the details needed to create queues named `BarcodePrinter` and `POS58 Printer`, plus the intended default invoice printer.
 7. Preferably, archived known-good `login` and `root` one-directory build folders. If unavailable, the script rebuilds them from source using the pinned Python environment.
@@ -341,7 +344,7 @@ Open an elevated 64-bit Windows PowerShell session as the same Windows account t
 From the repository root, run for example:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
   -InstallPrerequisites `
   -DatabaseBackupPath 'D:\Backup\somanathstores_2026_8_22.sql' `
   -MySqlInstallerPath 'D:\Installers\mysql-installer-community-8.0.45.0.msi'
@@ -353,17 +356,9 @@ After setup, select `SYSTEM` at login so all application services use localhost.
 
 ### Where does the database-restore query obtain the MySQL password?
 
-The setup script prompts interactively:
+The setup does not prompt for the MySQL password. It reads the existing legacy value from the deployed `backend/printer_server/gstRuntimeConfig.js`, temporarily places it in the setup process's `MYSQL_PWD` environment variable, and removes it afterward. The password is not added to the MySQL command line or written into this document.
 
-```text
-MySQL root password expected by the hardcoded application configuration:
-```
-
-Input is hidden by PowerShell's `Read-Host -AsSecureString` (`scripts/setup_hosangadi.ps1:288`). The script converts it only in memory, reads the expected legacy value from `backend/printer_server/gstRuntimeConfig.js`, and stops before changing the database if the values do not match (`scripts/setup_hosangadi.ps1:290-292`).
-
-For MySQL commands, the script temporarily places the password in the process-only `MYSQL_PWD` environment variable rather than adding `-p<password>` to the command line (`scripts/setup_hosangadi.ps1:293`). It uses that temporary value to verify the connection, configure `mysql_native_password` when necessary and restore the dump. The variable and plaintext in-memory value are cleared in the `finally` block (`scripts/setup_hosangadi.ps1:324-326`). Secure prompt input is not echoed into the setup transcript.
-
-Enter the same existing application password referenced by the backend configuration and legacy backup commands. On a fresh MySQL installation, use that same value when configuring the `root` account in the MySQL installer. Do not add the password to this document or to the PowerShell command line.
+On a fresh MySQL installation, configure the `root` account with the same value already required by the checked-in backend configuration. Treat that source file as sensitive and do not repeat the password in documentation, command history or logs.
 
 ## Automatic two-hour database backups
 
@@ -373,7 +368,7 @@ Unless `-SkipDatabaseBackupTask` is supplied, `setup_hosangadi.ps1` installs or 
 Hosangadi Database Backup
 ```
 
-It runs as Local System with highest privileges and launches PowerShell with `-NonInteractive -WindowStyle Hidden`, so no console window is shown. Its normal trigger starts two minutes after Windows startup and repeats every two hours. Concurrent triggers are ignored while a dump is already running.
+It runs as Local System with highest privileges and launches PowerShell with `-NonInteractive -WindowStyle Hidden`, so no console window is shown. One trigger runs two minutes after every Windows startup. A separate time trigger begins two minutes after task installation and repeats every two hours, allowing Task Scheduler to display a concrete **Next Run Time** immediately without requiring a reboot. Concurrent triggers are ignored while a dump is already running.
 
 The worker is `%USERPROFILE%\Hosangadi2.0\scripts\backup_databases.ps1`. On each run it derives the current financial-year schema from the system date, using the previous calendar year during January-March and the current calendar year during April-December. It dumps exactly:
 
@@ -413,6 +408,7 @@ Complete this checklist after every new installation or full recovery. Do not co
 | --- | --- | --- | --- |
 | [ ] | MySQL databases restored | The `somanath` master database and the required `somanath20YY` financial-year database exist and can be opened by the application. | |
 | [ ] | Application login tested | Login succeeds using `SYSTEM` mode and the correct financial year opens. | |
+| [ ] | Desktop shortcut tested | `Hosangadi 2.0` is present on the operator's Desktop and launches the deployed login application. | |
 | [ ] | Backend services tested | All required PM2 services are online and their configured localhost ports are listening. | |
 | [ ] | Automatic GST workflow installed | The GST Monthly Automation scheduled task exists, is enabled, and its configured account, schedule, `.env`, recipients and SMTP settings are correct. | |
 | [ ] | Automatic GST workflow test run completed | A controlled manual run creates the expected output and log without sending a duplicate production email. | |
@@ -440,11 +436,11 @@ After testing, cancel or clearly mark the test purchase and sales records accord
 The standalone recovery instructions are maintained in `RESTORE_FROM_PENDRIVE.md`. After selecting and verifying the newest completed `.sql` file on the pendrive, open 64-bit PowerShell as Administrator from the repository root and provide its complete path:
 
 ```powershell
-& .\scripts\setup_hosangadi.ps1 `
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_hosangadi.ps1 `
     -DatabaseBackupPath 'E:\backup\somanathstores_2026-08-22_14-00-03.sql'
 ```
 
-Replace `E:` with the actual pendrive drive letter. Paths containing spaces work when enclosed in single quotes. Do not select `.partial` files. The setup script requires a dump containing exactly `somanath` plus one `somanath20YY` database and prompts securely for the MySQL root password.
+Replace `E:` with the actual pendrive drive letter. Paths containing spaces work when enclosed in single quotes. Do not select `.partial` files. The setup script requires a dump containing exactly `somanath` plus one `somanath20YY` database and reads the existing legacy MySQL credential from the deployed backend configuration.
 
 ## Financial-year rollover on March 31 / April 1
 
@@ -459,6 +455,7 @@ Do not open the login application again until the command reports success. The c
 For example, on March 31, 2026 or April 1, 2026 it performs the `2025-26` to `2026-27` rollover:
 
 - Verifies that source database `somanath2025` exists.
+- Before changing any database, creates `C:\backup\aFullBackup_2026-03-31.sql` containing the `somanath` master database and every existing `somanath20YY` financial-year database. MySQL internal schemas are intentionally excluded. The dump is written as `.partial` and renamed only after success; an existing non-empty backup for the same date is reused on a safe rerun.
 - Creates `somanath2026` using `runOnMarch31\structureOfChangableDB.sql` as a structure-only template. The database name written inside that historical SQL file is ignored.
 - Copies every account's closing balances to both opening and closing balances in the new `acc_bal` table.
 - Carries forward stock rows whose `stk_prod_qty` is greater than zero and initializes `max_id`.
@@ -467,7 +464,7 @@ For example, on March 31, 2026 or April 1, 2026 it performs the `2025-26` to `20
 - Moves every existing file and directory inside `%USERPROFILE%\Desktop\Invoices\oldinvoices` into `%USERPROFILE%\Desktop\Invoices\oldinvoices\z25-26`. The `z` prefix keeps the archive at the end of a name-sorted listing.
 - Writes results to `C:\ProgramData\Hosangadi\financial-year-rollover.log`.
 
-The archive move is also idempotent. The destination year folder itself is never moved. If an item with the same name already exists inside the year archive, the script stops rather than overwriting either copy.
+The archive move is also idempotent. The destination year folder itself is never moved. An identical same-name file is treated as already archived. If the contents differ, the script prints a warning, leaves the source file untouched and continues with the remaining items; neither copy is overwritten or renamed. A source directory is retained when it still contains skipped conflicts. This allows an interrupted run to complete without losing manually created same-name files.
 
 Before running the rollover, close the login and main application, allow pending sales/purchases to finish, verify the computer's date, and take a completed database backup. Afterward, verify the log contains `COMPLETE`, confirm the new schema and invoice archive, then open login and perform a controlled purchase/sales test in the new financial year.
 

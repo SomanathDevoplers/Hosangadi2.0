@@ -175,7 +175,7 @@ rad_server.grid(row = 3 , column = 2 , padx = int(login_wdt*0.01))
 
 btn_submit.grid(row = 4 , column = 0 )
 
-rad_server.invoke()
+rad_system.invoke()
 
 ent_user_name.focus_set()
 

@@ -11,6 +11,8 @@ Set-StrictMode -Version 2.0
 
 $mutex = New-Object Threading.Mutex($false, 'Global\HosangadiFinancialYearRollover')
 $hasMutex = $false
+$backupMutex = New-Object Threading.Mutex($false, 'Global\HosangadiDatabaseBackup')
+$hasBackupMutex = $false
 $databasePassword = $null
 $logDirectory = Join-Path $env:ProgramData 'Hosangadi'
 $logPath = Join-Path $logDirectory 'financial-year-rollover.log'
@@ -41,9 +43,72 @@ function Invoke-MySql([string]$Sql) {
     return $output
 }
 
+function Get-ArchiveFileDestination([string]$Source, [string]$Destination, [switch]$WarnOnDifference) {
+    if (-not (Test-Path -LiteralPath $Destination)) { return $Destination }
+    $sourceItem = Get-Item -LiteralPath $Source -Force
+    $destinationItem = Get-Item -LiteralPath $Destination -Force
+    if ($destinationItem.PSIsContainer) { throw "Invoice archive type collision: $Destination" }
+    $sourceHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $Source).Hash
+    if ($sourceItem.Length -eq $destinationItem.Length -and $sourceHash -eq (Get-FileHash -Algorithm SHA256 -LiteralPath $Destination).Hash) {
+        return $Destination
+    }
+    if ($WarnOnDifference) {
+        Write-Warning "Skipping different same-name invoice file; source left unchanged: $Source (archive already has $Destination)"
+    }
+    return $null
+}
+
+function Test-ArchiveMerge([string]$Source, [string]$Destination) {
+    if (-not (Test-Path -LiteralPath $Destination)) { return }
+    $sourceItem = Get-Item -LiteralPath $Source -Force
+    $destinationItem = Get-Item -LiteralPath $Destination -Force
+    if ($sourceItem.PSIsContainer -ne $destinationItem.PSIsContainer) {
+        throw "Invoice archive type collision: $Destination"
+    }
+    if (-not $sourceItem.PSIsContainer) {
+        $null = Get-ArchiveFileDestination -Source $Source -Destination $Destination
+        return
+    }
+    foreach ($child in @(Get-ChildItem -LiteralPath $Source -Force)) {
+        Test-ArchiveMerge -Source $child.FullName -Destination (Join-Path $Destination $child.Name)
+    }
+}
+
+function Merge-ArchiveItem([string]$Source, [string]$Destination) {
+    if (-not (Test-Path -LiteralPath $Destination)) {
+        Move-Item -LiteralPath $Source -Destination $Destination
+        return
+    }
+    $sourceItem = Get-Item -LiteralPath $Source -Force
+    if (-not $sourceItem.PSIsContainer) {
+        $fileDestination = Get-ArchiveFileDestination -Source $Source -Destination $Destination -WarnOnDifference
+        if ([string]::IsNullOrWhiteSpace($fileDestination)) { return }
+        if (Test-Path -LiteralPath $fileDestination) {
+            # Preflight proved this exact content is already archived.
+            Remove-Item -LiteralPath $Source -Force
+        } else {
+            Move-Item -LiteralPath $Source -Destination $fileDestination
+        }
+        return
+    }
+    foreach ($child in @(Get-ChildItem -LiteralPath $Source -Force)) {
+        Merge-ArchiveItem -Source $child.FullName -Destination (Join-Path $Destination $child.Name)
+    }
+    if (@(Get-ChildItem -LiteralPath $Source -Force).Count -eq 0) {
+        Remove-Item -LiteralPath $Source -Force
+    } else {
+        Write-Warning "Source invoice directory retained because it contains skipped conflicts: $Source"
+    }
+}
+
 try {
     $hasMutex = $mutex.WaitOne(0)
     if (-not $hasMutex) { exit 0 }
+
+    # A quoted Windows command-line argument ending in a backslash can retain
+    # its closing quote. Normalize both roots before using them with Join-Path.
+    $ApplicationRoot = [IO.Path]::GetFullPath($ApplicationRoot.Trim().Trim('"'))
+    $InvoiceRoot = [IO.Path]::GetFullPath($InvoiceRoot.Trim().Trim('"'))
 
     $now = Get-Date
     if (-not $Force -and -not (($now.Month -eq 3 -and $now.Day -eq 31) -or ($now.Month -eq 4 -and $now.Day -eq 1))) {
@@ -57,6 +122,17 @@ try {
     $sourceShort = ([string]$sourceYear).Substring(2, 2)
     $targetShort = ([string]$targetYear).Substring(2, 2)
     $archiveName = "z$sourceShort-$targetShort"
+
+    $oldInvoices = Join-Path $InvoiceRoot 'oldinvoices'
+    $archivePath = Join-Path $oldInvoices $archiveName
+    New-Item -ItemType Directory -Path $archivePath -Force | Out-Null
+    $archiveItems = @(Get-ChildItem -LiteralPath $oldInvoices -Force | Where-Object { $_.Name -ne $archiveName })
+    # Validate the complete merge tree before any database or source-invoice
+    # change. Identical same-name files are safe remnants of an interrupted
+    # run; differing files are warned about and left untouched in the source.
+    foreach ($item in $archiveItems) {
+        Test-ArchiveMerge -Source $item.FullName -Destination (Join-Path $archivePath $item.Name)
+    }
 
     $script:mysqlExe = 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe'
     if (-not (Test-Path -LiteralPath $script:mysqlExe -PathType Leaf)) { throw "mysql.exe was not found: $script:mysqlExe" }
@@ -74,6 +150,61 @@ try {
     if ($sourceExists -ne '1') { throw "Source database does not exist: $sourceDatabase" }
 
     $targetExists = Invoke-MySql "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='$targetDatabase';"
+    $rolloverAlreadyComplete = $false
+    if ($targetExists -eq '1') {
+        $markerExists = Invoke-MySql "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$targetDatabase' AND table_name='_hosangadi_rollover';"
+        if ($markerExists -eq '1') {
+            $rolloverAlreadyComplete = (Invoke-MySql "SELECT COUNT(*) FROM ``$targetDatabase``.``_hosangadi_rollover`` WHERE source_year=$sourceYear;") -eq '1'
+        }
+    }
+
+    if (-not $rolloverAlreadyComplete) {
+        $backupDirectory = 'C:\backup'
+        New-Item -ItemType Directory -Path $backupDirectory -Force | Out-Null
+        $fullBackupPath = Join-Path $backupDirectory "aFullBackup_$($now.ToString('yyyy-MM-dd')).sql"
+        if (Test-Path -LiteralPath $fullBackupPath -PathType Leaf) {
+            if ((Get-Item -LiteralPath $fullBackupPath).Length -eq 0) { throw "Existing pre-rollover backup is empty: $fullBackupPath" }
+            Write-RolloverLog "FULL BACKUP REUSED $fullBackupPath"
+        } else {
+            $hasBackupMutex = $backupMutex.WaitOne(0)
+            if (-not $hasBackupMutex) { throw 'Another Hosangadi database backup is running. Wait for it to finish and rerun the rollover.' }
+
+            $mysqlDumpExe = 'C:\Program Files\MySQL\MySQL Server 8.0\bin\mysqldump.exe'
+            if (-not (Test-Path -LiteralPath $mysqlDumpExe -PathType Leaf)) { throw "mysqldump.exe was not found: $mysqlDumpExe" }
+            $databaseOutput = Invoke-MySql "SELECT schema_name FROM information_schema.schemata WHERE schema_name='somanath' OR schema_name REGEXP '^somanath20[0-9]{2,4}$' ORDER BY schema_name;"
+            $applicationDatabases = @($databaseOutput -split '\r?\n' | Where-Object { $_ -match '^somanath(?:20\d{2,4})?$' })
+            if ($applicationDatabases -notcontains 'somanath' -or $applicationDatabases -notcontains $sourceDatabase) {
+                throw "Full-backup database inventory is incomplete: $($applicationDatabases -join ', ')"
+            }
+
+            $temporaryBackupPath = "$fullBackupPath.partial"
+            $backupErrorPath = "$temporaryBackupPath.error"
+            Remove-Item -LiteralPath $temporaryBackupPath, $backupErrorPath -Force -ErrorAction SilentlyContinue
+            $dumpArguments = @(
+                '--host=localhost', '--port=3306', '--user=root',
+                '--single-transaction', '--routines', '--triggers', '--events',
+                '--set-gtid-purged=OFF', '--no-tablespaces', '--databases'
+            ) + $applicationDatabases
+            $dumpProcess = Start-Process -FilePath $mysqlDumpExe -ArgumentList $dumpArguments `
+                -RedirectStandardOutput $temporaryBackupPath -RedirectStandardError $backupErrorPath `
+                -WindowStyle Hidden -Wait -PassThru
+            if ($dumpProcess.ExitCode -ne 0) {
+                $details = if (Test-Path -LiteralPath $backupErrorPath) { (Get-Content -Raw -LiteralPath $backupErrorPath).Trim() } else { 'No mysqldump error text was produced.' }
+                throw "Pre-rollover mysqldump failed with exit code $($dumpProcess.ExitCode): $details"
+            }
+            if (-not (Test-Path -LiteralPath $temporaryBackupPath) -or (Get-Item -LiteralPath $temporaryBackupPath).Length -eq 0) {
+                throw 'Pre-rollover mysqldump produced an empty backup.'
+            }
+            Move-Item -LiteralPath $temporaryBackupPath -Destination $fullBackupPath
+            Remove-Item -LiteralPath $backupErrorPath -Force -ErrorAction SilentlyContinue
+            Write-RolloverLog "FULL BACKUP SUCCESS databases=$($applicationDatabases -join ',') path=$fullBackupPath"
+            Write-Host "Full pre-rollover backup created: $fullBackupPath"
+
+            $backupMutex.ReleaseMutex()
+            $hasBackupMutex = $false
+        }
+    }
+
     if ($targetExists -eq '0') {
         $template = Get-Content -Raw -LiteralPath $templatePath
         $template = [regex]::Replace($template, '(?im)^CREATE DATABASE[^;]+;\s*', '', 1)
@@ -113,26 +244,24 @@ COMMIT;
         Write-RolloverLog "DATABASE SUCCESS $sourceDatabase -> $targetDatabase"
     }
 
-    $oldInvoices = Join-Path $InvoiceRoot 'oldinvoices'
-    $archivePath = Join-Path $oldInvoices $archiveName
-    New-Item -ItemType Directory -Path $archivePath -Force | Out-Null
-    $items = @(Get-ChildItem -LiteralPath $oldInvoices -Force | Where-Object { $_.Name -ne $archiveName })
-    foreach ($item in $items) {
-        $destination = Join-Path $archivePath $item.Name
-        if (Test-Path -LiteralPath $destination) { throw "Invoice archive collision: $destination" }
-        Move-Item -LiteralPath $item.FullName -Destination $archivePath
+    foreach ($item in $archiveItems) {
+        if (Test-Path -LiteralPath $item.FullName) {
+            Merge-ArchiveItem -Source $item.FullName -Destination (Join-Path $archivePath $item.Name)
+        }
     }
 
     Write-RolloverLog "COMPLETE $sourceDatabase -> $targetDatabase; invoices -> $archivePath"
     Write-Host "Financial-year rollover complete: $sourceDatabase -> $targetDatabase"
     Write-Host "Old invoices archived in: $archivePath"
 } catch {
-    Write-RolloverLog "ERROR $($_.Exception.Message)"
-    Write-Error $_
+    Write-RolloverLog "ERROR $($_.Exception.Message) AT $($_.ScriptStackTrace)"
+    Write-Error -ErrorRecord $_
     exit 1
 } finally {
     $databasePassword = $null
     Remove-Item Env:MYSQL_PWD -ErrorAction SilentlyContinue
     if ($hasMutex) { $mutex.ReleaseMutex() }
     $mutex.Dispose()
+    if ($hasBackupMutex) { $backupMutex.ReleaseMutex() }
+    $backupMutex.Dispose()
 }

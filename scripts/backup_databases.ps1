@@ -19,6 +19,11 @@ try {
         exit 0
     }
 
+    # Defend against a quoted command-line directory ending in a backslash,
+    # which can retain the closing quote on Windows.
+    $ApplicationRoot = [IO.Path]::GetFullPath($ApplicationRoot.Trim().Trim('"'))
+    $BackupDirectory = [IO.Path]::GetFullPath($BackupDirectory.Trim().Trim('"'))
+
     if (-not (Test-Path -LiteralPath $BackupDirectory -PathType Container)) {
         New-Item -ItemType Directory -Path $BackupDirectory -Force | Out-Null
     }
@@ -93,4 +98,3 @@ try {
     if ($hasMutex) { $mutex.ReleaseMutex() }
     $mutex.Dispose()
 }
-

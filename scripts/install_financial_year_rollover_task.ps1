@@ -10,6 +10,12 @@ param(
 #Requires -RunAsAdministrator
 $ErrorActionPreference = 'Stop'
 
+# Normalize user-supplied paths before embedding them in Task Scheduler's
+# command-line string. This also removes an accidentally retained quote after
+# a directory argument ending in a backslash.
+$ApplicationRoot = [IO.Path]::GetFullPath($ApplicationRoot.Trim().Trim('"'))
+$OperatorProfile = [IO.Path]::GetFullPath($OperatorProfile.Trim().Trim('"'))
+
 $service = New-Object -ComObject 'Schedule.Service'
 $service.Connect()
 $root = $service.GetFolder('\')

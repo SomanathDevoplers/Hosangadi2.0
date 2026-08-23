@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$TaskName = 'Hosangadi Database Backup',
-    [string]$ApplicationRoot = (Join-Path $env:USERPROFILE 'Hosangadi2.0'),
+    [string]$ApplicationRoot = (Split-Path $PSScriptRoot -Parent),
     [string]$BackupDirectory = 'C:\backup',
     [switch]$NoShutdownTrigger,
     [switch]$Uninstall
@@ -11,6 +11,12 @@ param(
 #Requires -RunAsAdministrator
 
 $ErrorActionPreference = 'Stop'
+
+# Normalize user-supplied paths before embedding them in Task Scheduler's
+# command-line string. This also removes an accidentally retained quote after
+# a directory argument ending in a backslash.
+$ApplicationRoot = [IO.Path]::GetFullPath($ApplicationRoot.Trim().Trim('"'))
+$BackupDirectory = [IO.Path]::GetFullPath($BackupDirectory.Trim().Trim('"'))
 
 $backupScript = Join-Path $ApplicationRoot 'scripts\backup_databases.ps1'
 $powerShellPath = Join-Path $PSHOME 'powershell.exe'
@@ -45,13 +51,20 @@ $task.Settings.DisallowStartIfOnBatteries = $false
 $task.Settings.StopIfGoingOnBatteries = $false
 $task.Settings.AllowHardTerminate = $false
 
-# TASK_TRIGGER_BOOT = 8. Start two minutes after boot, then repeat every two hours.
+# TASK_TRIGGER_BOOT = 8. Take one backup two minutes after every boot.
 $bootTrigger = $task.Triggers.Create(8)
 $bootTrigger.Enabled = $true
 $bootTrigger.Delay = 'PT2M'
-$bootTrigger.Repetition.Interval = 'PT2H'
-$bootTrigger.Repetition.Duration = 'P9999D'
-$bootTrigger.Repetition.StopAtDurationEnd = $false
+
+# TASK_TRIGGER_TIME = 1. Start two minutes after installation and repeat every
+# two hours. Keeping repetition on a schedulable time trigger makes Task
+# Scheduler calculate and display Next Run Time without waiting for a reboot.
+$periodicTrigger = $task.Triggers.Create(1)
+$periodicTrigger.Enabled = $true
+$periodicTrigger.StartBoundary = (Get-Date).AddMinutes(2).ToString("yyyy-MM-dd'T'HH:mm:ss")
+$periodicTrigger.Repetition.Interval = 'PT2H'
+$periodicTrigger.Repetition.Duration = 'P9999D'
+$periodicTrigger.Repetition.StopAtDurationEnd = $false
 
 if (-not $NoShutdownTrigger) {
     # TASK_TRIGGER_EVENT = 0. User32 event 1074 is emitted when shutdown/restart is initiated.
@@ -82,7 +95,7 @@ $task.Principal.RunLevel = 1 # Highest privileges
 $null = $rootFolder.RegisterTaskDefinition($TaskName, $task, 6, 'SYSTEM', $null, 5, $null)
 
 Write-Host "Installed or updated scheduled task: $TaskName"
-Write-Host 'Schedule: two minutes after startup, then every two hours while Windows remains running.'
+Write-Host 'Schedule: once two minutes after startup, plus every two hours beginning two minutes after installation.'
 if ($NoShutdownTrigger) {
     Write-Host 'Shutdown trigger: disabled.'
 } else {
@@ -90,4 +103,3 @@ if ($NoShutdownTrigger) {
 }
 Write-Host "Backup destination: $BackupDirectory"
 Write-Host "Log: $(Join-Path $BackupDirectory 'scheduled-backup.log')"
-
