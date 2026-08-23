@@ -396,7 +396,7 @@ io.on('connection', function (socket) {
     //all the params passed pushed to usersLogged
     socketData = socket.handshake.headers
     clientId = socketData['form_id']
-    
+    console.log("connection","---New", getTime())
     //take all available old data
     let backedUpdata = fs.readFileSync(path.join(homeDir , 'Hosangadi2.0','backend','socket_server','NodeErr.txt'),{encoding:'utf8', flag:'r'});
     if (backedUpdata != "{}")
@@ -427,23 +427,28 @@ io.on('connection', function (socket) {
 
     //root window disconnect event
           socket.on('disconnect' , ()=> {
-            
+            console.log("usersLogged-disconnect-1",usersLogged, "clientId ",clientId, getTime())
             clientId = socket.handshake.headers.form_id
             if(socket.handshake.headers['user-agent'] != 'node-XMLHttpRequest')
             {
-              
+              console.log("usersLogged-disconnect",usersLogged, "clientId ",clientId, getTime())
               if(Object.keys(usersLogged[clientId].sales).length > 0 || Object.keys(usersLogged[clientId].purchases).length > 0){
                 temp = {}
                 temp[clientId] = usersLogged[clientId]
+                console.log("JSON START\n\n", JSON.stringify(temp) ,"\n\nJSON END", getTime())
                 fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(temp));
+                fs.appendFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErrNew.txt'),getTime() + JSON.stringify(temp));
               }
-              delete usersLogged[clientId]
+              // On 20-05-2026 Since while closing window annyway we won't allow to close 
+              // without first closing all sales and purchase forms so anyhow userLogged will be empty
+              // delete usersLogged[clientId]
             }
           });   
   
             
     //server refreshes
           socket.on('refresh' , ()=> {
+		            console.log("connection","---refresh")
                 socket.broadcast.emit("refreshProductServer")
           })
 
@@ -457,20 +462,22 @@ io.on('connection', function (socket) {
     //stayconnected 
           socket.on('keepAlive' , () => {
               i = 1;
-              
           })
           
         socket.on('refreshProductServer1' , () => {
+          console.log("connection","---refreshProductServer1", getTime())
           socket.broadcast.emit("refreshProductServer")
         })
 
       //error
           socket.on('sendError' , (data) =>{
+              console.log("connection","---sendError", getTime())
               socket.broadcast.emit('error' , data)
           })
 
       //refresh product hide when spurchase bill saved
       global.refreshProducts = ()=>{
+        console.log("connection","---refreshProducts", getTime())
         socket.broadcast.emit("refreshProductServer")
       } 
 
@@ -503,8 +510,12 @@ app.get('/login' , (req,res) => {                                               
         {
             //applicaion is already running
             //an entry in usersLogged of that form id
-            res.sendStatus(101);
-               
+            // Edit on 20-05-2026 since delete userLogged Removed
+            // res.sendStatus(101);
+            
+            con.query(sql, (err , userType)=>{
+                res.send(userType)
+            });
         }
       
 });
@@ -543,7 +554,7 @@ app.get('/purchases/addEditPurDetails' , (req , res) => {
             }
             else
               {
-
+                                  
                               
                               usersLogged[form_id].purchases.purDate = purDetails.date
                               usersLogged[form_id].purchases.invNo =  purDetails.inv_no
@@ -1823,21 +1834,26 @@ app.get('/sales/voucher',(req,res)=>{
 
 process.on('uncaughtException', (error) => { 
   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  fs.appendFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','err.txt'), error.stack+ '\n\n');	
   io.sockets.emit('error' ,"\n"+String(error.stack))
-  console.log(error.stack);
+  console.log(error.stack, getTime());
   process.exit(1)  
 });
 
 process.on('unhandledRejection', (error, promise)  => {
   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  fs.appendFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','err.txt'), error.stack+ '\n\n');	
   io.sockets.emit('error' , error)
+  console.log(error.stack, getTime());
   process.exit(1); // Exit your app 
 })
 
 
 function myCustomErrorHandler(err, req, res, next) {
   fs.writeFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','NodeErr.txt'),JSON.stringify(usersLogged));
+  fs.appendFileSync(path.join(homeDir,'Hosangadi2.0','backend','socket_server','err.txt'), err.stack+ '\n\n');
   io.sockets.emit('error' ,req.path+"\n"+String(err.stack))
+  console.log(err.stack, getTime());
   process.exit(1);
 }
 app.use(myCustomErrorHandler);
